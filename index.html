@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta charset="utf-8" />
+    <title>Clock Listening Trainer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/icon_CLT_512x512.png"
+    />
+    <link rel="stylesheet" href="styles/styles_02.css" />
+    <script src="script/script_07.js" defer></script>
+  </head>
+
+  <body>
+    <div id="scroll-container" class="scroll-container">
+      <div class="layout">
+        <div class="titles-container" id="titlesContainer">
+          <img
+            class="title-icon"
+            id="titleIcon"
+            src="icons/icon_CLT_512x512.png"
+            alt="Icon"
+          />
+          <div class="title-text" id="titleText">
+            <h2>Clock Listening Trainer<br /></h2>
+            <h6 id="version" class="version">version: 1.0.1</h6>
+          </div>
+        </div>
+        <h5>Oleksii Pokormiakho</h5>
+        <div class="setting-row" id="settingRow">
+          <button class="reset-settings-btn" id="resetSettingsBtn" title="Def">
+            🔄
+          </button>
+          <div class="ui-language-wrapper" id="uiLanguageWrapper">
+            <label for="uiLangSelect" id="uiLangLabel" class="ui-lang-label"
+              >Interface:</label
+            >
+            <select class="ui-lang-select" id="uiLangSelect">
+              <option value="de">Deutsch</option>
+              <option selected value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="nl">Nederlands</option>
+              <option value="pl">Polski</option>
+              <option value="pt">Português</option>
+              <option value="ru">Русский</option>
+              <option value="tr">Türkçe</option>
+              <option value="uk">Українська</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-block block-exercises">
+          <div class="clock-container">
+            <button class="random-btn" id="randomBtn_1">🎲</button>
+            <input
+              type="text"
+              class="time-input"
+              id="timeInput_1"
+              maxlength="5"
+              value="00:00"
+            />
+            <button class="speak-btn" id="speakBtn_1">▶️</button>
+          </div>
+          <div class="clock-container">
+            <button class="random-btn" id="randomBtn_2">🎲</button>
+            <input
+              type="text"
+              class="time-input"
+              id="timeInput_2"
+              maxlength="5"
+              value="00:00"
+            />
+            <button class="speak-btn" id="speakBtn_2">▶️</button>
+          </div>
+          <div class="clock-container">
+            <button class="random-btn" id="randomBtn_3">🎲</button>
+            <input
+              type="text"
+              class="time-input"
+              id="timeInput_3"
+              maxlength="5"
+              value="00:00"
+            />
+            <button class="speak-btn" id="speakBtn_3">▶️</button>
+          </div>
+          <div class="clock-container">
+            <button class="random-btn" id="randomBtn_4">🎲</button>
+            <input
+              type="text"
+              class="time-input"
+              id="timeInput_4"
+              maxlength="5"
+              value="00:00"
+            />
+            <button class="speak-btn" id="speakBtn_4">▶️</button>
+          </div>
+          <div class="clock-container">
+            <button class="random-btn" id="randomBtn_5">🎲</button>
+            <input
+              type="text"
+              class="time-input"
+              id="timeInput_5"
+              maxlength="5"
+              value="00:00"
+            />
+            <button class="speak-btn" id="speakBtn_5">▶️</button>
+          </div>
+        </div>
+        <div class="section-block block-button">
+          <button class="fill-random-btn" id="fillRandomBtn">🎲</button>
+          <button class="start-pause-btn" id="startPauseBtn">Start</button>
+          <button class="reset-btn" id="resetBtn">Reset</button>
+        </div>
+        <div class="section-block block-setting">
+          <label for="speedSelect" id="labelSpeed">Speed</label>
+          <select id="speedSelect" class="speed-select">
+            <option value="0.6">0.6</option>
+            <option value="0.8">0.8</option>
+            <option value="1.0" selected>1.0</option>
+            <option value="1.2">1.2</option>
+            <option value="1.4">1.4</option>
+            <option value="1.6">1.6</option>
+            <option value="1.8">1.8</option>
+            <option value="2.0">2.0</option>
+          </select>
+          <label for="delaySelect" id="labelDelay" class="label-delay"
+            >Delay</label
+          >
+          <select id="delaySelect" class="delay-select">
+            <option value="200">200</option>
+            <option value="500" selected>500</option>
+            <option value="1000">1000</option>
+            <option value="1500">1500</option>
+            <option value="2000">2000</option>
+            <option value="2500">2500</option>
+            <option value="3000">3000</option>
+            <option value="4000">4000</option>
+            <option value="5000">5000</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
