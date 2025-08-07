@@ -58,6 +58,7 @@ h5 {
 button {
   padding: 10px 0;
   font-size: 0.85em;
+  font-weight: 600;
   background: #e3f2fd;
   border: 2px solid #b3d4fc;
   border-radius: 10px;
@@ -193,7 +194,7 @@ select:disabled {
   height: 40px;
   padding: 4px 6px;
   margin: 0 4px 0;
-  font: 2.2em sans-serif;
+  font: 1.8em sans-serif;
   text-align: center;
   border: 1px solid #b3d4fc;
   border-radius: 6px;
@@ -227,7 +228,7 @@ select:disabled {
 .block-button button {
   flex: 1;
   height: 40px;
-  font-size: 1.2em;
+  font-size: 0.85em;
   padding: 4px 6px;
   margin: 0 4px 0;
 }
