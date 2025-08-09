@@ -10,12 +10,12 @@
       sizes="32x32"
       href="icons/icon_CLT_512x512.png"
     />
-    <link rel="stylesheet" href="styles/styles_03.css" />
-    <!-- <script src="script/ui_CLT_texts.js" defer></script> -->
+    <link rel="stylesheet" href="styles/styles_04.css" />
+    <script src="script/ui_CLT_texts.js" defer></script>
     <script src="script/dutchVocab.js" defer></script>
-    <script src="script/script_09.js" defer></script>
+    <script src="script/script_11_01.js" defer></script>
   </head>
-
+  <!-- CLT -->
   <body>
     <div id="scroll-container" class="scroll-container">
       <div class="layout">
@@ -28,19 +28,27 @@
           />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 id="version" class="version">version: 1.0.2</h6>
+            <h6 id="version" class="version">version: 1.0.3</h6>
           </div>
         </div>
         <h5>Oleksii Pokormiakho</h5>
         <div class="setting-row" id="settingRow">
-          <button class="reset-settings-btn" id="resetSettingsBtn" title="Def">
+          <button
+            class="reset-settings-btn"
+            id="resetSettingsBtn"
+            title="Reset to default settings"
+          >
             🔄
           </button>
           <!-- <div class="ui-language-wrapper" id="uiLanguageWrapper">
             <label for="uiLangSelect" id="uiLangLabel" class="ui-lang-label"
               >Interface:</label
             >
-            <select class="ui-lang-select" id="uiLangSelect">
+            <select
+              class="ui-lang-select"
+              id="uiLangSelect"
+              title="Select interface language"
+            >
               <option value="de">Deutsch</option>
               <option selected value="en">English</option>
               <option value="fr">Français</option>
@@ -53,7 +61,8 @@
             </select>
           </div> -->
         </div>
-        <div class="section-block block-exercises">
+
+        <div class="section-block section-block-exercises">
           <div class="clock-container">
             <button class="random-btn" id="randomBtn_1">🎲</button>
             <input
@@ -110,39 +119,60 @@
             <button class="speak-btn" id="speakBtn_5">▶️</button>
           </div>
         </div>
-        <div class="section-block block-button">
-          <button class="fill-random-btn" id="fillRandomBtn">Rnd</button>
-          <button class="start-pause-btn" id="startPauseBtn">Start</button>
-          <button class="reset-btn" id="resetBtn">Reset</button>
+
+        <div class="setting-button-wrapper">
+          <div class="section-block section-block-buttons">
+            <button class="fill-random-btn" id="fillRandomBtn">Rnd</button>
+            <button id="startPauseBtn" class="start-pause-btn">Start</button>
+            <button disabled id="resetBtn" class="reset-btn">Reset</button>
+          </div>
+
+          <div class="section-block section-block-settings">
+            <div class="speed-delay-wrapper">
+              <div class="speed-group">
+                <label for="speedSelect" id="labelSpeed">Speed</label>
+                <select id="speedSelect" class="speed-select">
+                  <option value="0.6">0.6</option>
+                  <option value="0.8">0.8</option>
+                  <option value="1.0" selected>1.0</option>
+                  <option value="1.2">1.2</option>
+                  <option value="1.4">1.4</option>
+                  <option value="1.6">1.6</option>
+                  <option value="1.8">1.8</option>
+                  <option value="2.0">2.0</option>
+                </select>
+              </div>
+              <div class="delay-group">
+                <label for="delaySelect" id="labelDelay" class="label-delay"
+                  >Delay</label
+                >
+                <select id="delaySelect" class="delay-select">
+                  <option value="1000" selected>1000</option>
+                  <option value="1500">1500</option>
+                  <option value="2000">2000</option>
+                  <option value="2500">2500</option>
+                  <option value="3000">3000</option>
+                  <option value="4000">4000</option>
+                  <option value="5000">5000</option>
+                  <option value="6000">6000</option>
+                  <option value="7000">7000</option>
+                  <option value="8000">8000</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="section-block block-setting">
-          <label for="speedSelect" id="labelSpeed">Speed</label>
-          <select id="speedSelect" class="speed-select">
-            <option value="0.6">0.6</option>
-            <option value="0.8">0.8</option>
-            <option value="1.0" selected>1.0</option>
-            <option value="1.2">1.2</option>
-            <option value="1.4">1.4</option>
-            <option value="1.6">1.6</option>
-            <option value="1.8">1.8</option>
-            <option value="2.0">2.0</option>
-          </select>
-          <label for="delaySelect" id="labelDelay" class="label-delay"
-            >Delay</label
+
+        <div class="developer" id="developer">
+          <button onclick="alert(location.href);" title="Path to this page">
+            Path
+          </button>
+          <button
+            onclick="localStorage.clear(); alert('localStorage cleared');"
+            title="Clear local storage"
           >
-          <select id="delaySelect" class="delay-select">
-            <option value="500">500</option>
-            <option value="1000" selected>1000</option>
-            <option value="1500">1500</option>
-            <option value="2000">2000</option>
-            <option value="2500">2500</option>
-            <option value="3000">3000</option>
-            <option value="4000">4000</option>
-            <option value="5000">5000</option>
-            <option value="6000">6000</option>
-            <option value="7000">7000</option>
-            <option value="8000">8000</option>
-          </select>
+            Clear LS
+          </button>
         </div>
       </div>
     </div>
