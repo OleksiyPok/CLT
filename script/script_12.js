@@ -1,4 +1,5 @@
 // ==================== CONSTANTS ====================
+const DEVELOPER_MODE = false;
 const DEFAULT_SETTINGS = { speed: "1.0", delay: "1000", lang: "en" };
 const SETTINGS_KEY = "CLT_settings";
 const PLAY_ICON = "▶️";
@@ -21,16 +22,14 @@ const resetBtnEl = document.getElementById("resetBtn");
 const resetSettingsBtnEl = document.getElementById("resetSettingsBtn");
 const fillRandomBtnEl = document.getElementById("fillRandomBtn");
 const uiLangSelectEl = document.getElementById("uiLangSelect");
-
-// UPDATED: selector matches new markup
 const blockExercisesInputEls = document.querySelectorAll(
   ".section-block-exercises .time-input"
 );
-
 const randomBtnEls = document.querySelectorAll(".random-btn");
 const speakBtnEls = document.querySelectorAll(".speak-btn");
 const timeInputEls = document.querySelectorAll(".time-input");
 const clockContainerEls = document.querySelectorAll(".clock-container");
+const developerBlockEl = document.getElementById("developer");
 
 // ==================== UTILS ====================
 const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
@@ -391,6 +390,9 @@ if (resetSettingsBtnEl)
 // ==================== INIT ====================
 document.addEventListener("DOMContentLoaded", () => {
   try {
+    if (developerBlockEl && !DEVELOPER_MODE) {
+      developerBlockEl.style.display = "none";
+    }
     applySettingsToUI(loadSettings());
     if (uiLangSelectEl) {
       translateUI(uiLangSelectEl.value);
