@@ -221,9 +221,9 @@ button:disabled {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  padding: 8px;
+  /* padding: 8px; */
   background: #ffffff;
-  border: 1px solid #b3d4fc;
+  /* border: 1px solid #b3d4fc; */
   border-radius: 10px;
 }
 .speed-group,
