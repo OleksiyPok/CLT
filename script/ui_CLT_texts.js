@@ -1,25 +1,26 @@
 window.embeddedUITexts = {
   de: {
     // Buttons
-    btnContinue: "Weiter", // Continue action button
-    btnStart: "Start", // Start action button
-    btnStop: "Stopp", // Stop action button
-    fillRandomBtn: "Rnd", // Button to fill with random times
-    resetBtn: "Zurück", // Reset button label
-    startPauseBtn: "Start", // Start or pause button label
+    btnContinue: "Weiter",
+    btnStart: "Start",
+    btnStop: "Stopp",
+    fillRandomBtn: "Rnd",
+    resetBtn: "Zurück",
+    startPauseBtn: "Start",
     // Labels
-    labelDelay: "Verzögerung (ms)", // Label for delay in milliseconds
-    labelSpeed: "Tempo", // Label for speed
-    uiLangLabel: "Oberfläche:", // Label for interface language selector
+    labelDelay: "Verzögerung (ms)",
+    labelSpeed: "Tempo",
+    uiLangLabel: "Oberfläche:",
     // Tooltips and alerts
-    alertInvalidFormat: "Zeit im Format HH:MM eingeben", // Alert for invalid time format
-    alertInvalidPhrase: "Ungültige Zeit oder keine Phrase verfügbar.", // Alert for invalid time or phrase
-    fillRandomBtnTitle: "Mit zufälligen Zeiten füllen", // Tooltip for fill random button
-    resetSettingsTitle: "Auf Standard zurücksetzen", // Tooltip for resetting to defaults
-    resetBtnTitle: "Sequenz zurücksetzen", // Tooltip for reset button
-    speakBtnTitle: "Aktuelle Zeit abspielen", // Tooltip for play time button
-    startPauseBtnTitle: "Sequenz starten oder pausieren", // Tooltip for start/pause button
-    uiLangSelectTitle: "Oberflächensprache auswählen", // Tooltip for language selector
+    alertInvalidFormat: "Zeit im Format HH:MM eingeben",
+    alertInvalidPhrase: "Ungültige Zeit oder keine Phrase verfügbar.",
+    fillRandomBtnTitle: "Mit zufälligen Zeiten füllen",
+    randomBtnTitle: "Zufällige Zeit generieren",
+    resetSettingsTitle: "Auf Standard zurücksetzen",
+    resetBtnTitle: "Sequenz zurücksetzen",
+    speakBtnTitle: "Aktuelle Zeit abspielen",
+    startPauseBtnTitle: "Sequenz starten oder pausieren",
+    uiLangSelectTitle: "Oberflächensprache auswählen",
   },
   en: {
     // Buttons
@@ -37,6 +38,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Enter time in HH:MM format",
     alertInvalidPhrase: "Invalid time or unable to generate phrase.",
     fillRandomBtnTitle: "Fill with random times",
+    randomBtnTitle: "Generate random",
     resetSettingsTitle: "Reset to default settings",
     resetBtnTitle: "Reset sequence",
     speakBtnTitle: "Play this time",
@@ -59,6 +61,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Entrez l’heure au format HH:MM",
     alertInvalidPhrase: "Heure invalide ou phrase indisponible.",
     fillRandomBtnTitle: "Remplir avec des heures aléatoires",
+    randomBtnTitle: "Générer aléatoire",
     resetSettingsTitle: "Restaurer les paramètres par défaut",
     resetBtnTitle: "Réinitialiser la séquence",
     speakBtnTitle: "Jouer cette heure",
@@ -81,6 +84,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Voer tijd in UU:MM formaat",
     alertInvalidPhrase: "Ongeldige tijd of geen zin beschikbaar.",
     fillRandomBtnTitle: "Vul met willekeurige tijden",
+    randomBtnTitle: "Genereer willekeurig",
     resetSettingsTitle: "Herstel naar standaardinstellingen",
     resetBtnTitle: "Reset de reeks",
     speakBtnTitle: "Speel deze tijd af",
@@ -103,6 +107,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Podaj czas w formacie GG:MM",
     alertInvalidPhrase: "Nieprawidłowy czas lub brak frazy.",
     fillRandomBtnTitle: "Wypełnij losowymi czasami",
+    randomBtnTitle: "Wygeneruj losowo",
     resetSettingsTitle: "Przywróć ustawienia domyślne",
     resetBtnTitle: "Zresetuj sekwencję",
     speakBtnTitle: "Odtwórz ten czas",
@@ -125,6 +130,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Digite a hora no formato HH:MM",
     alertInvalidPhrase: "Hora inválida ou frase indisponível.",
     fillRandomBtnTitle: "Preencher com horas aleatórias",
+    randomBtnTitle: "Gerar aleatório",
     resetSettingsTitle: "Restaurar configurações padrão",
     resetBtnTitle: "Redefinir sequência",
     speakBtnTitle: "Tocar esta hora",
@@ -147,6 +153,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Введите время в формате ЧЧ:ММ",
     alertInvalidPhrase: "Нет фразы для этого времени.",
     fillRandomBtnTitle: "Заполнить случайными временами",
+    randomBtnTitle: "Генерировать случайное",
     resetSettingsTitle: "Сбросить настройки по умолчанию",
     resetBtnTitle: "Сбросить последовательность",
     speakBtnTitle: "Воспроизвести это время",
@@ -169,6 +176,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "SS:DD formatında saat girin",
     alertInvalidPhrase: "Geçersiz saat veya cümle.",
     fillRandomBtnTitle: "Rastgele zamanlarla doldur",
+    randomBtnTitle: "Rastgele oluştur",
     resetSettingsTitle: "Varsayılan ayarları sıfırla",
     resetBtnTitle: "Sıralamayı sıfırla",
     speakBtnTitle: "Bu zamanı çal",
@@ -191,6 +199,7 @@ window.embeddedUITexts = {
     alertInvalidFormat: "Введіть час у форматі ГГ:ХХ",
     alertInvalidPhrase: "Немає фрази для цього часу.",
     fillRandomBtnTitle: "Заповнити випадковим часом",
+    randomBtnTitle: "Згенерувати випадкове",
     resetSettingsTitle: "Скинути до налаштувань за замовчуванням",
     resetBtnTitle: "Скинути послідовність",
     speakBtnTitle: "Відтворити цей час",
