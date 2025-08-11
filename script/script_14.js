@@ -1,11 +1,40 @@
+// ==================== CONFIG ====================
+const Config = {
+  PATHS: { CONFIG: "script/config.json" },
+  DEFAULT_CONFIG: Object.freeze({
+    DEVELOPER_MODE: true,
+    USE_LOCAL_STORAGE: true,
+    DEFAULT_VOICE: "Google Nederlands",
+    DEFAULT_SETTINGS: {
+      mobile: {
+        uiLang: "en",
+        delay: "1000",
+        speed: "1.0",
+        fullscreen: "0",
+        languageCode: "nl-NL",
+        voiceName: "Google Nederlands",
+      },
+      desktop: {
+        uiLang: "en",
+        delay: "1000",
+        speed: "1.0",
+        fullscreen: "0",
+        languageCode: "nl-NL",
+        voiceName: "Google Nederlands",
+      },
+    },
+  }),
+};
+
 // ==================== CONSTANTS ====================
-const DEVELOPER_MODE = false;
-const DEFAULT_SETTINGS = { speed: "1.0", delay: "1000", lang: "en" };
 const SETTINGS_KEY = "CLT_settings";
 const PLAY_ICON = "▶️";
 const STOP_ICON = "⏹️";
 
-// ==================== STATE ====================
+// ==================== APP STATE ====================
+let APP_CONFIG = {};
+let DEFAULT_SETTINGS_ACTIVE = {};
+let currentSettings = {};
 let sequenceIndex = 0;
 let isSequenceMode = false;
 let isPaused = false;
@@ -46,6 +75,86 @@ const generateRandomTimeString = () => {
   const m = Math.floor(Math.random() * 60);
   return `${h}:${String(m).padStart(2, "0")}`;
 };
+function deepMerge(defaultObj, srcObj) {
+  if (!srcObj) return JSON.parse(JSON.stringify(defaultObj));
+  const out = Array.isArray(defaultObj) ? [] : {};
+  const keys = new Set([
+    ...Object.keys(defaultObj || {}),
+    ...Object.keys(srcObj || {}),
+  ]);
+  keys.forEach((k) => {
+    const d = defaultObj ? defaultObj[k] : undefined;
+    const s = srcObj ? srcObj[k] : undefined;
+    if (
+      d &&
+      typeof d === "object" &&
+      !Array.isArray(d) &&
+      s &&
+      typeof s === "object" &&
+      !Array.isArray(s)
+    ) {
+      out[k] = deepMerge(d, s);
+    } else if (s === undefined) {
+      out[k] = JSON.parse(JSON.stringify(d));
+    } else {
+      out[k] = s;
+    }
+  });
+  return out;
+}
+async function loadExternalConfig() {
+  try {
+    const resp = await fetch(Config.PATHS.CONFIG, { cache: "no-store" });
+    if (!resp.ok) return deepMerge(Config.DEFAULT_CONFIG, {});
+    const j = await resp.json();
+    return deepMerge(Config.DEFAULT_CONFIG, j);
+  } catch (e) {
+    return deepMerge(Config.DEFAULT_CONFIG, {});
+  }
+}
+function selectPlatformDefaults(defs) {
+  const isMobile = /Mobi|Android|iPhone|iPad|Windows Phone|IEMobile/i.test(
+    navigator.userAgent
+  );
+  return deepMerge(defs.desktop || {}, defs[isMobile ? "mobile" : "desktop"]);
+}
+function mergeSettingsWithDefaults(stored, defaults) {
+  const out = {};
+  out.uiLang = stored?.uiLang ?? defaults.uiLang;
+  out.delay = stored?.delay ?? defaults.delay;
+  out.speed = stored?.speed ?? defaults.speed;
+  out.fullscreen = stored?.fullscreen ?? defaults.fullscreen;
+  out.languageCode = stored?.languageCode ?? defaults.languageCode;
+  out.voiceName = stored?.voiceName ?? defaults.voiceName;
+  return out;
+}
+function saveSettings(s) {
+  currentSettings = mergeSettingsWithDefaults(s || {}, DEFAULT_SETTINGS_ACTIVE);
+  if (APP_CONFIG.USE_LOCAL_STORAGE && typeof localStorage !== "undefined") {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
+    } catch (e) {}
+  }
+}
+function loadSettingsFromLocal() {
+  if (APP_CONFIG.USE_LOCAL_STORAGE && typeof localStorage !== "undefined") {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return mergeSettingsWithDefaults(parsed, DEFAULT_SETTINGS_ACTIVE);
+      }
+    } catch (e) {}
+  }
+  return mergeSettingsWithDefaults({}, DEFAULT_SETTINGS_ACTIVE);
+}
+function readSettingsFromUI() {
+  const base = { ...(currentSettings || {}) };
+  if (uiLangSelectEl) base.uiLang = uiLangSelectEl.value;
+  if (speedSelectEl) base.speed = speedSelectEl.value;
+  if (delaySelectEl) base.delay = delaySelectEl.value;
+  return mergeSettingsWithDefaults(base, DEFAULT_SETTINGS_ACTIVE);
+}
 
 // ==================== TIME -> DUTCH ====================
 function getDutchTimeString(timeStr) {
@@ -65,7 +174,6 @@ function getDutchTimeStringFromDigits(hours, minutes) {
   const nextHour = (hours + 1) % 24;
   const idx = hours % 12;
   const nextIdx = nextHour % 12;
-
   if (minutes === 0)
     return `${capitalize(hourNames[idx] || String(hours))} uur`;
   if (minutes === 15) return `Kwart over ${hourNames[idx] || hours}`;
@@ -112,7 +220,6 @@ function setActiveInput(index) {
   randomBtnEls.forEach((btn) => {
     if (btn) btn.disabled = false;
   });
-
   if (index >= 0 && index < timeInputEls.length) {
     const inp = timeInputEls[index];
     if (!inp) return;
@@ -142,7 +249,7 @@ function resetSequenceState() {
   isSpeaking = false;
   updateButtonIcon();
   setActiveInput(-1);
-  setBtnText(startPauseBtnEl, "Start");
+  setBtnText(startPauseBtnEl, window.btnStates?.start || "Start");
   disableSpeakButtons(false);
   toggleControls(true);
 }
@@ -157,13 +264,10 @@ function speakText(text, onEnd = null, rate = 1.0, button = null) {
   }
   if (isSpeaking) speechSynthesis.cancel();
   clearSequenceTimeout();
-
   utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "nl-NL";
   utterance.rate = rate;
-
   toggleControls(false);
-
   utterance.onend = () => {
     isSpeaking = false;
     updateButtonIcon(button);
@@ -184,11 +288,9 @@ function speakText(text, onEnd = null, rate = 1.0, button = null) {
     updateButtonIcon(button);
     if (!isSequenceMode) toggleControls(true);
   };
-
   isSpeaking = true;
   currentSpeakButton = button;
   updateButtonIcon(button);
-
   try {
     speechSynthesis.speak(utterance);
   } catch (e) {
@@ -197,7 +299,6 @@ function speakText(text, onEnd = null, rate = 1.0, button = null) {
     onEnd && onEnd();
   }
 }
-
 function stopAll() {
   if ("speechSynthesis" in window && speechSynthesis.speaking)
     speechSynthesis.cancel();
@@ -205,14 +306,14 @@ function stopAll() {
   clearSequenceTimeout();
   updateButtonIcon(currentSpeakButton);
 }
-
 function speakAllTimesSequentially(index = 0) {
   clearSequenceTimeout();
   const inputs = Array.from(blockExercisesInputEls || []);
-  const rate = parseFloat(speedSelectEl?.value || DEFAULT_SETTINGS.speed);
+  const rate = parseFloat(
+    speedSelectEl?.value || DEFAULT_SETTINGS_ACTIVE.speed
+  );
   const delayMs =
-    parseInt(delaySelectEl?.value || DEFAULT_SETTINGS.delay, 10) || 1000;
-
+    parseInt(delaySelectEl?.value || DEFAULT_SETTINGS_ACTIVE.delay, 10) || 1000;
   if (index === 0) disableSpeakButtons(true);
   if (index >= inputs.length) {
     isSpeaking = false;
@@ -222,26 +323,22 @@ function speakAllTimesSequentially(index = 0) {
     disableSpeakButtons(false);
     toggleControls(true);
     if (resetBtnEl) resetBtnEl.disabled = false;
-    setBtnText(startPauseBtnEl, "Start");
+    setBtnText(startPauseBtnEl, window.btnStates?.start || "Start");
     return;
   }
-
   sequenceIndex = index;
   const input = inputs[index];
   const raw = input?.value?.trim() || "";
   if (!raw) {
     return speakAllTimesSequentially(index + 1);
   }
-
   setActiveInput(index);
   const timeStr = parseTimeInput(raw);
   const phrase = timeStr ? getDutchTimeString(timeStr) : raw;
-
   isSpeaking = true;
   isSequenceMode = true;
   isPaused = false;
   toggleControls(false);
-
   speakText(
     phrase,
     () => {
@@ -256,49 +353,42 @@ function speakAllTimesSequentially(index = 0) {
   );
 }
 
-// ==================== SETTINGS ====================
-function saveSettings(s) {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s || {}));
-  } catch (e) {
-    console.warn("saveSettings failed", e);
-  }
-}
-function loadSettings() {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return { ...DEFAULT_SETTINGS, ...parsed };
-  } catch (e) {
-    return { ...DEFAULT_SETTINGS };
-  }
-}
-function applySettingsToUI(s) {
-  if (speedSelectEl && s.speed) speedSelectEl.value = s.speed;
-  if (delaySelectEl && s.delay) delaySelectEl.value = s.delay;
-}
-function readSettingsFromUI() {
-  return {
-    speed: speedSelectEl?.value || DEFAULT_SETTINGS.speed,
-    delay: delaySelectEl?.value || DEFAULT_SETTINGS.delay,
-  };
-}
-
 // ==================== UI TEXTS ====================
 function translateUI(lang) {
   const texts = window.embeddedUITexts?.[lang];
   if (!texts) return;
-  const map = {
+  const textMap = {
     uiLangLabel: "uiLangLabel",
     startPauseBtn: "startPauseBtn",
     resetBtn: "resetBtn",
+    fillRandomBtn: "fillRandomBtn",
     labelSpeed: "labelSpeed",
     labelDelay: "labelDelay",
   };
-  Object.entries(map).forEach(([id, key]) => {
+  Object.entries(textMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el && texts[key]) el.textContent = texts[key];
   });
+  const titleMap = {
+    resetSettingsBtn: "resetSettingsTitle",
+    uiLangSelect: "uiLangSelectTitle",
+  };
+  Object.entries(titleMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el && texts[key]) el.title = texts[key];
+  });
+  window.alertTexts = {
+    invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
+    invalidPhrase:
+      texts.alertInvalidPhrase ||
+      "Invalid time or unable to generate Dutch phrase.",
+  };
+  window.btnStates = {
+    start: texts.btnStart || "Start",
+    stop: texts.btnStop || "Stop",
+    cont: texts.btnContinue || "Continue",
+  };
+  setBtnText(startPauseBtnEl, window.btnStates.start || "Start");
 }
 
 // ==================== EVENTS ====================
@@ -306,13 +396,11 @@ clockContainerEls.forEach((group) => {
   const rndBtn = group.querySelector(".random-btn");
   const input = group.querySelector(".time-input");
   const speakBtn = group.querySelector(".speak-btn");
-
   if (rndBtn && input) {
     rndBtn.addEventListener("click", () => {
       input.value = generateRandomTimeString();
     });
   }
-
   if (speakBtn) {
     speakBtn.addEventListener("click", () => {
       try {
@@ -323,15 +411,17 @@ clockContainerEls.forEach((group) => {
         const raw = input?.value?.trim() || "";
         const timeStr = parseTimeInput(raw);
         if (!timeStr) {
-          alert("Enter time in HH:MM format");
+          alert(window.alertTexts?.invalidFormat);
           return;
         }
         const phrase = getDutchTimeString(timeStr);
         if (!phrase) {
-          alert("Invalid time or unable to generate Dutch phrase.");
+          alert(window.alertTexts?.invalidPhrase);
           return;
         }
-        const rate = parseFloat(speedSelectEl?.value || DEFAULT_SETTINGS.speed);
+        const rate = parseFloat(
+          speedSelectEl?.value || DEFAULT_SETTINGS_ACTIVE.speed
+        );
         speakText(phrase, null, rate, speakBtn);
       } catch (e) {
         console.error("speak handler error", e);
@@ -340,18 +430,16 @@ clockContainerEls.forEach((group) => {
     });
   }
 });
-
 if (fillRandomBtnEl)
   fillRandomBtnEl.addEventListener("click", () =>
     randomBtnEls.forEach((b) => b.click())
   );
-
 if (startPauseBtnEl) {
   startPauseBtnEl.addEventListener("click", () => {
     if (isSequenceMode && !isPaused) {
       stopAll();
       isPaused = true;
-      setBtnText(startPauseBtnEl, "Continue");
+      setBtnText(startPauseBtnEl, window.btnStates?.cont || "Continue");
       toggleControls(true);
       if (resetBtnEl) resetBtnEl.disabled = false;
       return;
@@ -359,19 +447,18 @@ if (startPauseBtnEl) {
     if (isSequenceMode && isPaused) {
       isPaused = false;
       speakAllTimesSequentially(sequenceIndex || 0);
-      setBtnText(startPauseBtnEl, "Stop");
+      setBtnText(startPauseBtnEl, window.btnStates?.stop || "Stop");
       toggleControls(false);
       if (resetBtnEl) resetBtnEl.disabled = true;
       return;
     }
     sequenceIndex = 0;
     speakAllTimesSequentially(0);
-    setBtnText(startPauseBtnEl, "Stop");
+    setBtnText(startPauseBtnEl, window.btnStates?.stop || "Stop");
     toggleControls(false);
     if (resetBtnEl) resetBtnEl.disabled = true;
   });
 }
-
 if (resetBtnEl) resetBtnEl.addEventListener("click", resetSequenceState);
 if (speedSelectEl)
   speedSelectEl.addEventListener("change", () =>
@@ -381,25 +468,35 @@ if (delaySelectEl)
   delaySelectEl.addEventListener("change", () =>
     saveSettings(readSettingsFromUI())
   );
+if (uiLangSelectEl)
+  uiLangSelectEl.addEventListener("change", (e) => {
+    translateUI(e.target.value);
+    saveSettings(readSettingsFromUI());
+  });
 if (resetSettingsBtnEl)
   resetSettingsBtnEl.addEventListener("click", () => {
-    applySettingsToUI(DEFAULT_SETTINGS);
-    saveSettings(DEFAULT_SETTINGS);
+    const defaults = mergeSettingsWithDefaults({}, DEFAULT_SETTINGS_ACTIVE);
+    applySettingsToUI(defaults);
+    saveSettings(defaults);
   });
 
 // ==================== INIT ====================
-document.addEventListener("DOMContentLoaded", () => {
+function applySettingsToUI(s) {
+  if (speedSelectEl && s.speed) speedSelectEl.value = s.speed;
+  if (delaySelectEl && s.delay) delaySelectEl.value = s.delay;
+  if (uiLangSelectEl && s.uiLang) uiLangSelectEl.value = s.uiLang;
+  translateUI(s.uiLang || DEFAULT_SETTINGS_ACTIVE.uiLang);
+}
+document.addEventListener("DOMContentLoaded", async () => {
   try {
-    if (developerBlockEl && !DEVELOPER_MODE) {
-      developerBlockEl.style.display = "none";
-    }
-    applySettingsToUI(loadSettings());
-    if (uiLangSelectEl) {
-      translateUI(uiLangSelectEl.value);
-      uiLangSelectEl.addEventListener("change", (e) =>
-        translateUI(e.target.value)
-      );
-    }
+    APP_CONFIG = await loadExternalConfig();
+    DEFAULT_SETTINGS_ACTIVE = selectPlatformDefaults(
+      APP_CONFIG.DEFAULT_SETTINGS || Config.DEFAULT_CONFIG.DEFAULT_SETTINGS
+    );
+    currentSettings = loadSettingsFromLocal();
+    applySettingsToUI(currentSettings);
+    if (developerBlockEl)
+      developerBlockEl.style.display = APP_CONFIG.DEVELOPER_MODE ? "" : "none";
     if (fillRandomBtnEl) fillRandomBtnEl.click();
   } catch (e) {
     console.error("init error", e);
