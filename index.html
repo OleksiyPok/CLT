@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="styles/styles_04.css" />
     <script src="script/ui_CLT_texts.js" defer></script>
     <script src="script/dutchVocab.js" defer></script>
-    <script src="script/script_15.js" defer></script>
+    <script src="script/script_16.js" defer></script>
   </head>
   <!-- CLT -->
   <body>
@@ -28,7 +28,7 @@
           />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 id="version" class="version">version: 1.1.2</h6>
+            <h6 id="version" class="version">version: 1.1.3</h6>
           </div>
         </div>
         <h5>Oleksii Pokormiakho</h5>
@@ -64,7 +64,7 @@
 
         <div class="section-block section-block-exercises">
           <div class="clock-container">
-            <button class="random-btn" id="randomBtn_1">🎲</button>
+            <button class="random-btn" id="randomBtn_1" title="">🎲</button>
             <input
               type="text"
               class="time-input"
@@ -72,10 +72,10 @@
               maxlength="5"
               value="00:00"
             />
-            <button class="speak-btn" id="speakBtn_1">▶️</button>
+            <button class="speak-btn" id="speakBtn_1" title="">▶️</button>
           </div>
           <div class="clock-container">
-            <button class="random-btn" id="randomBtn_2">🎲</button>
+            <button class="random-btn" id="randomBtn_2" title="">🎲</button>
             <input
               type="text"
               class="time-input"
@@ -83,10 +83,10 @@
               maxlength="5"
               value="00:00"
             />
-            <button class="speak-btn" id="speakBtn_2">▶️</button>
+            <button class="speak-btn" id="speakBtn_2" title="">▶️</button>
           </div>
           <div class="clock-container">
-            <button class="random-btn" id="randomBtn_3">🎲</button>
+            <button class="random-btn" id="randomBtn_3" title="">🎲</button>
             <input
               type="text"
               class="time-input"
@@ -94,10 +94,10 @@
               maxlength="5"
               value="00:00"
             />
-            <button class="speak-btn" id="speakBtn_3">▶️</button>
+            <button class="speak-btn" id="speakBtn_3" title="">▶️</button>
           </div>
           <div class="clock-container">
-            <button class="random-btn" id="randomBtn_4">🎲</button>
+            <button class="random-btn" id="randomBtn_4" title="">🎲</button>
             <input
               type="text"
               class="time-input"
@@ -105,10 +105,10 @@
               maxlength="5"
               value="00:00"
             />
-            <button class="speak-btn" id="speakBtn_4">▶️</button>
+            <button class="speak-btn" id="speakBtn_4" title="">▶️</button>
           </div>
           <div class="clock-container">
-            <button class="random-btn" id="randomBtn_5">🎲</button>
+            <button class="random-btn" id="randomBtn_5" title="">🎲</button>
             <input
               type="text"
               class="time-input"
@@ -116,15 +116,21 @@
               maxlength="5"
               value="00:00"
             />
-            <button class="speak-btn" id="speakBtn_5">▶️</button>
+            <button class="speak-btn" id="speakBtn_5" title="">▶️</button>
           </div>
         </div>
 
         <div class="setting-button-wrapper">
           <div class="section-block section-block-buttons">
-            <button class="fill-random-btn" id="fillRandomBtn">Rnd</button>
-            <button id="startPauseBtn" class="start-pause-btn">Start</button>
-            <button disabled id="resetBtn" class="reset-btn">Reset</button>
+            <button class="fill-random-btn" id="fillRandomBtn" title="">
+              Rnd
+            </button>
+            <button id="startPauseBtn" class="start-pause-btn" title="">
+              Start
+            </button>
+            <button disabled id="resetBtn" class="reset-btn" title="">
+              Reset
+            </button>
           </div>
 
           <div class="section-block section-block-settings">

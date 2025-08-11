@@ -596,7 +596,19 @@ function translateUI(lang) {
   const titleMap = {
     resetSettingsBtn: "resetSettingsTitle",
     uiLangSelect: "uiLangSelectTitle",
+    speakBtnTitle: "Play this time",
+    randomBtnTitle: "Generate random time",
+    startPauseBtn: "startPauseBtnTitle",
+    resetBtn: "resetBtnTitle",
+    fillRandomBtn: "fillRandomBtnTitle",
   };
+  document.querySelectorAll(".speak-btn").forEach((btn) => {
+    btn.title = texts.speakBtnTitle || "";
+  });
+  document.querySelectorAll(".random-btn").forEach((btn) => {
+    btn.title = texts.randomBtnTitle || "";
+  });
+
   Object.entries(titleMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el && texts[key]) el.title = texts[key];
