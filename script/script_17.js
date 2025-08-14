@@ -2,7 +2,7 @@
 const Config = {
   PATHS: { CONFIG: "script/config.json" },
   DEFAULT_CONFIG: Object.freeze({
-    DEVELOPER_MODE: "1111",
+    DEVELOPER_MODE: false,
     USE_LOCAL_STORAGE: true,
     DEFAULT_VOICE: "Google Nederlands",
     DEFAULT_SETTINGS: {

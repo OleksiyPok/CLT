@@ -4,7 +4,7 @@ window.embeddedUITexts = {
     btnContinue: "Weiter",
     btnStart: "Start",
     btnStop: "Stopp",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Zurück",
     startPauseBtn: "Start",
     // Labels
@@ -27,7 +27,7 @@ window.embeddedUITexts = {
     btnContinue: "Continue",
     btnStart: "Start",
     btnStop: "Stop",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Reset",
     startPauseBtn: "Start",
     // Labels
@@ -50,7 +50,7 @@ window.embeddedUITexts = {
     btnContinue: "Continuer",
     btnStart: "Démarrer",
     btnStop: "Arrêter",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Réinit.",
     startPauseBtn: "Démarrer",
     // Labels
@@ -73,7 +73,7 @@ window.embeddedUITexts = {
     btnContinue: "Doorgaan",
     btnStart: "Start",
     btnStop: "Stop",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Reset",
     startPauseBtn: "Start",
     // Labels
@@ -96,7 +96,7 @@ window.embeddedUITexts = {
     btnContinue: "Kontynuuj",
     btnStart: "Start",
     btnStop: "Stop",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Reset",
     startPauseBtn: "Start",
     // Labels
@@ -119,7 +119,7 @@ window.embeddedUITexts = {
     btnContinue: "Continuar",
     btnStart: "Iniciar",
     btnStop: "Parar",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Redef.",
     startPauseBtn: "Iniciar",
     // Labels
@@ -142,7 +142,7 @@ window.embeddedUITexts = {
     btnContinue: "Дальше",
     btnStart: "Старт",
     btnStop: "Стоп",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Сброс",
     startPauseBtn: "Старт",
     // Labels
@@ -165,7 +165,7 @@ window.embeddedUITexts = {
     btnContinue: "Devam",
     btnStart: "Başla",
     btnStop: "Dur",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Sıfırla",
     startPauseBtn: "Başla",
     // Labels
@@ -188,7 +188,7 @@ window.embeddedUITexts = {
     btnContinue: "Далі",
     btnStart: "Старт",
     btnStop: "Стоп",
-    fillRandomBtn: "Rnd",
+    fillRandomBtn: "🎲 Rnd",
     resetBtn: "Скинути",
     startPauseBtn: "Старт",
     // Labels
