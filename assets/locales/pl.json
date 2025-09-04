@@ -1,0 +1,21 @@
+{
+    "languageCode": "PL",
+    "btnContinue": "Kontynuuj",
+    "btnStart": "Start",
+    "btnStop": "Stop",
+    "fillRandomBtn": "🎲 Rnd",
+    "resetBtn": "Reset",
+    "startPauseBtn": "Start",
+    "labelDelay": "Opóźnienie (ms)",
+    "labelSpeed": "Prędkość",
+    "uiLangLabel": "Interfejs:",
+    "alertInvalidFormat": "Podaj czas w formacie GG:MM",
+    "alertInvalidPhrase": "Nieprawidłowy czas lub brak frazy",
+    "fillRandomBtnTitle": "Wypełnij losowymi czasami",
+    "randomBtnTitle": "Wygeneruj losowo",
+    "resetSettingsTitle": "Przywróć ustawienia domyślne",
+    "resetBtnTitle": "Zresetuj sekwencję",
+    "speakBtnTitle": "Odtwórz ten czas",
+    "startPauseBtnTitle": "Uruchom lub zatrzymaj sekwencję",
+    "uiLangSelectTitle": "Wybierz język interfejsu"
+  }

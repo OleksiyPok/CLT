@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-yellowblue-normal">
   <head>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta charset="utf-8" />
@@ -10,10 +10,12 @@
       sizes="x16"
       href="icons/icon_CLT_16x16.png"
     />
-    <link rel="stylesheet" href="styles/styles_04.css" />
-    <script src="script/ui_CLT_texts.js" defer></script>
-    <script src="script/dutchVocab.js" defer></script>
-    <script src="script/script_17.js" defer></script>
+
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/themes.css" />
+    <script src="./assets/locales/ui_CLT_texts.js" defer></script>
+    <script src="./app/dutchVocab.js" defer></script>
+    <script src="./app/main.js" defer></script>
   </head>
   <!-- CLT -->
   <body>
@@ -28,7 +30,7 @@
           />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 id="version" class="version">version: 1.1.5</h6>
+            <h6 id="version" class="version">version: 1.1.8</h6>
           </div>
         </div>
         <h5>Oleksii Pokormiakho</h5>
@@ -49,6 +51,7 @@
               id="uiLangSelect"
               title="Select interface language"
             >
+              <option value="ar">العربية</option>
               <option value="de">Deutsch</option>
               <option selected value="en">English</option>
               <option value="fr">Français</option>
