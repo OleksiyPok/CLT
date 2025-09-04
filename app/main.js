@@ -143,12 +143,23 @@ const Utils = (function () {
 
 // Config — load external config.json and select platform defaults
 function createConfig() {
-  const PATHS = { CONFIG: "./assets/configs/config.json" };
+  const PATHS = {
+    CONFIG: "./assets/configs/config.json",
+    UI_TEXTS_DIR: "./assets/locales",
+  };
   const DEFAULT_CONFIG = Object.freeze({
     DEVELOPER_MODE: false,
     USE_LOCAL_STORAGE: true,
     DEFAULT_VOICE: "Google Nederlands",
     DEFAULT_SETTINGS: {
+      shared: {
+        uiLang: "en",
+        delay: "2000",
+        speed: "1.0",
+        fullscreen: "0",
+        languageCode: "nl-NL",
+        voiceName: "Google Nederlands",
+      },
       mobile: {
         uiLang: "en",
         delay: "2000",
@@ -207,6 +218,74 @@ function createConfig() {
     loadExternal,
     selectPlatformDefaults,
   };
+}
+
+// Language loader
+//loadLang(code) => Promise<object|null>
+//loadAll() => Promise<texts>
+//getTexts(lang) => object
+function createLangLoader({ config }) {
+  const PATH = config.PATHS.UI_TEXTS_DIR || "./assets/locales";
+  let texts = {};
+  const FALLBACK_EN = {
+    uiLangLabel: "Interface",
+    startPauseBtn: "Start",
+    resetBtn: "Reset",
+    fillRandomBtn: "🎲 Rnd",
+    labelSpeed: "Speed",
+    labelDelay: "Delay (ms)",
+    resetSettingsTitle: "Reset to default",
+    uiLangSelectTitle: "Select language",
+    startPauseBtnTitle: "Start / Continue / Pause",
+    resetBtnTitle: "Reset sequence",
+    randomBtnTitle: "Random time",
+    fillRandomBtnTitle: "Random fill all",
+    speakBtnTitle: "Speak",
+    alertInvalidFormat: "Enter time in HH:MM format",
+    alertInvalidPhrase: "Invalid time or unable to generate Dutch phrase.",
+    btnStart: "Start",
+    btnStop: "Stop",
+    btnContinue: "Continue",
+  };
+  async function loadLang(code) {
+    try {
+      const res = await fetch(`${PATH}/${code}.json`, { cache: "no-cache" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json || typeof json !== "object") throw new Error("Bad JSON");
+      return json;
+    } catch (e) {
+      console.warn(`UI texts load failed for ${code}:`, e);
+      return null;
+    }
+  }
+  async function loadAll() {
+    texts = {};
+    const langs = config.ALLOWED_LANGS || [
+      "de",
+      "en",
+      "fr",
+      "nl",
+      "pl",
+      "pt",
+      "ru",
+      "tr",
+      "uk",
+    ];
+    await Promise.all(
+      langs.map(async (code) => {
+        const data = await loadLang(code);
+        if (data) texts[code] = data;
+      })
+    );
+    if (!texts.en) {
+      texts.en = FALLBACK_EN;
+      console.warn("EN fallback injected.");
+    }
+    return texts;
+  }
+  const getTexts = (lang) => texts[lang] || texts.en || FALLBACK_EN;
+  return { loadLang, loadAll, getTexts };
 }
 
 // Store — persistent settings + runtime playback flags
@@ -531,7 +610,7 @@ function createSpeaker({ bus, store }) {
 }
 
 // UI — DOM adapter, encapsulates selectors and exposes methods for other modules
-function createUI({ bus, store, config }) {
+function createUI({ bus, store, config, langLoader }) {
   const PLAY_ICON = "▶️",
     STOP_ICON = "⏹️";
   const els = {
@@ -591,7 +670,10 @@ function createUI({ bus, store, config }) {
     if (btn) btn.textContent = text;
   }
   function translateUI(lang) {
-    const texts = window.embeddedUITexts && window.embeddedUITexts[lang];
+    const texts =
+      typeof langLoader !== "undefined" && langLoader.getTexts
+        ? langLoader.getTexts(lang)
+        : null;
     if (!texts) return;
     const textMap = {
       uiLangLabel: "uiLangLabel",
@@ -1032,7 +1114,8 @@ function createPlayback({ bus, store, ui, speaker, config }) {
   const bus = createEventBus();
   const config = createConfig();
   const store = createStore({ bus, config });
-  const ui = createUI({ bus, store, config });
+  const langLoader = createLangLoader({ config });
+  const ui = createUI({ bus, store, config, langLoader });
   const speaker = createSpeaker({ bus, store });
   const playback = createPlayback({ bus, store, ui, speaker, config });
 
@@ -1070,6 +1153,9 @@ function createPlayback({ bus, store, ui, speaker, config }) {
         store.saveSettings(store.getSettings(), ui.els);
     }
     ui.setDeveloperVisibility(appCfg);
+    await langLoader.loadAll();
+    const lang = store.getSettings().uiLang || config.FALLBACK.uiLang || "en";
+    ui.translateUI(lang);
     ui.bindHandlers && ui.bindHandlers();
     if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.click();
   });
