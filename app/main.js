@@ -90,7 +90,8 @@ const Utils = (function () {
   }
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
-    const m = Math.floor(Math.random() * 60);
+    // const m = Math.floor(Math.random() * 60);
+    const m = Math.floor(Math.random() * 12) * 5;
     return `${h}:${String(m).padStart(2, "0")}`;
   }
   function getDutchTimeString(timeStr) {
