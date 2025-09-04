@@ -45,18 +45,7 @@ function createEventBus() {
 
 // Utils — helpers: deep merge, time parsing, random generator, Dutch time formatter
 const Utils = (function () {
-  const ALLOWED_LANGS = [
-    "ar",
-    "de",
-    "en",
-    "fr",
-    "nl",
-    "pl",
-    "pt",
-    "ru",
-    "tr",
-    "uk",
-  ];
+  const ALLOWED_LANGS = ["de", "en", "fr", "nl", "pl", "pt", "ru", "tr", "uk"];
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
   function deepMerge(a, b) {
     if (!b) return JSON.parse(JSON.stringify(a || {}));

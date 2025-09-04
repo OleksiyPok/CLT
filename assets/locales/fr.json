@@ -1,0 +1,21 @@
+{
+    "languageCode": "FR",
+    "btnContinue": "Continuer",
+    "btnStart": "Démarrer",
+    "btnStop": "Arrêter",
+    "fillRandomBtn": "🎲 Rnd",
+    "resetBtn": "Réinit.",
+    "startPauseBtn": "Démarrer",
+    "labelDelay": "Délai (ms)",
+    "labelSpeed": "Vitesse",
+    "uiLangLabel": "Interface :",
+    "alertInvalidFormat": "Entrez l’heure au format HH:MM",
+    "alertInvalidPhrase": "Heure invalide ou phrase indisponible",
+    "fillRandomBtnTitle": "Remplir avec des heures aléatoires",
+    "randomBtnTitle": "Générer aléatoire",
+    "resetSettingsTitle": "Restaurer les paramètres par défaut",
+    "resetBtnTitle": "Réinitialiser la séquence",
+    "speakBtnTitle": "Jouer cette heure",
+    "startPauseBtnTitle": "Démarrer ou mettre en pause la séquence",
+    "uiLangSelectTitle": "Choisir la langue de l’interface"
+  }
