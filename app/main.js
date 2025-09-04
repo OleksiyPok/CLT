@@ -567,45 +567,131 @@ function createStore({ bus, config }) {
 }
 
 // Speaker — wrapper over Web Speech API, emits events via bus
-function createSpeaker({ bus, store }) {
-  let synth = window.speechSynthesis;
-  let currentUtterance = null;
-
-  function speak({ text, rate, lang, button }) {
-    stopAll();
-    if (!text) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = rate || 1;
-    utterance.lang = lang || "nl-NL";
-
-    store.setUtterance(utterance);
-    store.setCurrentSpeakButton(button || null);
-
-    bus.emit(EventTypes.SPEECH_START, { button });
-
-    utterance.onend = () => {
-      bus.emit(EventTypes.SPEECH_END, { button });
-      store.setUtterance(null);
-      store.setCurrentSpeakButton(null);
-    };
-
-    currentUtterance = utterance;
-    synth.speak(utterance);
+function createSpeakerNLT() {
+  let getVoices = () => [];
+  let getSettings = () => ({});
+  function init(voicesProvider, settingsProvider) {
+    if (typeof voicesProvider === "function") getVoices = voicesProvider;
+    if (typeof settingsProvider === "function") getSettings = settingsProvider;
   }
-
-  function stopAll() {
-    if (synth.speaking || synth.pending) synth.cancel();
-    if (currentUtterance) {
-      bus.emit(EventTypes.SPEECH_END, {
-        button: store.getCurrentSpeakButton(),
-      });
+  function _selectVoice(s) {
+    const voices = getVoices() || [];
+    if (!voices.length) return null;
+    const desiredName = String(s.voiceName || "").trim();
+    const desiredLang = String(s.languageCode || "")
+      .trim()
+      .toLowerCase();
+    if (desiredName) {
+      let exact = voices.find((v) => v.name === desiredName);
+      if (exact) return exact;
+      const norm = (n) =>
+        String(n || "")
+          .trim()
+          .toLowerCase();
+      let partial = voices.find((v) =>
+        norm(v.name).includes(norm(desiredName))
+      );
+      if (partial) return partial;
     }
-    currentUtterance = null;
-    store.setUtterance(null);
-    store.setCurrentSpeakButton(null);
+    if (desiredLang) {
+      const langFull = desiredLang;
+      let byFull = voices.find(
+        (v) => (v.lang || "").toLowerCase() === langFull
+      );
+      if (byFull) return byFull;
+      const base = langFull.split(/[-_]/)[0];
+      if (base) {
+        let byBase = voices.find((v) =>
+          (v.lang || "").toLowerCase().startsWith(base)
+        );
+        if (byBase) return byBase;
+      }
+    }
+    const navigatorBase = (navigator.language || "").split(/[-_]/)[0];
+    if (navigatorBase) {
+      const navMatch = voices.find((v) =>
+        (v.lang || "").toLowerCase().startsWith(navigatorBase)
+      );
+      if (navMatch) return navMatch;
+    }
+    return voices[0] || null;
   }
+  function speak(text, options = {}) {
+    if (!text) return Promise.resolve();
+    const s = { ...getSettings(), ...options };
+    if (options.interrupt !== false) speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(String(text));
+    const chosen = _selectVoice(s);
+    if (chosen) {
+      try {
+        utter.voice = chosen;
+        utter.lang = chosen.lang || s.languageCode || utter.lang || "";
+      } catch (e) {
+        if (s.languageCode) utter.lang = s.languageCode;
+      }
+    } else {
+      if (s.languageCode) utter.lang = s.languageCode;
+    }
+    const rate =
+      Number.isFinite(Number(s.rate ?? s.speed)) &&
+      Number(s.rate ?? s.speed) > 0
+        ? Number(s.rate ?? s.speed)
+        : 1.0;
+    const pitch =
+      Number.isFinite(Number(s.pitch)) && Number(s.pitch) > 0
+        ? Number(s.pitch)
+        : 1.0;
+    const volume =
+      Number.isFinite(Number(s.volume)) &&
+      Number(s.volume) >= 0 &&
+      Number(s.volume) <= 1
+        ? Number(s.volume)
+        : 1.0;
+    utter.rate = rate;
+    utter.pitch = pitch;
+    utter.volume = volume;
+    return new Promise((resolve) => {
+      const done = () => resolve();
+      utter.onend = done;
+      utter.onerror = done;
+      speechSynthesis.speak(utter);
+    });
+  }
+  return {
+    init,
+    speak,
+    cancel: () => speechSynthesis.cancel(),
+    pause: () => speechSynthesis.pause(),
+    resume: () => speechSynthesis.resume(),
+    isSpeaking: () => speechSynthesis.speaking,
+    isPaused: () => speechSynthesis.paused,
+  };
+}
 
+function createSpeaker({ bus, store }) {
+  const Base = createSpeakerNLT();
+  Base.init(
+    () => speechSynthesis.getVoices(),
+    () => store.getSettings()
+  );
+  function speak({ text, rate, lang, button }) {
+    const s = store.getSettings() || {};
+    bus.emit(EventTypes.SPEECH_START, { button });
+    Base.speak(text, {
+      speed: rate || s.speed,
+      languageCode: lang || s.languageCode || "nl-NL",
+      voiceName: s.voiceName,
+      pitch: s.pitch,
+      volume: s.volume,
+      interrupt: true,
+    }).then(() => {
+      bus.emit(EventTypes.SPEECH_END, { button });
+    });
+  }
+  function stopAll() {
+    Base.cancel();
+    bus.emit(EventTypes.SPEECH_END, { button: store.getCurrentSpeakButton() });
+  }
   return { speak, stopAll };
 }
 
