@@ -1,4 +1,8 @@
-// EventTypes — list of event names used for decoupled module communication
+"use strict";
+
+/* =========================================================================
+   EventTypes
+   ========================================================================= */
 const EventTypes = Object.freeze({
   APP_INIT: "APP_INIT",
   CONFIG_LOADED: "CONFIG_LOADED",
@@ -7,44 +11,59 @@ const EventTypes = Object.freeze({
   SETTINGS_RESET_TO_DEFAULTS: "SETTINGS_RESET_TO_DEFAULTS",
   UI_TRANSLATE: "UI_TRANSLATE",
   UI_RANDOM_FILL_ALL: "UI_RANDOM_FILL_ALL",
-  UI_RANDOM_FILL_ONE: "UI_RANDOM_FILL_ONE",
   UI_SPEAK_SINGLE: "UI_SPEAK_SINGLE",
+  SPEAK_SINGLE_START: "SPEAK_SINGLE_START",
+  SPEAK_SINGLE_STOP: "SPEAK_SINGLE_STOP",
   PLAYBACK_START: "PLAYBACK_START",
-  PLAYBACK_TOGGLE: "PLAYBACK_TOGGLE",
+  PLAYBACK_PAUSE: "PLAYBACK_PAUSE",
   PLAYBACK_CONTINUE: "PLAYBACK_CONTINUE",
   PLAYBACK_STOP: "PLAYBACK_STOP",
-  PLAYBACK_STEP_DONE: "PLAYBACK_STEP_DONE",
-  PLAYBACK_FINISHED: "PLAYBACK_FINISHED",
+  PLAYBACK_FINISH: "PLAYBACK_FINISH",
+  UPDATE_CONTROLS: "UPDATE_CONTROLS",
   SPEECH_START: "SPEECH_START",
   SPEECH_END: "SPEECH_END",
-  SPEECH_STOP_ALL: "SPEECH_STOP_ALL",
 });
 
-// EventBus — tiny pub/sub for modules
+/* =========================================================================
+   EventBus
+   ========================================================================= */
 function createEventBus() {
   const map = new Map();
   return {
-    on(ev, fn) {
-      if (!map.has(ev)) map.set(ev, new Set());
-      map.get(ev).add(fn);
-      return () => map.get(ev)?.delete(fn);
+    on(event, handler) {
+      if (!map.has(event)) map.set(event, new Set());
+      map.get(event).add(handler);
+      return () => map.get(event)?.delete(handler);
     },
-    off(ev, fn) {
-      map.get(ev)?.delete(fn);
+    once(event, handler) {
+      let off;
+      off = this.on(event, (payload) => {
+        off();
+        handler(payload);
+      });
+      return off;
     },
-    emit(ev, payload) {
-      const subs = [...(map.get(ev) || [])];
-      for (const s of subs) {
+    emit(event, payload) {
+      const subs = [...(map.get(event) || [])];
+      for (const fn of subs) {
+        if (typeof fn !== "function") {
+          console.warn("EventBus: invalid subscriber detected for", event, fn);
+          continue;
+        }
         try {
-          s(payload);
-        } catch (e) {}
+          fn(payload);
+        } catch (e) {
+          console.warn("EventBus handler error", event, e);
+        }
       }
     },
   };
 }
 
-// Utils — helpers: deep merge, time parsing, random generator, Dutch time formatter
-const Utils = (function () {
+/* =========================================================================
+   Utils
+   ========================================================================= */
+function createUtils() {
   const ALLOWED_LANGS = [
     "ar",
     "de",
@@ -57,29 +76,35 @@ const Utils = (function () {
     "tr",
     "uk",
   ];
+
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+
   function deepMerge(a, b) {
     if (!b) return JSON.parse(JSON.stringify(a || {}));
     if (!a) return JSON.parse(JSON.stringify(b || {}));
     const out = Array.isArray(a) ? [] : {};
-    const keys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
+    const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
     keys.forEach((k) => {
-      const d = a ? a[k] : undefined,
-        s = b ? b[k] : undefined;
+      const va = a[k],
+        vb = b[k];
       if (
-        d &&
-        typeof d === "object" &&
-        !Array.isArray(d) &&
-        s &&
-        typeof s === "object" &&
-        !Array.isArray(s)
-      )
-        out[k] = deepMerge(d, s);
-      else if (s === undefined) out[k] = JSON.parse(JSON.stringify(d));
-      else out[k] = s;
+        va &&
+        typeof va === "object" &&
+        !Array.isArray(va) &&
+        vb &&
+        typeof vb === "object" &&
+        !Array.isArray(vb)
+      ) {
+        out[k] = deepMerge(va, vb);
+      } else if (vb !== undefined) {
+        out[k] = vb;
+      } else {
+        out[k] = va;
+      }
     });
     return out;
   }
+
   function parseTimeInput(input) {
     if (!input || typeof input !== "string") return null;
     const m = input.trim().match(/^(\d{1,2}):(\d{2})$/);
@@ -88,49 +113,43 @@ const Utils = (function () {
     const min = m[2].padStart(2, "0");
     return `${h}:${min}`;
   }
+
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
-    // const m = Math.floor(Math.random() * 60);
     const m = Math.floor(Math.random() * 12) * 5;
     return `${h}:${String(m).padStart(2, "0")}`;
   }
+
   function getDutchTimeString(timeStr) {
     if (!timeStr) return "";
-    const parts = timeStr.split(":");
-    const h = parseInt(parts[0], 10);
-    const m = parseInt(parts[1], 10);
+    const [h, m] = timeStr.split(":").map(Number);
     if (Number.isNaN(h) || Number.isNaN(m)) return "";
-    return getDutchTimeStringFromDigits(h, m);
-  }
-  function getDutchTimeStringFromDigits(hours, minutes) {
     if (typeof dutchVocab === "undefined")
-      return `${hours}:${String(minutes).padStart(2, "0")}`;
+      return `${h}:${String(m).padStart(2, "0")}`;
     const hourNames = dutchVocab.hourNames || [];
     const minuteNames = dutchVocab.minuteNames || [];
-    const nextHour = (hours + 1) % 24;
-    const idx = hours % 12;
+    const nextHour = (h + 1) % 24;
+    const idx = h % 12;
     const nextIdx = nextHour % 12;
-    if (minutes === 0)
-      return `${capitalize(hourNames[idx] || String(hours))} uur`;
-    if (minutes === 15) return `Kwart over ${hourNames[idx] || hours}`;
-    if (minutes === 30) return `Half ${hourNames[nextIdx] || nextHour}`;
-    if (minutes === 45) return `Kwart voor ${hourNames[nextIdx] || nextHour}`;
-    if (minutes < 15)
-      return `${minuteNames[minutes] || minutes} over ${
-        hourNames[idx] || hours
-      }`;
-    if (minutes < 30)
-      return `${minuteNames[30 - minutes] || 30 - minutes} voor half ${
+
+    if (m === 0) return `${capitalize(hourNames[idx] || h)} uur`;
+    if (m === 15) return `Kwart over ${hourNames[idx] || h}`;
+    if (m === 30) return `Half ${hourNames[nextIdx] || nextHour}`;
+    if (m === 45) return `Kwart voor ${hourNames[nextIdx] || nextHour}`;
+    if (m < 15) return `${minuteNames[m] || m} over ${hourNames[idx] || h}`;
+    if (m < 30)
+      return `${minuteNames[30 - m] || 30 - m} voor half ${
         hourNames[nextIdx] || nextHour
       }`;
-    if (minutes < 45)
-      return `${minuteNames[minutes - 30] || minutes - 30} over half ${
+    if (m < 45)
+      return `${minuteNames[m - 30] || m - 30} over half ${
         hourNames[nextIdx] || nextHour
       }`;
-    return `${minuteNames[60 - minutes] || 60 - minutes} voor ${
+    return `${minuteNames[60 - m] || 60 - m} voor ${
       hourNames[nextIdx] || nextHour
     }`;
   }
+
   return {
     ALLOWED_LANGS,
     deepMerge,
@@ -139,14 +158,17 @@ const Utils = (function () {
     getDutchTimeString,
     capitalize,
   };
-})();
+}
 
-// Config — load external config.json and select platform defaults
-function createConfig() {
+/* =========================================================================
+   Config
+   ========================================================================= */
+function createConfig(utils) {
   const PATHS = {
     CONFIG: "./assets/configs/config.json",
     UI_TEXTS_DIR: "./assets/locales",
   };
+
   const DEFAULT_CONFIG = Object.freeze({
     DEVELOPER_MODE: false,
     USE_LOCAL_STORAGE: true,
@@ -178,6 +200,7 @@ function createConfig() {
       },
     },
   });
+
   const FALLBACK = Object.freeze({
     DEVELOPER_MODE: true,
     USE_LOCAL_STORAGE: true,
@@ -189,28 +212,32 @@ function createConfig() {
     languageCode: "nl-NL",
     voiceName: "Google Nederlands",
   });
+
   async function loadExternal() {
     try {
       const resp = await fetch(PATHS.CONFIG, { cache: "no-store" });
-      if (!resp.ok) return Utils.deepMerge(DEFAULT_CONFIG, {});
-      const j = await resp.json();
-      return Utils.deepMerge(DEFAULT_CONFIG, j);
-    } catch (e) {
-      return Utils.deepMerge(DEFAULT_CONFIG, {});
+      if (!resp.ok) return utils.deepMerge(DEFAULT_CONFIG, {});
+      const json = await resp.json();
+      return utils.deepMerge(DEFAULT_CONFIG, json);
+    } catch (err) {
+      console.warn("Failed to load external config:", err);
+      return utils.deepMerge(DEFAULT_CONFIG, {});
     }
   }
+
   function selectPlatformDefaults(defs) {
     const isMobile = /Mobi|Android|iPhone|iPad|Windows Phone|IEMobile/i.test(
       navigator.userAgent
     );
-    const platform = isMobile
-      ? (defs && defs.mobile) || {}
-      : (defs && defs.desktop) || {};
-    return Utils.deepMerge(
-      DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop || {},
-      platform
+    const platformSettings = isMobile
+      ? defs?.mobile || {}
+      : defs?.desktop || {};
+    return utils.deepMerge(
+      DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop,
+      platformSettings
     );
   }
+
   return {
     PATHS,
     DEFAULT_CONFIG,
@@ -220,13 +247,13 @@ function createConfig() {
   };
 }
 
-// Language loader
-//loadLang(code) => Promise<object|null>
-//loadAll() => Promise<texts>
-//getTexts(lang) => object
+/* =========================================================================
+   LangLoader
+   ========================================================================= */
 function createLangLoader({ config }) {
-  const PATH = config.PATHS.UI_TEXTS_DIR || "./assets/locales";
+  const PATH = config?.PATHS?.UI_TEXTS_DIR || "./assets/locales";
   let texts = {};
+
   const FALLBACK_EN = {
     uiLangLabel: "Interface",
     startPauseBtn: "Start",
@@ -247,31 +274,22 @@ function createLangLoader({ config }) {
     btnStop: "Stop",
     btnContinue: "Continue",
   };
+
   async function loadLang(code) {
     try {
       const res = await fetch(`${PATH}/${code}.json`, { cache: "no-cache" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
-      if (!json || typeof json !== "object") throw new Error("Bad JSON");
+      if (!json || typeof json !== "object") throw new Error("Invalid JSON");
       return json;
-    } catch (e) {
-      console.warn(`UI texts load failed for ${code}:`, e);
+    } catch (err) {
+      console.warn(`Failed to load UI texts for ${code}:`, err);
       return null;
     }
   }
-  async function loadAll() {
+
+  async function loadAll(langs) {
     texts = {};
-    const langs = config.ALLOWED_LANGS || [
-      "de",
-      "en",
-      "fr",
-      "nl",
-      "pl",
-      "pt",
-      "ru",
-      "tr",
-      "uk",
-    ];
     await Promise.all(
       langs.map(async (code) => {
         const data = await loadLang(code);
@@ -280,45 +298,64 @@ function createLangLoader({ config }) {
     );
     if (!texts.en) {
       texts.en = FALLBACK_EN;
-      console.warn("EN fallback injected.");
+      console.warn("Fallback EN texts injected.");
     }
     return texts;
   }
+
   const getTexts = (lang) => texts[lang] || texts.en || FALLBACK_EN;
-  return { loadLang, loadAll, getTexts };
+
+  return { loadAll, getTexts };
 }
 
-// Store — persistent settings + runtime playback flags
-function createStore({ bus, config }) {
+/* =========================================================================
+   Store
+   ========================================================================= */
+function createStore({ bus, config, utils }) {
   const SETTINGS_KEY = "CLT_settings";
-  let appConfig = {},
-    defaultActive = {},
-    currentSettings = {};
-  let isSpeaking = false,
-    isSequenceMode = false,
-    isPaused = false,
-    sequenceIndex = 0,
-    sequenceTimeoutId = null,
-    currentSpeakButton = null,
-    utterance = null;
-  function setAppConfig(c) {
-    appConfig = c;
-  }
-  function setDefaultActive(d) {
-    defaultActive = d;
-  }
-  function getDefaultActive() {
-    return defaultActive;
-  }
-  function setSettings(s) {
-    currentSettings = s;
-  }
-  function getSettings() {
-    return currentSettings;
-  }
-  function getAppConfig() {
-    return appConfig;
-  }
+
+  let appConfig = {};
+  let defaultActive = {};
+  let currentSettings = {};
+
+  // playback state
+  let flags = {
+    isSpeaking: false,
+    isSequenceMode: false,
+    isPaused: false,
+    sequenceIndex: 0,
+  };
+  let sequenceTimeoutId = null;
+  let currentSpeakButton = null;
+  let utterance = null;
+
+  // Config & defaults
+  const setAppConfig = (cfg) => (appConfig = cfg || {});
+  const getAppConfig = () => appConfig;
+  const setDefaultActive = (d) => (defaultActive = d || {});
+  const getDefaultActive = () => defaultActive;
+  const setSettings = (s) => (currentSettings = s || {});
+  const getSettings = () => currentSettings;
+
+  // Flags
+  const playbackFlags = () => ({ ...flags });
+  const setPlaybackFlags = (patch) => (flags = { ...flags, ...patch });
+
+  const getSequenceTimeout = () => sequenceTimeoutId;
+  const setSequenceTimeout = (id) => (sequenceTimeoutId = id);
+  const clearSequenceTimeout = () => {
+    if (sequenceTimeoutId) {
+      clearTimeout(sequenceTimeoutId);
+      sequenceTimeoutId = null;
+    }
+  };
+
+  const getCurrentSpeakButton = () => currentSpeakButton;
+  const setCurrentSpeakButton = (b) => (currentSpeakButton = b);
+  const getUtterance = () => utterance;
+  const setUtterance = (u) => (utterance = u);
+
+  // Local storage
   function allowed(selectEl, value) {
     if (!selectEl || !selectEl.options) return false;
     const v = value == null ? "" : String(value);
@@ -327,235 +364,80 @@ function createStore({ bus, config }) {
     }
     return false;
   }
-  function validateDefaults(defs, els) {
-    const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els;
-    const out = {};
-    if (
-      defs &&
-      typeof defs.uiLang === "string" &&
-      Utils.ALLOWED_LANGS.includes(defs.uiLang) &&
-      allowed(uiLangSelectEl, defs.uiLang)
-    )
-      out.uiLang = defs.uiLang;
-    else if (
-      config.DEFAULT_CONFIG?.DEFAULT_SETTINGS?.desktop?.uiLang &&
-      Utils.ALLOWED_LANGS.includes(
-        config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.uiLang
-      ) &&
-      allowed(
-        uiLangSelectEl,
-        config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.uiLang
-      )
-    )
-      out.uiLang = config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.uiLang;
-    else out.uiLang = config.FALLBACK.uiLang;
-    const tryDelay = (() => {
-      if (!defs) return null;
-      const v = defs.delay;
-      const n = parseInt(v, 10);
-      if (
-        !isNaN(n) &&
-        n >= 100 &&
-        n <= 60000 &&
-        allowed(delaySelectEl, String(n))
-      )
-        return String(n);
-      return null;
-    })();
-    if (tryDelay) out.delay = tryDelay;
-    else if (
-      allowed(
-        delaySelectEl,
-        String(config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.delay)
-      )
-    )
-      out.delay = String(config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.delay);
-    else out.delay = config.FALLBACK.delay;
-    const trySpeed = (() => {
-      if (!defs) return null;
-      const v = defs.speed;
-      const n = parseFloat(v);
-      if (
-        !isNaN(n) &&
-        n >= 0.5 &&
-        n <= 3.0 &&
-        allowed(speedSelectEl, String(v))
-      )
-        return String(v);
-      return null;
-    })();
-    if (trySpeed) out.speed = trySpeed;
-    else if (
-      allowed(
-        speedSelectEl,
-        String(config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.speed)
-      )
-    )
-      out.speed = String(config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.speed);
-    else out.speed = config.FALLBACK.speed;
-    if (
-      defs &&
-      (defs.fullscreen === "0" ||
-        defs.fullscreen === "1" ||
-        defs.fullscreen === 0 ||
-        defs.fullscreen === 1)
-    )
-      out.fullscreen = String(defs.fullscreen);
-    else if (
-      config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.fullscreen !== undefined
-    )
-      out.fullscreen = String(
-        config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.fullscreen
-      );
-    else out.fullscreen = config.FALLBACK.fullscreen;
-    out.languageCode =
-      defs && defs.languageCode
-        ? String(defs.languageCode)
-        : config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.languageCode
-        ? String(config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.languageCode)
-        : config.FALLBACK.languageCode;
-    out.voiceName =
-      defs && defs.voiceName
-        ? String(defs.voiceName)
-        : config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.voiceName
-        ? String(config.DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop.voiceName)
-        : config.FALLBACK.voiceName;
-    return out;
-  }
+
   function mergeWithDefaults(stored, defaults, els) {
     const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els;
     const out = {};
     out.uiLang =
-      stored &&
-      typeof stored.uiLang === "string" &&
-      Utils.ALLOWED_LANGS.includes(stored.uiLang) &&
+      stored?.uiLang &&
+      utils.ALLOWED_LANGS.includes(stored.uiLang) &&
       allowed(uiLangSelectEl, stored.uiLang)
         ? stored.uiLang
-        : (defaults && defaults.uiLang) || config.FALLBACK.uiLang;
+        : defaults?.uiLang ?? config.FALLBACK.uiLang;
+
     out.delay = (() => {
-      const v = stored && stored.delay !== undefined ? stored.delay : undefined;
+      const v = stored?.delay;
       const n = parseInt(v, 10);
       if (!isNaN(n) && allowed(delaySelectEl, String(n))) return String(n);
-      if (defaults && defaults.delay) return String(defaults.delay);
-      return config.FALLBACK.delay;
+      return defaults?.delay ?? config.FALLBACK.delay;
     })();
+
     out.speed = (() => {
-      const v = stored && stored.speed !== undefined ? stored.speed : undefined;
+      const v = stored?.speed;
       const n = parseFloat(v);
       if (!isNaN(n) && allowed(speedSelectEl, String(v))) return String(v);
-      if (defaults && defaults.speed) return String(defaults.speed);
-      return config.FALLBACK.speed;
+      return defaults?.speed ?? config.FALLBACK.speed;
     })();
+
     out.fullscreen =
-      stored &&
-      (stored.fullscreen === "0" ||
-        stored.fullscreen === "1" ||
-        stored.fullscreen === 0 ||
-        stored.fullscreen === 1)
-        ? String(stored.fullscreen)
-        : (defaults && defaults.fullscreen) || config.FALLBACK.fullscreen;
+      stored?.fullscreen ?? defaults?.fullscreen ?? config.FALLBACK.fullscreen;
     out.languageCode =
-      stored && stored.languageCode
-        ? String(stored.languageCode)
-        : (defaults && defaults.languageCode) || config.FALLBACK.languageCode;
+      stored?.languageCode ??
+      defaults?.languageCode ??
+      config.FALLBACK.languageCode;
     out.voiceName =
-      stored && stored.voiceName
-        ? String(stored.voiceName)
-        : (defaults && defaults.voiceName) || config.FALLBACK.voiceName;
+      stored?.voiceName ?? defaults?.voiceName ?? config.FALLBACK.voiceName;
     return out;
   }
+
   function saveSettings(s, els) {
     const toSave = mergeWithDefaults(s || {}, defaultActive || {}, els);
     currentSettings = toSave;
     const useLocal =
-      appConfig && appConfig.USE_LOCAL_STORAGE !== undefined
-        ? appConfig.USE_LOCAL_STORAGE
-        : config.DEFAULT_CONFIG.USE_LOCAL_STORAGE;
+      appConfig?.USE_LOCAL_STORAGE ?? config.DEFAULT_CONFIG.USE_LOCAL_STORAGE;
     if (useLocal && typeof localStorage !== "undefined") {
       try {
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(toSave));
-      } catch (e) {}
+      } catch (_) {}
     }
     bus.emit(EventTypes.SETTINGS_SAVE, toSave);
   }
+
   function loadSettingsFromLocal(els) {
     const useLocal =
-      appConfig && appConfig.USE_LOCAL_STORAGE !== undefined
-        ? appConfig.USE_LOCAL_STORAGE
-        : config.DEFAULT_CONFIG.USE_LOCAL_STORAGE;
+      appConfig?.USE_LOCAL_STORAGE ?? config.DEFAULT_CONFIG.USE_LOCAL_STORAGE;
     if (useLocal && typeof localStorage !== "undefined") {
       try {
         const raw = localStorage.getItem(SETTINGS_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          const merged = mergeWithDefaults(
-            parsed || {},
-            defaultActive || {},
-            els
-          );
-          return { raw: parsed || {}, merged };
+          const merged = mergeWithDefaults(parsed, defaultActive || {}, els);
+          return { raw: parsed, merged };
         }
-      } catch (e) {}
+      } catch (_) {}
     }
     return { raw: {}, merged: mergeWithDefaults({}, defaultActive || {}, els) };
   }
-  function playbackFlags() {
-    return { isSpeaking, isSequenceMode, isPaused, sequenceIndex };
-  }
-  function setSpeaking(v) {
-    isSpeaking = v;
-  }
-  function setSequenceMode(v) {
-    isSequenceMode = v;
-  }
-  function setPaused(v) {
-    isPaused = v;
-  }
-  function setSequenceIndex(i) {
-    sequenceIndex = i;
-  }
-  function getSequenceTimeout() {
-    return sequenceTimeoutId;
-  }
-  function setSequenceTimeout(id) {
-    sequenceTimeoutId = id;
-  }
-  function clearSequenceTimeout() {
-    if (sequenceTimeoutId) {
-      clearTimeout(sequenceTimeoutId);
-      sequenceTimeoutId = null;
-    }
-  }
-  function getCurrentSpeakButton() {
-    return currentSpeakButton;
-  }
-  function setCurrentSpeakButton(b) {
-    currentSpeakButton = b;
-  }
-  function getUtterance() {
-    return utterance;
-  }
-  function setUtterance(u) {
-    utterance = u;
-  }
-  function setAppConfig(c) {
-    appConfig = c;
-  }
+
   return {
     setAppConfig,
+    getAppConfig,
     setDefaultActive,
     getDefaultActive,
     setSettings,
     getSettings,
-    getAppConfig,
-    validateDefaults,
-    saveSettings,
-    loadSettingsFromLocal,
     playbackFlags,
-    setSpeaking,
-    setSequenceMode,
-    setPaused,
-    setSequenceIndex,
+    setPlaybackFlags,
     getSequenceTimeout,
     setSequenceTimeout,
     clearSequenceTimeout,
@@ -563,142 +445,101 @@ function createStore({ bus, config }) {
     setCurrentSpeakButton,
     getUtterance,
     setUtterance,
+    saveSettings,
+    loadSettingsFromLocal,
   };
 }
 
-// Speaker — wrapper over Web Speech API, emits events via bus
-function createSpeakerNLT() {
-  let getVoices = () => [];
-  let getSettings = () => ({});
-  function init(voicesProvider, settingsProvider) {
-    if (typeof voicesProvider === "function") getVoices = voicesProvider;
-    if (typeof settingsProvider === "function") getSettings = settingsProvider;
+/* =========================================================================
+   Voices
+   ========================================================================= */
+function createVoices({ bus }) {
+  let voices = [];
+  let availableLanguages = [];
+
+  function collectVoices() {
+    voices = speechSynthesis.getVoices() || [];
+    availableLanguages = Array.from(
+      new Set(
+        voices
+          .map((v) => (v.lang || "").split("-")[0].toUpperCase())
+          .filter(Boolean)
+      )
+    ).sort();
+    if (!availableLanguages.includes("ALL")) availableLanguages.push("ALL");
+    bus.emit("VOICES_CHANGED", { voices, availableLanguages });
   }
-  function _selectVoice(s) {
-    const voices = getVoices() || [];
-    if (!voices.length) return null;
-    const desiredName = String(s.voiceName || "").trim();
-    const desiredLang = String(s.languageCode || "")
-      .trim()
-      .toLowerCase();
-    if (desiredName) {
-      let exact = voices.find((v) => v.name === desiredName);
-      if (exact) return exact;
-      const norm = (n) =>
-        String(n || "")
-          .trim()
-          .toLowerCase();
-      let partial = voices.find((v) =>
-        norm(v.name).includes(norm(desiredName))
-      );
-      if (partial) return partial;
+
+  async function loadVoices() {
+    collectVoices();
+    if (!voices.length) {
+      speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+      await new Promise((r) => setTimeout(r, 250));
+      collectVoices();
     }
-    if (desiredLang) {
-      const langFull = desiredLang;
-      let byFull = voices.find(
-        (v) => (v.lang || "").toLowerCase() === langFull
-      );
-      if (byFull) return byFull;
-      const base = langFull.split(/[-_]/)[0];
-      if (base) {
-        let byBase = voices.find((v) =>
-          (v.lang || "").toLowerCase().startsWith(base)
-        );
-        if (byBase) return byBase;
-      }
-    }
-    const navigatorBase = (navigator.language || "").split(/[-_]/)[0];
-    if (navigatorBase) {
-      const navMatch = voices.find((v) =>
-        (v.lang || "").toLowerCase().startsWith(navigatorBase)
-      );
-      if (navMatch) return navMatch;
-    }
-    return voices[0] || null;
+    bus.emit("VOICES_LOADED", { voices, availableLanguages });
   }
-  function speak(text, options = {}) {
-    if (!text) return Promise.resolve();
-    const s = { ...getSettings(), ...options };
-    if (options.interrupt !== false) speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(String(text));
-    const chosen = _selectVoice(s);
-    if (chosen) {
-      try {
-        utter.voice = chosen;
-        utter.lang = chosen.lang || s.languageCode || utter.lang || "";
-      } catch (e) {
-        if (s.languageCode) utter.lang = s.languageCode;
-      }
-    } else {
-      if (s.languageCode) utter.lang = s.languageCode;
-    }
-    const rate =
-      Number.isFinite(Number(s.rate ?? s.speed)) &&
-      Number(s.rate ?? s.speed) > 0
-        ? Number(s.rate ?? s.speed)
-        : 1.0;
-    const pitch =
-      Number.isFinite(Number(s.pitch)) && Number(s.pitch) > 0
-        ? Number(s.pitch)
-        : 1.0;
-    const volume =
-      Number.isFinite(Number(s.volume)) &&
-      Number(s.volume) >= 0 &&
-      Number(s.volume) <= 1
-        ? Number(s.volume)
-        : 1.0;
-    utter.rate = rate;
-    utter.pitch = pitch;
-    utter.volume = volume;
-    return new Promise((resolve) => {
-      const done = () => resolve();
-      utter.onend = done;
-      utter.onerror = done;
-      speechSynthesis.speak(utter);
-    });
-  }
+
+  if ("onvoiceschanged" in speechSynthesis)
+    speechSynthesis.onvoiceschanged = collectVoices;
+
   return {
-    init,
-    speak,
-    cancel: () => speechSynthesis.cancel(),
-    pause: () => speechSynthesis.pause(),
-    resume: () => speechSynthesis.resume(),
-    isSpeaking: () => speechSynthesis.speaking,
-    isPaused: () => speechSynthesis.paused,
+    loadVoices,
+    getVoices: () => voices.slice(),
+    getAvailableLanguages: () => availableLanguages.slice(),
   };
 }
 
-function createSpeaker({ bus, store }) {
-  const Base = createSpeakerNLT();
-  Base.init(
-    () => speechSynthesis.getVoices(),
-    () => store.getSettings()
-  );
-  function speak({ text, rate, lang, button }) {
-    const s = store.getSettings() || {};
+/* =========================================================================
+   Speaker (Web Speech API wrapper + bus events)
+   ========================================================================= */
+function createCLTSpeaker({ bus, store }) {
+  const synth = window.speechSynthesis;
+  let currentUtterance = null;
+
+  function speak({ text, rate = 1, lang = "nl-NL", button = null }) {
+    stopAll();
+    if (!text) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = rate;
+    utterance.lang = lang || store.getSettings().languageCode || "nl-NL";
+
+    store.setUtterance(utterance);
+    store.setCurrentSpeakButton(button);
+
     bus.emit(EventTypes.SPEECH_START, { button });
-    Base.speak(text, {
-      speed: rate || s.speed,
-      languageCode: lang || s.languageCode || "nl-NL",
-      voiceName: s.voiceName,
-      pitch: s.pitch,
-      volume: s.volume,
-      interrupt: true,
-    }).then(() => {
+
+    utterance.onend = () => {
+      store.setUtterance(null);
+      store.setCurrentSpeakButton(null);
+      currentUtterance = null;
       bus.emit(EventTypes.SPEECH_END, { button });
-    });
+    };
+
+    currentUtterance = utterance;
+    synth.speak(utterance);
   }
+
   function stopAll() {
-    Base.cancel();
-    bus.emit(EventTypes.SPEECH_END, { button: store.getCurrentSpeakButton() });
+    if (synth.speaking || synth.pending) synth.cancel();
+    if (currentUtterance) {
+      store.setUtterance(null);
+      store.setCurrentSpeakButton(null);
+      currentUtterance = null;
+    }
   }
+
   return { speak, stopAll };
 }
 
-// UI — DOM adapter, encapsulates selectors and exposes methods for other modules
-function createUI({ bus, store, config, langLoader }) {
-  const PLAY_ICON = "▶️",
-    STOP_ICON = "⏹️";
+/* =========================================================================
+   UI
+   ========================================================================= */
+function createUI({ bus, store, config, langLoader, utils }) {
+  const PLAY_ICON = "▶️";
+  const STOP_ICON = "⏹️";
+
   const els = {
     delaySelectEl: document.getElementById("delaySelect"),
     speedSelectEl: document.getElementById("speedSelect"),
@@ -707,20 +548,17 @@ function createUI({ bus, store, config, langLoader }) {
     resetSettingsBtnEl: document.getElementById("resetSettingsBtn"),
     fillRandomBtnEl: document.getElementById("fillRandomBtn"),
     uiLangSelectEl: document.getElementById("uiLangSelect"),
-    blockExercisesInputEls: document.querySelectorAll(
-      ".section-block-exercises .time-input"
-    ),
     randomBtnEls: document.querySelectorAll(".random-btn"),
     speakBtnEls: document.querySelectorAll(".speak-btn"),
     timeInputEls: document.querySelectorAll(".time-input"),
     clockContainerEls: document.querySelectorAll(".clock-container"),
     developerBlockEl: document.getElementById("developer"),
   };
+
   function disableSpeakButtons(disable) {
-    els.speakBtnEls.forEach((b) => {
-      if (b) b.disabled = disable;
-    });
+    els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
   }
+
   function toggleControls(enabled) {
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enabled;
     if (els.delaySelectEl) els.delaySelectEl.disabled = !enabled;
@@ -728,39 +566,30 @@ function createUI({ bus, store, config, langLoader }) {
       .querySelectorAll('label[for="speedSelect"],label[for="delaySelect"]')
       .forEach((l) => l.classList.toggle("disabled", !enabled));
   }
+
   function setActiveInput(index) {
-    els.timeInputEls.forEach((inp) => {
-      if (inp) inp.classList.remove("highlight");
-    });
-    els.randomBtnEls.forEach((btn) => {
-      if (btn) btn.disabled = false;
-    });
+    els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
+    els.randomBtnEls.forEach((btn) => btn && (btn.disabled = false));
     if (index >= 0 && index < els.timeInputEls.length) {
       const inp = els.timeInputEls[index];
-      if (!inp) return;
-      inp.classList.add("highlight");
-      const rnd = inp.parentElement
-        ? inp.parentElement.querySelector(".random-btn")
-        : null;
+      inp?.classList.add("highlight");
+      const rnd = inp?.parentElement?.querySelector(".random-btn");
       if (rnd) rnd.disabled = true;
     }
   }
+
   function updateButtonIcon(activeButton = null) {
     const flags = store.playbackFlags();
-    els.speakBtnEls.forEach((b) => {
-      if (b) b.textContent = PLAY_ICON;
-    });
+    els.speakBtnEls.forEach((b) => b && (b.textContent = PLAY_ICON));
     if (flags.isSpeaking && activeButton) activeButton.textContent = STOP_ICON;
   }
-  function setBtnText(btn, text) {
-    if (btn) btn.textContent = text;
-  }
+
+  const setBtnText = (btn, text) => btn && (btn.textContent = text);
+
   function translateUI(lang) {
-    const texts =
-      typeof langLoader !== "undefined" && langLoader.getTexts
-        ? langLoader.getTexts(lang)
-        : null;
+    const texts = langLoader?.getTexts?.(lang);
     if (!texts) return;
+
     const textMap = {
       uiLangLabel: "uiLangLabel",
       startPauseBtn: "startPauseBtn",
@@ -773,6 +602,7 @@ function createUI({ bus, store, config, langLoader }) {
       const el = document.getElementById(id);
       if (el && texts[key]) el.textContent = texts[key];
     });
+
     const titleMap = {
       resetSettingsBtn: "resetSettingsTitle",
       uiLangSelect: "uiLangSelectTitle",
@@ -781,16 +611,17 @@ function createUI({ bus, store, config, langLoader }) {
       randomBtn: "randomBtnTitle",
       fillRandomBtn: "fillRandomBtnTitle",
     };
-    document.querySelectorAll(".speak-btn").forEach((btn) => {
-      btn.title = texts.speakBtnTitle || "";
-    });
-    document.querySelectorAll(".random-btn").forEach((btn) => {
-      btn.title = texts.randomBtnTitle || "";
-    });
+    document
+      .querySelectorAll(".speak-btn")
+      .forEach((btn) => (btn.title = texts.speakBtnTitle || ""));
+    document
+      .querySelectorAll(".random-btn")
+      .forEach((btn) => (btn.title = texts.randomBtnTitle || ""));
     Object.entries(titleMap).forEach(([id, key]) => {
       const el = document.getElementById(id);
       if (el && texts[key]) el.title = texts[key];
     });
+
     window.alertTexts = {
       invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
       invalidPhrase:
@@ -804,169 +635,164 @@ function createUI({ bus, store, config, langLoader }) {
     };
     setBtnText(els.startPauseBtnEl, window.btnStates.start || "Start");
   }
+
   function applySettingsToUI(
     s,
     { preferBlankForInvalid = true, raw = {} } = {}
   ) {
-    const { uiLangSelectEl, speedSelectEl, delaySelectEl } = els;
-    const hasOpt = (sel, val) => {
-      if (!sel || !sel.options) return false;
-      const v = val == null ? "" : String(val);
-      for (let i = 0; i < sel.options.length; i++) {
-        if (String(sel.options[i].value) === v) return true;
-      }
-      return false;
-    };
     const setOrBlank = (sel, candidate, fallback) => {
-      if (
-        candidate !== undefined &&
-        candidate !== null &&
-        hasOpt(sel, candidate)
-      )
+      if (!sel) return;
+      const hasOpt = (val) =>
+        Array.from(sel.options).some((o) => String(o.value) === String(val));
+      if (candidate !== undefined && hasOpt(candidate))
         sel.value = String(candidate);
-      else if (candidate !== undefined && preferBlankForInvalid) {
-        try {
-          sel.value = "";
-        } catch (e) {}
-        sel.selectedIndex = -1;
-      } else if (fallback !== undefined && hasOpt(sel, fallback))
+      else if (preferBlankForInvalid) sel.value = "";
+      else if (fallback !== undefined && hasOpt(fallback))
         sel.value = String(fallback);
-      else {
-        try {
-          sel.value = "";
-        } catch (e) {}
-        sel.selectedIndex = -1;
-      }
     };
-    setOrBlank(
-      uiLangSelectEl,
-      raw.uiLang !== undefined ? raw.uiLang : s.uiLang,
-      s.uiLang
-    );
-    setOrBlank(
-      speedSelectEl,
-      raw.speed !== undefined ? raw.speed : s.speed,
-      s.speed
-    );
-    setOrBlank(
-      delaySelectEl,
-      raw.delay !== undefined ? raw.delay : s.delay,
-      s.delay
-    );
+    setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
+    setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
+    setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
+
     const effectiveLang =
-      (uiLangSelectEl && uiLangSelectEl.value) ||
+      els.uiLangSelectEl?.value ||
       s.uiLang ||
       store.getDefaultActive().uiLang ||
       config.FALLBACK.uiLang;
     translateUI(effectiveLang);
   }
+
   function readSettingsFromUI() {
-    const base = {};
-    if (els.uiLangSelectEl) base.uiLang = els.uiLangSelectEl.value;
-    if (els.speedSelectEl) base.speed = els.speedSelectEl.value;
-    if (els.delaySelectEl) base.delay = els.delaySelectEl.value;
-    const merged = (function () {
-      const allowed = (sel, val) => {
-        if (!sel || !sel.options) return false;
-        const v = val == null ? "" : String(val);
-        for (let i = 0; i < sel.options.length; i++) {
-          if (String(sel.options[i].value) === v) return true;
-        }
-        return false;
-      };
-      const d = store.getDefaultActive() || {};
-      const out = {};
-      out.uiLang =
+    const base = {
+      uiLang: els.uiLangSelectEl?.value,
+      speed: els.speedSelectEl?.value,
+      delay: els.delaySelectEl?.value,
+    };
+    const defaults = store.getDefaultActive() || {};
+    const allowedOpt = (sel, val) =>
+      sel &&
+      Array.from(sel.options).some((opt) => String(opt.value) === String(val));
+    return {
+      uiLang:
         base.uiLang &&
-        Utils.ALLOWED_LANGS.includes(base.uiLang) &&
-        allowed(els.uiLangSelectEl, base.uiLang)
+        utils.ALLOWED_LANGS.includes(base.uiLang) &&
+        allowedOpt(els.uiLangSelectEl, base.uiLang)
           ? base.uiLang
-          : d.uiLang || config.FALLBACK.uiLang;
-      out.speed =
-        base.speed &&
+          : defaults.uiLang,
+      speed:
         !isNaN(parseFloat(base.speed)) &&
-        allowed(els.speedSelectEl, base.speed)
+        allowedOpt(els.speedSelectEl, base.speed)
           ? base.speed
-          : d.speed || config.FALLBACK.speed;
-      out.delay =
-        base.delay &&
+          : defaults.speed,
+      delay:
         !isNaN(parseInt(base.delay, 10)) &&
-        allowed(els.delaySelectEl, base.delay)
+        allowedOpt(els.delaySelectEl, base.delay)
           ? base.delay
-          : d.delay || config.FALLBACK.delay;
-      out.fullscreen = d.fullscreen || config.FALLBACK.fullscreen;
-      out.languageCode = d.languageCode || config.FALLBACK.languageCode;
-      out.voiceName = d.voiceName || config.FALLBACK.voiceName;
-      return out;
-    })();
-    return merged;
+          : defaults.delay,
+      fullscreen: defaults.fullscreen,
+      languageCode: defaults.languageCode,
+      voiceName: defaults.voiceName,
+    };
   }
+
   function setDeveloperVisibility(appCfg) {
     const devMode =
-      typeof appCfg.DEVELOPER_MODE === "boolean"
-        ? appCfg.DEVELOPER_MODE
-        : typeof config.DEFAULT_CONFIG.DEVELOPER_MODE === "boolean"
-        ? config.DEFAULT_CONFIG.DEVELOPER_MODE
-        : config.FALLBACK.DEVELOPER_MODE;
+      appCfg?.DEVELOPER_MODE ??
+      config.DEFAULT_CONFIG.DEVELOPER_MODE ??
+      config.FALLBACK.DEVELOPER_MODE;
     if (els.developerBlockEl)
       els.developerBlockEl.style.display = devMode ? "" : "none";
   }
+
   function updateStartPauseBtnTo(state) {
     if (state === "start")
-      setBtnText(
-        els.startPauseBtnEl,
-        (window.btnStates && window.btnStates.start) || "Start"
-      );
+      setBtnText(els.startPauseBtnEl, window.btnStates.start);
     else if (state === "stop")
-      setBtnText(
-        els.startPauseBtnEl,
-        (window.btnStates && window.btnStates.stop) || "Stop"
-      );
+      setBtnText(els.startPauseBtnEl, window.btnStates.stop);
     else if (state === "cont")
-      setBtnText(
-        els.startPauseBtnEl,
-        (window.btnStates && window.btnStates.cont) || "Continue"
-      );
+      setBtnText(els.startPauseBtnEl, window.btnStates.cont);
   }
+
+  function updateControlsAvailability() {
+    const flags = store.playbackFlags();
+    const activeBtn = store.getCurrentSpeakButton();
+    const activeIdx = flags.sequenceIndex;
+
+    els.speakBtnEls.forEach((btn, idx) => {
+      if (flags.isSequenceMode) btn.disabled = true;
+      else if (flags.isSpeaking && activeBtn) btn.disabled = btn !== activeBtn;
+      else btn.disabled = flags.isPaused;
+
+      const input = btn?.parentElement?.querySelector(".time-input");
+      if (input) {
+        if ((flags.isSequenceMode && idx === activeIdx) || btn === activeBtn) {
+          input.classList.add("active-speaking");
+        } else {
+          input.classList.remove("active-speaking");
+        }
+      }
+    });
+
+    els.randomBtnEls.forEach((btn, idx) => {
+      if (flags.isSequenceMode && idx === activeIdx) btn.disabled = true;
+      else if (activeBtn) {
+        const speakBtn = btn?.parentElement?.querySelector(".speak-btn");
+        btn.disabled = speakBtn && speakBtn === activeBtn;
+      } else btn.disabled = false;
+    });
+
+    toggleControls(!flags.isSequenceMode && !flags.isPaused);
+
+    if (els.resetBtnEl)
+      els.resetBtnEl.disabled = !(flags.isPaused || flags.isSequenceMode);
+  }
+
+  els.fillRandomBtnEl?.addEventListener("click", () => {
+    const { isPaused, sequenceIndex } = store.playbackFlags();
+    els.timeInputEls.forEach((inp, idx) => {
+      if (
+        (store.playbackFlags().isSequenceMode || isPaused) &&
+        idx === sequenceIndex
+      )
+        return;
+      inp.value = utils.generateRandomTimeString();
+    });
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+  });
+
+  bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
+
   function bindHandlers() {
     els.clockContainerEls.forEach((group) => {
       const rndBtn = group.querySelector(".random-btn");
       const input = group.querySelector(".time-input");
       const speakBtn = group.querySelector(".speak-btn");
+
       if (rndBtn && input) {
         rndBtn.addEventListener("click", () => {
-          input.value = Utils.generateRandomTimeString();
+          input.value = utils.generateRandomTimeString();
+          bus.emit(EventTypes.UPDATE_CONTROLS);
         });
       }
-      if (speakBtn) {
+
+      if (speakBtn && input) {
         speakBtn.addEventListener("click", () => {
-          const flags = store.playbackFlags();
-          if (flags.isSpeaking) {
-            bus.emit(EventTypes.SPEECH_STOP_ALL, {});
-            return;
-          }
-          const raw = input && input.value ? input.value.trim() : "";
-          const timeStr = Utils.parseTimeInput(raw);
-          if (!timeStr) {
-            alert(
-              (window.alertTexts && window.alertTexts.invalidFormat) ||
-                "Enter time in HH:MM format"
-            );
-            return;
-          }
-          const phrase = Utils.getDutchTimeString(timeStr);
-          if (!phrase) {
-            alert(
-              (window.alertTexts && window.alertTexts.invalidPhrase) ||
-                "Invalid time or unable to generate Dutch phrase."
-            );
-            return;
-          }
+          const { isSpeaking } = store.playbackFlags();
+          if (isSpeaking) return bus.emit(EventTypes.PLAYBACK_STOP);
+
+          const raw = input.value?.trim() || "";
+          const timeStr = utils.parseTimeInput(raw);
+          if (!timeStr) return alert(window.alertTexts.invalidFormat);
+          const phrase = utils.getDutchTimeString(timeStr);
+          if (!phrase) return alert(window.alertTexts.invalidPhrase);
+
+          els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
+          input.classList.add("highlight");
+
           const rate = parseFloat(
-            els.speedSelectEl && els.speedSelectEl.value
-              ? els.speedSelectEl.value
-              : store.getDefaultActive().speed || config.FALLBACK.speed
+            els.speedSelectEl?.value || store.getDefaultActive().speed
           );
+
           bus.emit(EventTypes.UI_SPEAK_SINGLE, {
             phrase,
             rate,
@@ -975,66 +801,64 @@ function createUI({ bus, store, config, langLoader }) {
         });
       }
     });
-    if (els.fillRandomBtnEl) {
-      els.fillRandomBtnEl.addEventListener("click", () => {
-        const flags = store.playbackFlags();
-        els.timeInputEls.forEach((inp, idx) => {
-          if (flags.isPaused && idx === flags.sequenceIndex) return;
-          if (inp) inp.value = Utils.generateRandomTimeString();
+
+    els.startPauseBtnEl?.addEventListener("click", () => {
+      const f = store.playbackFlags();
+      if (!f.isSequenceMode) {
+        store.setPlaybackFlags({
+          isSequenceMode: true,
+          isPaused: false,
+          sequenceIndex: 0,
         });
-      });
-    }
-    if (els.startPauseBtnEl) {
-      els.startPauseBtnEl.addEventListener("click", () => {
-        const flags = store.playbackFlags();
-        if (flags.isSequenceMode && !flags.isPaused) {
-          bus.emit(EventTypes.PLAYBACK_STOP);
-          store.setPaused(true);
-          updateStartPauseBtnTo("cont");
-          toggleControls(true);
-          if (els.resetBtnEl) els.resetBtnEl.disabled = false;
-          return;
-        }
-        if (flags.isSequenceMode && flags.isPaused) {
-          store.setPaused(false);
-          bus.emit(EventTypes.PLAYBACK_CONTINUE, {
-            index: store.playbackFlags().sequenceIndex || 0,
-          });
-          updateStartPauseBtnTo("stop");
-          toggleControls(false);
-          if (els.resetBtnEl) els.resetBtnEl.disabled = true;
-          return;
-        }
-        store.setSequenceIndex(0);
+        bus.emit(EventTypes.UPDATE_CONTROLS);
         bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
         updateStartPauseBtnTo("stop");
         toggleControls(false);
-        if (els.resetBtnEl) els.resetBtnEl.disabled = true;
-      });
-    }
-    if (els.resetBtnEl) {
-      els.resetBtnEl.addEventListener("click", () => {
-        bus.emit(EventTypes.PLAYBACK_RESET, {});
-      });
-    }
-    if (els.speedSelectEl)
-      els.speedSelectEl.addEventListener("change", () =>
-        bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
-      );
-    if (els.delaySelectEl)
-      els.delaySelectEl.addEventListener("change", () =>
-        bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
-      );
-    if (els.uiLangSelectEl)
-      els.uiLangSelectEl.addEventListener("change", (e) => {
-        bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
-        bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
-      });
-    if (els.resetSettingsBtnEl)
-      els.resetSettingsBtnEl.addEventListener("click", () =>
-        bus.emit(EventTypes.SETTINGS_RESET_TO_DEFAULTS)
-      );
-    if (els.fillRandomBtnEl) els.fillRandomBtnEl.click();
+        return;
+      }
+      if (f.isSequenceMode && !f.isPaused) {
+        store.setPlaybackFlags({ isPaused: true });
+        bus.emit(EventTypes.UPDATE_CONTROLS);
+        bus.emit(EventTypes.PLAYBACK_PAUSE);
+        updateStartPauseBtnTo("cont");
+        toggleControls(true);
+        return;
+      }
+      if (f.isSequenceMode && f.isPaused) {
+        store.setPlaybackFlags({ isPaused: false });
+        bus.emit(EventTypes.UPDATE_CONTROLS);
+        bus.emit(EventTypes.PLAYBACK_CONTINUE, {
+          index: f.sequenceIndex || 0,
+        });
+        updateStartPauseBtnTo("stop");
+        toggleControls(false);
+        return;
+      }
+    });
+
+    els.resetBtnEl?.addEventListener("click", () =>
+      bus.emit(EventTypes.PLAYBACK_STOP)
+    );
+    els.speedSelectEl?.addEventListener("change", () =>
+      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
+    );
+    els.delaySelectEl?.addEventListener("change", () =>
+      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
+    );
+    els.uiLangSelectEl?.addEventListener("change", (e) => {
+      bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
+      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
+    });
+    els.resetSettingsBtnEl?.addEventListener("click", () =>
+      bus.emit(EventTypes.SETTINGS_RESET_TO_DEFAULTS)
+    );
+
+    const allEmpty = Array.from(els.timeInputEls || []).every(
+      (inp) => !(inp.value && inp.value.trim())
+    );
+    if (allEmpty) els.fillRandomBtnEl?.click();
+
+    bus.emit(EventTypes.UPDATE_CONTROLS);
   }
 
   return {
@@ -1050,243 +874,240 @@ function createUI({ bus, store, config, langLoader }) {
     setDeveloperVisibility,
     updateStartPauseBtnTo,
     bindHandlers,
+    updateControlsAvailability,
   };
 }
 
-// Playback — sequence engine that speaks inputs sequentially, handles pause/continue/finish
-function createPlayback({ bus, store, ui, speaker, config }) {
-  function resetSequenceState({ full = true } = {}) {
-    speaker.stopAll();
-    store.setSpeaking(false);
-    store.clearSequenceTimeout();
-    store.setCurrentSpeakButton(null);
-    store.setUtterance(null);
-    ui.updateButtonIcon();
-    ui.setActiveInput(-1);
-    ui.updateStartPauseBtnTo("start");
-    if (full) {
-      store.setSequenceMode(false);
-      store.setPaused(false);
-      store.setSequenceIndex(0);
-      ui.disableSpeakButtons(false);
-      ui.toggleControls(true);
-      if (ui.els.resetBtnEl) ui.els.resetBtnEl.disabled = false;
-      if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.disabled = false;
+/* =========================================================================
+   Playback
+   ========================================================================= */
+function createPlayback({ bus, store, ui, speaker }) {
+  let currentTimeout = null;
+
+  function clearTimer() {
+    if (currentTimeout) {
+      clearTimeout(currentTimeout);
+      currentTimeout = null;
     }
   }
 
-  function speakSingle({ phrase, rate, button }) {
-    ui.disableSpeakButtons(true);
-    speaker.speak({
-      text: phrase,
-      rate,
-      lang: store.getSettings().languageCode || "nl-NL",
-      button,
-    });
-  }
+  function speakPhrase(phrase, btn, after) {
+    store.setPlaybackFlags({ isSpeaking: true });
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+    ui.updateButtonIcon(btn);
 
-  function speakAll(index = 0) {
-    store.clearSequenceTimeout();
-    const inputs = Array.from(ui.els.blockExercisesInputEls || []);
     const rate = parseFloat(
-      (ui.els.speedSelectEl && ui.els.speedSelectEl.value) ||
-        store.getDefaultActive().speed ||
-        config.FALLBACK.speed
+      ui.els.speedSelectEl?.value || store.getDefaultActive().speed
     );
-    const delayMs =
-      parseInt(
-        (ui.els.delaySelectEl && ui.els.delaySelectEl.value) ||
-          store.getDefaultActive().delay ||
-          config.FALLBACK.delay,
-        10
-      ) || 1000;
-
-    if (index === 0) {
-      ui.disableSpeakButtons(true);
-      ui.toggleControls(false);
-      if (ui.els.resetBtnEl) ui.els.resetBtnEl.disabled = true;
-      if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.disabled = true;
-    }
-
-    if (index >= inputs.length) {
-      store.setSpeaking(false);
-      store.setSequenceMode(false);
-      store.setPaused(false);
-      ui.setActiveInput(-1);
-      ui.disableSpeakButtons(false);
-      ui.toggleControls(true);
-      if (ui.els.resetBtnEl) ui.els.resetBtnEl.disabled = false;
-      if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.disabled = false;
-      ui.updateStartPauseBtnTo("start");
-      bus.emit(EventTypes.PLAYBACK_FINISHED, {});
-      return;
-    }
-
-    store.setSequenceIndex(index);
-    const input = inputs[index];
-    const raw = input && input.value ? input.value.trim() : "";
-    if (!raw) {
-      speakAll(index + 1);
-      return;
-    }
-
-    ui.setActiveInput(index);
-    const timeStr = Utils.parseTimeInput(raw);
-    const phrase = timeStr ? Utils.getDutchTimeString(timeStr) : raw;
-
-    store.setSpeaking(true);
-    store.setSequenceMode(true);
-    store.setPaused(false);
 
     speaker.speak({
       text: phrase,
       rate,
-      lang: store.getSettings().languageCode || "nl-NL",
-      button: null,
+      lang: store.getSettings().languageCode,
+      button: btn,
     });
 
-    const onEnded = () => {
-      if (store.playbackFlags().isPaused) return;
-      const id = setTimeout(() => {
-        store.setSequenceTimeout(null);
-        speakAll(index + 1);
-      }, delayMs);
-      store.setSequenceTimeout(id);
-    };
     const off = bus.on(EventTypes.SPEECH_END, () => {
       off();
-      onEnded();
+      store.setPlaybackFlags({ isSpeaking: false });
+      bus.emit(EventTypes.UPDATE_CONTROLS);
+      ui.updateButtonIcon(btn);
+
+      const f = store.playbackFlags();
+      if (f.isSequenceMode && !f.isPaused) after && after();
     });
   }
 
-  function bind() {
-    bus.on(EventTypes.UI_SPEAK_SINGLE, (p) => speakSingle(p));
-    bus.on(EventTypes.PLAYBACK_START, ({ index }) => speakAll(index || 0));
-    bus.on(EventTypes.PLAYBACK_CONTINUE, ({ index }) => {
-      if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.disabled = true;
-      speakAll(index || 0);
+  function playAt(index = 0) {
+    const inputs = ui.els.timeInputEls;
+    if (!inputs || index >= inputs.length) return finish();
+
+    store.setPlaybackFlags({
+      sequenceIndex: index,
+      isSequenceMode: true,
+      isPaused: false,
     });
-    bus.on(EventTypes.PLAYBACK_STOP, () => {
-      store.setPaused(true);
-      store.setSpeaking(false);
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+
+    ui.setActiveInput(index);
+
+    ui.els.speakBtnEls.forEach((b, idx) => {
+      if (b) b.disabled = true;
+    });
+    ui.els.randomBtnEls.forEach((b, idx) => {
+      if (b) b.disabled = idx === index;
+    });
+
+    const inp = inputs[index];
+    const raw = inp?.value?.trim();
+    if (!raw) return next(index);
+
+    const timeStr = window.utils.parseTimeInput(raw);
+    if (!timeStr) return next(index);
+
+    const phrase = window.utils.getDutchTimeString(timeStr);
+    if (!phrase) return next(index);
+
+    const speakBtn = inp?.parentElement?.querySelector(".speak-btn") || null;
+    speakPhrase(phrase, speakBtn, () => scheduleNext(index));
+  }
+
+  function scheduleNext(index) {
+    if (store.playbackFlags().isPaused) return;
+    const delayMs = parseInt(
+      ui.els.delaySelectEl?.value || store.getDefaultActive().delay,
+      10
+    );
+    currentTimeout = setTimeout(() => next(index), delayMs);
+  }
+
+  function next(index) {
+    const nextIndex = index + 1;
+    if (nextIndex >= ui.els.timeInputEls.length) return finish();
+    playAt(nextIndex);
+  }
+
+  function finish() {
+    clearTimer();
+    store.setPlaybackFlags({
+      isSequenceMode: false,
+      isPaused: false,
+      isSpeaking: false,
+      sequenceIndex: 0,
+    });
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+    ui.updateStartPauseBtnTo("start");
+    ui.toggleControls(true);
+    ui.setActiveInput(-1);
+    ui.updateButtonIcon();
+    ui.els.speakBtnEls.forEach((b) => (b.disabled = false));
+    ui.els.randomBtnEls.forEach((b) => (b.disabled = false));
+    bus.emit(EventTypes.PLAYBACK_FINISH);
+  }
+
+  function stop() {
+    clearTimer();
+    store.setPlaybackFlags({
+      isSequenceMode: false,
+      isPaused: false,
+      isSpeaking: false,
+      sequenceIndex: 0,
+    });
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+    if (speaker && typeof speaker.stopAll === "function") {
       speaker.stopAll();
-      ui.updateStartPauseBtnTo("cont");
-      if (ui.els.resetBtnEl) ui.els.resetBtnEl.disabled = false;
-      if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.disabled = false;
-    });
-    bus.on(EventTypes.PLAYBACK_RESET, () => resetSequenceState({ full: true }));
-    bus.on(EventTypes.SPEECH_STOP_ALL, () => speaker.stopAll());
-
-    bus.on(EventTypes.SPEECH_START, ({ button }) => {
-      ui.updateButtonIcon(button || store.getCurrentSpeakButton());
-    });
-
-    bus.on(EventTypes.SPEECH_END, ({ button }) => {
-      const flags = store.playbackFlags();
-      ui.updateButtonIcon(button || store.getCurrentSpeakButton());
-      if (!flags.isSequenceMode) {
-        ui.disableSpeakButtons(false);
-        if (button) button.disabled = false;
-      }
-    });
+    } else {
+      window.speechSynthesis.cancel();
+      bus.emit(EventTypes.SPEECH_END, {
+        button: store.getCurrentSpeakButton(),
+      });
+    }
+    finish();
   }
 
-  bind();
-  return { resetSequenceState };
+  function pause() {
+    clearTimer();
+    store.setPlaybackFlags({ isPaused: true, isSpeaking: false });
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+    if (speaker && typeof speaker.stopAll === "function") speaker.stopAll();
+    ui.updateStartPauseBtnTo("cont");
+    ui.toggleControls(true);
+  }
+
+  function cont() {
+    const i = store.playbackFlags().sequenceIndex || 0;
+    store.setPlaybackFlags({ isPaused: false });
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+    playAt(i);
+    ui.updateStartPauseBtnTo("stop");
+    ui.toggleControls(false);
+  }
+
+  bus.on(EventTypes.PLAYBACK_START, ({ index }) => playAt(index || 0));
+  bus.on(EventTypes.PLAYBACK_STOP, stop);
+  bus.on(EventTypes.PLAYBACK_PAUSE, pause);
+  bus.on(EventTypes.PLAYBACK_CONTINUE, cont);
+
+  return { playAt, stop, pause, cont };
 }
 
-// App — orchestrates boot, loads config, applies defaults, restores settings, initializes UI and modules
-(function App() {
+/* =========================================================================
+   Bootstrap
+   ========================================================================= */
+(async function bootstrap() {
   const bus = createEventBus();
-  const config = createConfig();
-  const store = createStore({ bus, config });
+  const utils = createUtils();
+  const config = createConfig(utils);
   const langLoader = createLangLoader({ config });
-  const ui = createUI({ bus, store, config, langLoader });
-  const speaker = createSpeaker({ bus, store });
-  const playback = createPlayback({ bus, store, ui, speaker, config });
+  const store = createStore({ bus, config, utils });
+  const ui = createUI({ bus, store, config, langLoader, utils });
+  const speaker = createCLTSpeaker({ bus, store });
+  const playback = createPlayback({ bus, store, ui, speaker });
+  const voices = createVoices({ bus });
 
-  function applySettings({ raw, merged, preferBlankForInvalid }) {
-    ui.applySettingsToUI(merged, { raw, preferBlankForInvalid });
-    store.setSettings(merged);
-  }
+  window.utils = utils;
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    bus.emit(EventTypes.APP_INIT, {});
-    const appCfg = await config.loadExternal();
-    store.setAppConfig(appCfg);
-    const platformDefaults = config.selectPlatformDefaults(
-      appCfg && appCfg.DEFAULT_SETTINGS
-        ? appCfg.DEFAULT_SETTINGS
-        : config.DEFAULT_CONFIG.DEFAULT_SETTINGS
-    );
-    const validated = store.validateDefaults(platformDefaults, ui.els);
-    store.setDefaultActive(validated);
-    const stored = store.loadSettingsFromLocal(ui.els);
-    store.setSettings(stored.merged);
-    applySettings({
-      raw: stored.raw,
-      merged: stored.merged,
-      preferBlankForInvalid: true,
-    });
-    const useLocal =
-      typeof appCfg.USE_LOCAL_STORAGE === "boolean"
-        ? appCfg.USE_LOCAL_STORAGE
-        : typeof config.DEFAULT_CONFIG.USE_LOCAL_STORAGE === "boolean"
-        ? config.DEFAULT_CONFIG.USE_LOCAL_STORAGE
-        : config.FALLBACK.USE_LOCAL_STORAGE;
-    if (useLocal && typeof localStorage !== "undefined") {
-      if (!localStorage.getItem("CLT_settings"))
-        store.saveSettings(store.getSettings(), ui.els);
-    }
-    ui.setDeveloperVisibility(appCfg);
-    await langLoader.loadAll();
-    const lang = store.getSettings().uiLang || config.FALLBACK.uiLang || "en";
-    ui.translateUI(lang);
-    ui.bindHandlers && ui.bindHandlers();
-    if (ui.els.fillRandomBtnEl) ui.els.fillRandomBtnEl.click();
-  });
+  const appCfg = await config.loadExternal();
+  store.setAppConfig(appCfg);
+  const platformDefaults = config.selectPlatformDefaults(
+    appCfg.DEFAULT_SETTINGS
+  );
+  store.setDefaultActive(platformDefaults);
 
+  await langLoader.loadAll(utils.ALLOWED_LANGS);
+  ui.setDeveloperVisibility(appCfg);
+
+  const { raw, merged } = store.loadSettingsFromLocal(ui.els);
+  store.setSettings(merged);
+  ui.applySettingsToUI(merged, { raw });
+
+  voices.loadVoices();
+  ui.bindHandlers();
+  [
+    EventTypes.SPEECH_START,
+    EventTypes.SPEECH_END,
+    EventTypes.PLAYBACK_START,
+    EventTypes.PLAYBACK_PAUSE,
+    EventTypes.PLAYBACK_CONTINUE,
+    EventTypes.PLAYBACK_STOP,
+  ].forEach((ev) => bus.on(ev, () => ui.updateControlsAvailability()));
+
+  ui.els.fillRandomBtnEl?.click();
+
+  bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => ui.translateUI(lang));
   bus.on(EventTypes.SETTINGS_APPLY_TO_UI, ({ saveFromUI }) => {
-    if (saveFromUI) {
-      const merged = ui.readSettingsFromUI();
-      store.saveSettings(merged, ui.els);
-      applySettings({
-        raw: {},
-        merged: store.getSettings(),
-        preferBlankForInvalid: false,
-      });
-    } else
-      applySettings({
-        raw: {},
-        merged: store.getSettings(),
-        preferBlankForInvalid: false,
-      });
+    const s = ui.readSettingsFromUI();
+    store.setSettings(s);
+    if (saveFromUI) store.saveSettings(s, ui.els);
+  });
+  bus.on(EventTypes.SETTINGS_RESET_TO_DEFAULTS, () => {
+    const defs = store.getDefaultActive();
+    store.setSettings(defs);
+    ui.applySettingsToUI(defs);
+    store.saveSettings(defs, ui.els);
   });
 
-  bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => {
-    ui.translateUI(lang);
+  bus.on(EventTypes.UI_SPEAK_SINGLE, ({ phrase, rate, button }) => {
+    store.setPlaybackFlags({ isSpeaking: true });
+    store.setCurrentSpeakButton(button);
+    bus.emit(EventTypes.UPDATE_CONTROLS);
+    ui.updateButtonIcon(button);
+
+    speaker.speak({
+      text: phrase,
+      rate,
+      lang: store.getSettings().languageCode,
+      button,
+    });
+
+    bus.once(EventTypes.SPEECH_END, () => {
+      store.setPlaybackFlags({ isSpeaking: false });
+      store.setCurrentSpeakButton(null);
+      bus.emit(EventTypes.UPDATE_CONTROLS);
+      ui.updateButtonIcon();
+      ui.els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
+    });
   });
 
-  bus.on(EventTypes.SETTINGS_RESET_TO_DEFAULTS, async () => {
-    try {
-      const ext = await config.loadExternal();
-      const extDefs = config.selectPlatformDefaults(
-        ext && ext.DEFAULT_SETTINGS
-          ? ext.DEFAULT_SETTINGS
-          : config.DEFAULT_CONFIG.DEFAULT_SETTINGS
-      );
-      const validated = store.validateDefaults(extDefs, ui.els);
-      store.setDefaultActive(validated);
-      ui.applySettingsToUI(validated, { preferBlankForInvalid: false });
-      store.saveSettings(validated, ui.els);
-    } catch (e) {
-      const fallback = store.validateDefaults(
-        config.DEFAULT_CONFIG.DEFAULT_SETTINGS?.desktop || {},
-        ui.els
-      );
-      store.setDefaultActive(fallback);
-      ui.applySettingsToUI(fallback, { preferBlankForInvalid: false });
-      store.saveSettings(fallback, ui.els);
-    }
-  });
+  console.log("App initialized");
 })();

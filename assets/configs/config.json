@@ -1,5 +1,5 @@
 {
-  "DEVELOPER_MODE": false,
+  "DEVELOPER_MODE": true,
   "USE_LOCAL_STORAGE": true,
   "DEFAULT_VOICE": "Google Nederlands",
   "DEFAULT_SETTINGS": {
@@ -7,7 +7,6 @@
       "uiLang": "en",
       "delay": "2000",
       "speed": "1.0",
-      "fullscreen": "0",
       "languageCode": "nl-NL",
       "voiceName": "Google Nederlands"
     },
@@ -15,7 +14,6 @@
       "uiLang": "en",
       "delay": "2000",
       "speed": "1.0",
-      "fullscreen": "0",
       "languageCode": "nl-NL",
       "voiceName": "Google Nederlands"
     },
@@ -23,7 +21,6 @@
       "uiLang": "en",
       "delay": "2000",
       "speed": "1.0",
-      "fullscreen": "0",
       "languageCode": "nl-NL",
       "voiceName": "Google Nederlands"
     }

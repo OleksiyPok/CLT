@@ -318,6 +318,10 @@ button:disabled {
   font: 1.8em sans-serif;
   font-weight: 600;
 }
+.section-block-exercises input.highlight {
+  color: var(--primary-active);
+  border: 3px solid var(--border-color);
+}
 .section-block-exercises button {
   display: flex;
   justify-content: center;
