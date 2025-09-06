@@ -749,7 +749,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     // selectors active unless playback is running (sequence mode without pause)
     toggleControls(!(flags.isSequenceMode && !flags.isPaused));
 
-    // resetBtn: active only when paused (not in active playback)
+    // resetBtn: active only when paused
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
 
