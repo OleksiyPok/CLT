@@ -1,27 +1,36 @@
+// main_CLT.js
 "use strict";
 
 /* 
 EventTypes
 */
 const EventTypes = Object.freeze({
-  APP_INIT: "APP_INIT",
-  CONFIG_LOADED: "CONFIG_LOADED",
-  SETTINGS_APPLY_TO_UI: "SETTINGS_APPLY_TO_UI",
-  SETTINGS_SAVE: "SETTINGS_SAVE",
-  SETTINGS_RESET_TO_DEFAULTS: "SETTINGS_RESET_TO_DEFAULTS",
-  UI_TRANSLATE: "UI_TRANSLATE",
-  UI_RANDOM_FILL_ALL: "UI_RANDOM_FILL_ALL",
-  UI_SPEAK_SINGLE: "UI_SPEAK_SINGLE",
-  SPEAK_SINGLE_START: "SPEAK_SINGLE_START",
-  SPEAK_SINGLE_STOP: "SPEAK_SINGLE_STOP",
-  PLAYBACK_START: "PLAYBACK_START",
-  PLAYBACK_PAUSE: "PLAYBACK_PAUSE",
-  PLAYBACK_CONTINUE: "PLAYBACK_CONTINUE",
-  PLAYBACK_STOP: "PLAYBACK_STOP",
-  PLAYBACK_FINISH: "PLAYBACK_FINISH",
-  UPDATE_CONTROLS: "UPDATE_CONTROLS",
-  SPEECH_START: "SPEECH_START",
-  SPEECH_END: "SPEECH_END",
+  APP_INIT: "app:init",
+  CONFIG_LOADED: "app:config:loaded",
+
+  SETTINGS_APPLY_TO_UI: "settings:applyToUI",
+  SETTINGS_SAVE: "settings:save",
+  SETTINGS_RESET_TO_DEFAULTS: "settings:resetToDefaults",
+
+  UI_TRANSLATE: "ui:translate",
+  UI_RANDOM_FILL_ALL: "ui:random:fillAll",
+  UI_SPEAK_SINGLE: "ui:speak:single",
+  SPEAK_SINGLE_START: "ui:speak:single:start",
+  SPEAK_SINGLE_STOP: "ui:speak:single:stop",
+
+  PLAYBACK_START: "playback:start",
+  PLAYBACK_PAUSE: "playback:pause",
+  PLAYBACK_CONTINUE: "playback:continue",
+  PLAYBACK_STOP: "playback:stop",
+  PLAYBACK_FINISH: "playback:finish",
+
+  UPDATE_CONTROLS: "ui:updateControls",
+
+  SPEECH_START: "speech:start",
+  SPEECH_END: "speech:end",
+
+  VOICES_CHANGED: "voices:changed",
+  VOICES_LOADED: "voices:loaded",
 });
 
 /* 
@@ -34,6 +43,15 @@ function createEventBus() {
       if (!map.has(event)) map.set(event, new Set());
       map.get(event).add(handler);
       return () => map.get(event)?.delete(handler);
+    },
+    off(event, handler) {
+      const s = map.get(event);
+      if (!s) return false;
+      if (!handler) {
+        map.delete(event);
+        return true;
+      }
+      return s.delete(handler);
     },
     once(event, handler) {
       let off;
@@ -318,7 +336,6 @@ function createStore({ bus, config, utils }) {
   let defaultActive = {};
   let currentSettings = {};
 
-  // playback state
   let flags = {
     isSpeaking: false,
     isSequenceMode: false,
@@ -329,7 +346,6 @@ function createStore({ bus, config, utils }) {
   let currentSpeakButton = null;
   let utterance = null;
 
-  // Config & defaults
   const setAppConfig = (cfg) => (appConfig = cfg || {});
   const getAppConfig = () => appConfig;
   const setDefaultActive = (d) => (defaultActive = d || {});
@@ -337,7 +353,6 @@ function createStore({ bus, config, utils }) {
   const setSettings = (s) => (currentSettings = s || {});
   const getSettings = () => currentSettings;
 
-  // Flags
   const playbackFlags = () => ({ ...flags });
   const setPlaybackFlags = (patch) => (flags = { ...flags, ...patch });
 
@@ -355,7 +370,6 @@ function createStore({ bus, config, utils }) {
   const getUtterance = () => utterance;
   const setUtterance = (u) => (utterance = u);
 
-  // Local storage
   function allowed(selectEl, value) {
     if (!selectEl || !selectEl.options) return false;
     const v = value == null ? "" : String(value);
@@ -366,7 +380,7 @@ function createStore({ bus, config, utils }) {
   }
 
   function mergeWithDefaults(stored, defaults, els) {
-    const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els;
+    const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els || {};
     const out = {};
     out.uiLang =
       stored?.uiLang &&
@@ -467,7 +481,7 @@ function createVoices({ bus }) {
       )
     ).sort();
     if (!availableLanguages.includes("ALL")) availableLanguages.push("ALL");
-    bus.emit("VOICES_CHANGED", { voices, availableLanguages });
+    bus.emit(EventTypes.VOICES_CHANGED, { voices, availableLanguages });
   }
 
   async function loadVoices() {
@@ -477,7 +491,7 @@ function createVoices({ bus }) {
       await new Promise((r) => setTimeout(r, 250));
       collectVoices();
     }
-    bus.emit("VOICES_LOADED", { voices, availableLanguages });
+    bus.emit(EventTypes.VOICES_LOADED, { voices, availableLanguages });
   }
 
   if ("onvoiceschanged" in speechSynthesis)
@@ -722,15 +736,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       if (flags.isSequenceMode) btn.disabled = true;
       else if (flags.isSpeaking && activeBtn) btn.disabled = btn !== activeBtn;
       else btn.disabled = flags.isPaused;
-
-      const input = btn?.parentElement?.querySelector(".time-input");
-      if (input) {
-        if ((flags.isSequenceMode && idx === activeIdx) || btn === activeBtn) {
-          input.classList.add("active-speaking");
-        } else {
-          input.classList.remove("active-speaking");
-        }
-      }
     });
 
     els.randomBtnEls.forEach((btn, idx) => {
@@ -741,10 +746,11 @@ function createUI({ bus, store, config, langLoader, utils }) {
       } else btn.disabled = false;
     });
 
-    toggleControls(!flags.isSequenceMode && !flags.isPaused);
+    // selectors active unless playback is running (sequence mode without pause)
+    toggleControls(!(flags.isSequenceMode && !flags.isPaused));
 
-    if (els.resetBtnEl)
-      els.resetBtnEl.disabled = !(flags.isPaused || flags.isSequenceMode);
+    // resetBtn: active only when paused (not in active playback)
+    if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
 
   els.fillRandomBtnEl?.addEventListener("click", () => {
@@ -805,36 +811,49 @@ function createUI({ bus, store, config, langLoader, utils }) {
     els.startPauseBtnEl?.addEventListener("click", () => {
       const f = store.playbackFlags();
       if (!f.isSequenceMode) {
-        store.setPlaybackFlags({
-          isSequenceMode: true,
-          isPaused: false,
-          sequenceIndex: 0,
-        });
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-        bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
-        updateStartPauseBtnTo("stop");
-        toggleControls(false);
+        setPlaybackStartForSequence();
         return;
       }
       if (f.isSequenceMode && !f.isPaused) {
-        store.setPlaybackFlags({ isPaused: true });
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-        bus.emit(EventTypes.PLAYBACK_PAUSE);
-        updateStartPauseBtnTo("cont");
-        toggleControls(true);
+        setPlaybackPauseForSequence();
         return;
       }
       if (f.isSequenceMode && f.isPaused) {
-        store.setPlaybackFlags({ isPaused: false });
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-        bus.emit(EventTypes.PLAYBACK_CONTINUE, {
-          index: f.sequenceIndex || 0,
-        });
-        updateStartPauseBtnTo("stop");
-        toggleControls(false);
+        setPlaybackContinueForSequence();
         return;
       }
     });
+
+    function setPlaybackStartForSequence() {
+      store.setPlaybackFlags({
+        isSequenceMode: true,
+        isPaused: false,
+        sequenceIndex: 0,
+      });
+      bus.emit(EventTypes.UPDATE_CONTROLS);
+      bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
+      updateStartPauseBtnTo("stop");
+      toggleControls(false);
+    }
+
+    function setPlaybackPauseForSequence() {
+      store.setPlaybackFlags({ isPaused: true });
+      bus.emit(EventTypes.UPDATE_CONTROLS);
+      bus.emit(EventTypes.PLAYBACK_PAUSE);
+      updateStartPauseBtnTo("cont");
+      toggleControls(true);
+    }
+
+    function setPlaybackContinueForSequence() {
+      const f = store.playbackFlags();
+      store.setPlaybackFlags({ isPaused: false });
+      bus.emit(EventTypes.UPDATE_CONTROLS);
+      bus.emit(EventTypes.PLAYBACK_CONTINUE, {
+        index: f.sequenceIndex || 0,
+      });
+      updateStartPauseBtnTo("stop");
+      toggleControls(false);
+    }
 
     els.resetBtnEl?.addEventListener("click", () =>
       bus.emit(EventTypes.PLAYBACK_STOP)
