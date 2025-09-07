@@ -1,5 +1,6 @@
 "use strict";
 
+// ==== События ====
 const EventTypes = Object.freeze({
   APP_INIT: "app:init",
   APP_STATE: "app:state",
@@ -31,6 +32,7 @@ const EventTypes = Object.freeze({
   UPDATE_CONTROLS: "ui:updateControls",
 });
 
+// ==== EventBus ====
 function createEventBus() {
   const map = new Map();
   return {
@@ -69,7 +71,8 @@ function createEventBus() {
   };
 }
 
-function createUtils(timeDictLoader) {
+// ==== Утилиты ====
+function createUtils() {
   const ALLOWED_LANGS = [
     "ar",
     "de",
@@ -82,7 +85,9 @@ function createUtils(timeDictLoader) {
     "tr",
     "uk",
   ];
-  const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+
+  const capitalize = (s) =>
+    s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "";
 
   function deepMerge(a, b) {
     if (!b) return JSON.parse(JSON.stringify(a || {}));
@@ -110,114 +115,80 @@ function createUtils(timeDictLoader) {
     return out;
   }
 
-  function parseTimeInput(input) {
-    if (!input || typeof input !== "string") return null;
-    const m = input.trim().match(/^(\d{1,2}):(\d{2})$/);
+  function parseTimeInput(raw) {
+    if (raw === undefined || raw === null) return null;
+    const r = String(raw).trim();
+    const m = r.match(/^(\d{1,2})[:\.\-](\d{2})$/);
     if (!m) return null;
     const h = Number(m[1]);
-    const min = Number(m[2]);
-    if (h < 0 || h > 23 || min < 0 || min > 59) return null;
-    return { h, mm: min };
+    const mm = Number(m[2]);
+    if (
+      !Number.isFinite(h) ||
+      !Number.isFinite(mm) ||
+      h < 0 ||
+      h > 23 ||
+      mm < 0 ||
+      mm > 59
+    )
+      return null;
+    return { h, mm };
   }
 
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
-    const m = Math.floor(Math.random() * 12) * 5;
-    return `${h}:${String(m).padStart(2, "0")}`;
+    const m = Math.floor(Math.random() * 60);
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   }
 
-  function getTimePhrase(langCode, { h, mm }, { use24h = false } = {}) {
-    const dict =
-      timeDictLoader.getDict(langCode) || timeDictLoader.getDict("en");
-    if (!dict) return "";
+  const hourNames = [
+    "twaalf",
+    "een",
+    "twee",
+    "drie",
+    "vier",
+    "vijf",
+    "zes",
+    "zeven",
+    "acht",
+    "negen",
+    "tien",
+    "elf",
+  ];
+  const minuteNames = {
+    1: "één",
+    2: "twee",
+    3: "drie",
+    4: "vier",
+    5: "vijf",
+    6: "zes",
+    7: "zeven",
+    8: "acht",
+    9: "negen",
+    10: "tien",
+    11: "elf",
+    12: "twaalf",
+    13: "dertien",
+    14: "veertien",
+    15: "kwart",
+    20: "twintig",
+    25: "vijfentwintig",
+    30: "half",
+  };
 
-    const hours = dict.hours || {};
-    const minutes = dict.minutes || {};
-    const words = dict.words || {};
-    const lang = langCode.toLowerCase();
-
-    let algo = "default";
-    if (["ru", "uk"].includes(lang)) algo = "slavic";
-    if (["de", "nl"].includes(lang)) algo = "germanic";
-    if (["fr", "pt", "en"].includes(lang)) algo = "latin";
-    if (["ar"].includes(lang)) algo = "arabic";
-    if (["tr"].includes(lang)) algo = "turkic";
-    if (["pl"].includes(lang)) algo = "slavic";
-
-    let hourWord, nextHourWord;
-    if (use24h) {
-      hourWord = hours[h] || h;
-      nextHourWord = hours[(h + 1) % 24] || h + 1;
-    } else {
-      const idx = h % 12;
-      const nextIdx = (h + 1) % 12;
-      hourWord = hours[idx] || h;
-      nextHourWord = hours[nextIdx] || h + 1;
-    }
-
-    switch (algo) {
-      case "slavic": // 🇷🇺 🇺🇦 🇵🇱
-        if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${words.quarterOver || ""} ${hourWord}`;
-        if (mm === 30) return `${words.half || ""} ${nextHourWord}`;
-        if (mm === 45) return `${words.quarterBefore || ""} ${nextHourWord}`;
-        if (mm < 30)
-          return `${minutes[mm] || mm} ${words.over || ""} ${hourWord}`;
-        return `${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        } ${nextHourWord}`;
-
-      case "germanic": // 🇩🇪 🇳🇱
-        if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${words.quarterOver || ""} ${hourWord}`;
-        if (mm === 30) return `${words.half || ""} ${nextHourWord}`;
-        if (mm === 45) return `${words.quarterBefore || ""} ${nextHourWord}`;
-        if (mm < 30)
-          return `${minutes[mm] || mm} ${words.over || ""} ${hourWord}`;
-        return `${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        } ${nextHourWord}`;
-
-      case "latin": // 🇫🇷 🇵🇹 🇬🇧
-        if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${hourWord} ${words.quarterOver || ""}`;
-        if (mm === 30) return `${hourWord} ${words.half || ""}`;
-        if (mm === 45) return `${hourWord} ${words.quarterBefore || ""}`;
-        if (mm < 30) return `${hourWord} ${minutes[mm] || mm}`;
-        return `${hourWord} ${words.before || ""} ${
-          minutes[60 - mm] || 60 - mm
-        }`;
-
-      case "arabic": // 🇦🇪
-        if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${hourWord} ${words.quarterOver || ""}`;
-        if (mm === 30) return `${hourWord} ${words.half || ""}`;
-        if (mm === 45) return `${nextHourWord} ${words.quarterBefore || ""}`;
-        if (mm < 30) return `${hourWord} و${minutes[mm] || mm}`;
-        return `${nextHourWord} ${words.before || ""} ${
-          minutes[60 - mm] || 60 - mm
-        }`;
-
-      case "turkic": // 🇹🇷
-        if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${hourWord} ${words.quarterOver || ""}`;
-        if (mm === 30) return `${hourWord} ${words.half || ""}`;
-        if (mm === 45) return `${hourWord} ${words.quarterBefore || ""}`;
-        if (mm < 30)
-          return `${hourWord} ${minutes[mm] || mm} ${words.over || ""}`;
-        return `${hourWord} ${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        }`;
-
-      default: // fallback
-        if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 30) return `${words.half || ""} ${nextHourWord}`;
-        if (mm < 30)
-          return `${minutes[mm] || mm} ${words.over || ""} ${hourWord}`;
-        return `${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        } ${nextHourWord}`;
-    }
+  function getDutchTimeString({ h, mm }) {
+    const idx = h % 12;
+    const nextIdx = (h + 1) % 12;
+    const hour = Number(h);
+    const minute = Number(mm);
+    if (minute === 0) return `${hourNames[idx]} uur`;
+    if (minute === 15) return `Kwart over ${hourNames[idx]}`;
+    if (minute === 30) return `Half ${hourNames[nextIdx]}`;
+    if (minute === 45) return `Kwart voor ${hourNames[nextIdx]}`;
+    if (minute < 30)
+      return `${minuteNames[minute] || minute} over ${hourNames[idx]}`;
+    return `${minuteNames[60 - minute] || 60 - minute} voor ${
+      hourNames[nextIdx]
+    }`;
   }
 
   return {
@@ -225,16 +196,15 @@ function createUtils(timeDictLoader) {
     deepMerge,
     parseTimeInput,
     generateRandomTimeString,
-    getTimePhrase,
+    getDutchTimeString,
     capitalize,
   };
 }
-
+// ==== Конфигурация ====
 function createConfig(utils, { paths = null } = {}) {
   const PATHS = paths || {
     CONFIG: "./assets/configs/config.json",
     UI_TEXTS_DIR: "./assets/locales",
-    TIME_DICTS_DIR: "./assets/vocabs",
   };
 
   const DEFAULT_CONFIG = Object.freeze({
@@ -300,43 +270,7 @@ function createConfig(utils, { paths = null } = {}) {
   };
 }
 
-function createTimeDictLoader({ config }) {
-  const PATH = config.PATHS.TIME_DICTS_DIR;
-  let dicts = {};
-
-  async function loadDict(code) {
-    try {
-      const res = await fetch(`${PATH}/${code}_vocab.json`, {
-        cache: "no-cache",
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      if (!json || typeof json !== "object") throw new Error("Bad JSON");
-      return json;
-    } catch {
-      return null;
-    }
-  }
-
-  async function loadAll(allowed) {
-    dicts = {};
-    await Promise.all(
-      allowed.map(async (code) => {
-        const d = await loadDict(code);
-        if (d) dicts[code.toLowerCase()] = d;
-      })
-    );
-    return dicts;
-  }
-
-  function getDict(lang) {
-    const key = String(lang || "").toLowerCase();
-    return dicts[key] || dicts["en"];
-  }
-
-  return { loadDict, loadAll, getDict };
-}
-
+// ==== Загрузчик локализации ====
 function createLangLoader({ config, utils }) {
   const PATH = config.PATHS.UI_TEXTS_DIR;
   let texts = {};
@@ -386,6 +320,7 @@ function createLangLoader({ config, utils }) {
   return { loadLang, loadAll, getTexts };
 }
 
+// ==== Store (localStorage + состояние) ====
 function createStore({ bus, config, utils }) {
   const KEY = "CLT-settings";
   const canUseLocal = Boolean(
@@ -498,7 +433,7 @@ function createStore({ bus, config, utils }) {
     getDefaultActive,
   };
 }
-
+// ==== WakeLock ====
 function createWakeLock({ bus } = {}) {
   let wakeLock = null;
 
@@ -544,6 +479,7 @@ function createWakeLock({ bus } = {}) {
   return { request, release, init };
 }
 
+// ==== Voices ====
 function createVoices({ bus }) {
   let voices = [];
   let availableLanguages = [];
@@ -600,6 +536,7 @@ function createVoices({ bus }) {
   };
 }
 
+// ==== Speaker ====
 function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
   let currentUtter = null;
 
@@ -792,6 +729,7 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
   };
 }
 
+// ==== UI (CLT specific) ====
 function createUI({ bus, store, config, langLoader, utils }) {
   const PLAY_ICON = "▶️";
   const STOP_ICON = "⏹️";
@@ -987,10 +925,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
             alert(window.alertTexts.invalidFormat);
             return;
           }
-          const phrase = utils.getTimePhrase(
-            store.getSettings().languageCode,
-            timeStr
-          );
+          const phrase = utils.getDutchTimeString(timeStr);
           if (!phrase) {
             alert(window.alertTexts.invalidPhrase);
             return;
@@ -1017,28 +952,28 @@ function createUI({ bus, store, config, langLoader, utils }) {
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     els.resetSettingsBtnEl?.addEventListener("click", () =>
-      bus.emit(EventTypes.SETTINGS_RESET_TO_DEFAULTS)
+      bus.emit(EventTypes.SETTINGS_RESET)
     );
     els.uiLangSelectEl?.addEventListener("change", (e) => {
       bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
-      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
+      bus.emit(EventTypes.SETTINGS_APPLY, { saveFromUI: true });
     });
     els.speedSelectEl?.addEventListener("change", () =>
-      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
+      bus.emit(EventTypes.SETTINGS_APPLY, { saveFromUI: true })
     );
     els.delaySelectEl?.addEventListener("change", () =>
-      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
+      bus.emit(EventTypes.SETTINGS_APPLY, { saveFromUI: true })
     );
     els.resetBtnEl?.addEventListener("click", () =>
       bus.emit(EventTypes.PLAYBACK_STOP)
     );
     els.startPauseBtnEl?.addEventListener("click", () => {
       const flags = store.playbackFlags();
-      if (flags.isSequenceMode && !flags.isPaused) {
+      if (flags.isSequenceMode && !flags.isPaused)
         bus.emit(EventTypes.PLAYBACK_PAUSE);
-      } else if (flags.isSequenceMode && flags.isPaused) {
+      else if (flags.isSequenceMode && flags.isPaused)
         bus.emit(EventTypes.PLAYBACK_CONTINUE);
-      } else bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
+      else bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
     });
     bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
     bus.on(EventTypes.SPEECH_START, () => {
@@ -1080,6 +1015,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
   };
 }
 
+// ==== Playback (unified: group + single) ====
 function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   let currentTimeout = null;
 
@@ -1123,7 +1059,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     ui.setActiveInput(index);
-    ui.els.speakBtnEls.forEach((b, idx) => {
+    ui.els.speakBtnEls.forEach((b) => {
       if (b) b.disabled = true;
     });
     ui.els.randomBtnEls.forEach((b, idx) => {
@@ -1134,10 +1070,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     if (!raw) return next(index);
     const timeStr = utils.parseTimeInput(raw);
     if (!timeStr) return next(index);
-    const phrase = utils.getTimePhrase(
-      store.getSettings().languageCode,
-      timeStr
-    );
+    const phrase = utils.getDutchTimeString(timeStr);
     if (!phrase) return next(index);
     const speakBtn = inp?.parentElement?.querySelector(".speak-btn") || null;
     speakPhrase(phrase, speakBtn, () => scheduleNext(index));
@@ -1247,24 +1180,11 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   return { playAt, stop, pause, resume, finish };
 }
 
-(async function bootstrap() {
+// ==== Bootstrap (compose modules) ====
+(function bootstrap() {
   const bus = createEventBus();
-
-  const utilsStub = createUtils({ getDict: () => null });
-
-  const config = createConfig(utilsStub, {
-    paths: {
-      CONFIG: "./assets/configs/config.json",
-      UI_TEXTS_DIR: "./assets/locales",
-      TIME_DICTS_DIR: "./assets/vocabs",
-    },
-  });
-
-  const timeDictLoader = createTimeDictLoader({ config });
-  await timeDictLoader.loadAll(utilsStub.ALLOWED_LANGS);
-
-  const utils = createUtils(timeDictLoader);
-
+  const utils = createUtils();
+  const config = createConfig(utils, {});
   const langLoader = createLangLoader({ config, utils });
   const store = createStore({ bus, config, utils });
   const wakeLock = createWakeLock({ bus });
@@ -1276,7 +1196,6 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   });
   const ui = createUI({ bus, store, config, langLoader, utils });
   const playback = createPlayback({ bus, store, ui, speaker, utils, wakeLock });
-
   window.app = {
     bus,
     utils,
@@ -1289,6 +1208,5 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     ui,
     playback,
   };
-
   bus.emit(EventTypes.APP_INIT);
 })();
