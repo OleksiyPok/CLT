@@ -507,7 +507,7 @@ function createVoices({ bus }) {
 /* 
 Speaker (Web Speech API wrapper + bus events)
 */
-function createCLTSpeaker({ bus, store }) {
+function createSpeaker({ bus }) {
   const synth = window.speechSynthesis;
   let currentUtterance = null;
 
@@ -517,29 +517,23 @@ function createCLTSpeaker({ bus, store }) {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = rate;
-    utterance.lang = lang || store.getSettings().languageCode || "nl-NL";
+    utterance.lang = lang || "nl-NL";
 
-    store.setUtterance(utterance);
-    store.setCurrentSpeakButton(button);
-
+    currentUtterance = utterance;
     bus.emit(EventTypes.SPEECH_START, { button });
 
     utterance.onend = () => {
-      store.setUtterance(null);
-      store.setCurrentSpeakButton(null);
       currentUtterance = null;
       bus.emit(EventTypes.SPEECH_END, { button });
     };
 
-    currentUtterance = utterance;
     synth.speak(utterance);
   }
 
   function stopAll() {
     if (synth.speaking || synth.pending) synth.cancel();
     if (currentUtterance) {
-      store.setUtterance(null);
-      store.setCurrentSpeakButton(null);
+      bus.emit(EventTypes.SPEECH_END, { button: null });
       currentUtterance = null;
     }
   }
@@ -745,7 +739,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
         btn.disabled = speakBtn && speakBtn === activeBtn;
       } else btn.disabled = false;
     });
-
     // selectors active unless playback is running (sequence mode without pause)
     toggleControls(!(flags.isSequenceMode && !flags.isPaused));
 
@@ -1060,7 +1053,7 @@ Bootstrap
   const langLoader = createLangLoader({ config });
   const store = createStore({ bus, config, utils });
   const ui = createUI({ bus, store, config, langLoader, utils });
-  const speaker = createCLTSpeaker({ bus, store });
+  const speaker = createSpeaker({ bus });
   const playback = createPlayback({ bus, store, ui, speaker });
   const voices = createVoices({ bus });
 
@@ -1094,11 +1087,13 @@ Bootstrap
   ui.els.fillRandomBtnEl?.click();
 
   bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => ui.translateUI(lang));
+
   bus.on(EventTypes.SETTINGS_APPLY_TO_UI, ({ saveFromUI }) => {
     const s = ui.readSettingsFromUI();
     store.setSettings(s);
     if (saveFromUI) store.saveSettings(s, ui.els);
   });
+
   bus.on(EventTypes.SETTINGS_RESET_TO_DEFAULTS, () => {
     const defs = store.getDefaultActive();
     store.setSettings(defs);
@@ -1107,25 +1102,29 @@ Bootstrap
   });
 
   bus.on(EventTypes.UI_SPEAK_SINGLE, ({ phrase, rate, button }) => {
-    store.setPlaybackFlags({ isSpeaking: true });
-    store.setCurrentSpeakButton(button);
-    bus.emit(EventTypes.UPDATE_CONTROLS);
-    ui.updateButtonIcon(button);
-
     speaker.speak({
       text: phrase,
       rate,
       lang: store.getSettings().languageCode,
       button,
     });
+  });
 
-    bus.once(EventTypes.SPEECH_END, () => {
-      store.setPlaybackFlags({ isSpeaking: false });
-      store.setCurrentSpeakButton(null);
-      bus.emit(EventTypes.UPDATE_CONTROLS);
-      ui.updateButtonIcon();
+  bus.on(EventTypes.SPEECH_START, ({ button }) => {
+    store.setPlaybackFlags({ isSpeaking: true });
+    store.setCurrentSpeakButton(button);
+    ui.updateControlsAvailability();
+    ui.updateButtonIcon(button);
+  });
+
+  bus.on(EventTypes.SPEECH_END, () => {
+    store.setPlaybackFlags({ isSpeaking: false });
+    store.setCurrentSpeakButton(null);
+    ui.updateControlsAvailability();
+    ui.updateButtonIcon();
+    if (!store.playbackFlags().isSequenceMode) {
       ui.els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
-    });
+    }
   });
 
   console.log("App initialized");
