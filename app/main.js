@@ -551,9 +551,9 @@ function createVoices({ bus }) {
   function computeAvailableLanguages() {
     availableLanguages = Array.from(
       new Set(
-        (voices || []).map((v) =>
-          ((v.lang || "").split(/[-_]/)[0] || "").toUpperCase()
-        )
+        (voices || [])
+          .map((v) => (v.lang || "").split(/[-_]/)[0].toUpperCase())
+          .filter(Boolean)
       )
     ).sort();
     if (!availableLanguages.includes("ALL")) availableLanguages.unshift("ALL");
@@ -583,7 +583,9 @@ function createVoices({ bus }) {
         speechSynthesis.speak(new SpeechSynthesisUtterance(""));
         await new Promise((r) => setTimeout(r, 250));
         collect();
-      } catch (e) {}
+      } catch (e) {
+        console.warn("Voices.load fallback failed", e);
+      }
     }
     publish(EventTypes.VOICES_LOADED);
   }
