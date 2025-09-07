@@ -1,41 +1,28 @@
-// main_CLT.js
 "use strict";
 
-/* 
-EventTypes
-*/
 const EventTypes = Object.freeze({
   APP_INIT: "app:init",
   CONFIG_LOADED: "app:config:loaded",
-
   SETTINGS_APPLY_TO_UI: "settings:applyToUI",
   SETTINGS_SAVE: "settings:save",
   SETTINGS_RESET_TO_DEFAULTS: "settings:resetToDefaults",
-
   UI_TRANSLATE: "ui:translate",
   UI_RANDOM_FILL_ALL: "ui:random:fillAll",
   UI_SPEAK_SINGLE: "ui:speak:single",
   SPEAK_SINGLE_START: "ui:speak:single:start",
   SPEAK_SINGLE_STOP: "ui:speak:single:stop",
-
   PLAYBACK_START: "playback:start",
   PLAYBACK_PAUSE: "playback:pause",
   PLAYBACK_CONTINUE: "playback:continue",
   PLAYBACK_STOP: "playback:stop",
   PLAYBACK_FINISH: "playback:finish",
-
   UPDATE_CONTROLS: "ui:updateControls",
-
   SPEECH_START: "speech:start",
   SPEECH_END: "speech:end",
-
   VOICES_CHANGED: "voices:changed",
   VOICES_LOADED: "voices:loaded",
 });
 
-/* 
-EventBus
-*/
 function createEventBus() {
   const map = new Map();
   return {
@@ -64,10 +51,7 @@ function createEventBus() {
     emit(event, payload) {
       const subs = [...(map.get(event) || [])];
       for (const fn of subs) {
-        if (typeof fn !== "function") {
-          console.warn("EventBus: invalid subscriber detected for", event, fn);
-          continue;
-        }
+        if (typeof fn !== "function") continue;
         try {
           fn(payload);
         } catch (e) {
@@ -78,9 +62,6 @@ function createEventBus() {
   };
 }
 
-/* 
-Utils
-*/
 function createUtils() {
   const ALLOWED_LANGS = [
     "ar",
@@ -94,9 +75,7 @@ function createUtils() {
     "tr",
     "uk",
   ];
-
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
-
   function deepMerge(a, b) {
     if (!b) return JSON.parse(JSON.stringify(a || {}));
     if (!a) return JSON.parse(JSON.stringify(b || {}));
@@ -122,7 +101,6 @@ function createUtils() {
     });
     return out;
   }
-
   function parseTimeInput(input) {
     if (!input || typeof input !== "string") return null;
     const m = input.trim().match(/^(\d{1,2}):(\d{2})$/);
@@ -131,13 +109,11 @@ function createUtils() {
     const min = m[2].padStart(2, "0");
     return `${h}:${min}`;
   }
-
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
     const m = Math.floor(Math.random() * 12) * 5;
     return `${h}:${String(m).padStart(2, "0")}`;
   }
-
   function getDutchTimeString(timeStr) {
     if (!timeStr) return "";
     const [h, m] = timeStr.split(":").map(Number);
@@ -149,7 +125,6 @@ function createUtils() {
     const nextHour = (h + 1) % 24;
     const idx = h % 12;
     const nextIdx = nextHour % 12;
-
     if (m === 0) return `${capitalize(hourNames[idx] || h)} uur`;
     if (m === 15) return `Kwart over ${hourNames[idx] || h}`;
     if (m === 30) return `Half ${hourNames[nextIdx] || nextHour}`;
@@ -167,7 +142,6 @@ function createUtils() {
       hourNames[nextIdx] || nextHour
     }`;
   }
-
   return {
     ALLOWED_LANGS,
     deepMerge,
@@ -178,15 +152,11 @@ function createUtils() {
   };
 }
 
-/* 
-Config
-*/
 function createConfig(utils) {
   const PATHS = {
     CONFIG: "./assets/configs/config.json",
     UI_TEXTS_DIR: "./assets/locales",
   };
-
   const DEFAULT_CONFIG = Object.freeze({
     DEVELOPER_MODE: false,
     USE_LOCAL_STORAGE: true,
@@ -218,7 +188,6 @@ function createConfig(utils) {
       },
     },
   });
-
   const FALLBACK = Object.freeze({
     DEVELOPER_MODE: true,
     USE_LOCAL_STORAGE: true,
@@ -230,7 +199,6 @@ function createConfig(utils) {
     languageCode: "nl-NL",
     voiceName: "Google Nederlands",
   });
-
   async function loadExternal() {
     try {
       const resp = await fetch(PATHS.CONFIG, { cache: "no-store" });
@@ -238,11 +206,9 @@ function createConfig(utils) {
       const json = await resp.json();
       return utils.deepMerge(DEFAULT_CONFIG, json);
     } catch (err) {
-      console.warn("Failed to load external config:", err);
       return utils.deepMerge(DEFAULT_CONFIG, {});
     }
   }
-
   function selectPlatformDefaults(defs) {
     const isMobile = /Mobi|Android|iPhone|iPad|Windows Phone|IEMobile/i.test(
       navigator.userAgent
@@ -255,7 +221,6 @@ function createConfig(utils) {
       platformSettings
     );
   }
-
   return {
     PATHS,
     DEFAULT_CONFIG,
@@ -265,13 +230,9 @@ function createConfig(utils) {
   };
 }
 
-/* 
-LangLoader
-*/
 function createLangLoader({ config }) {
   const PATH = config?.PATHS?.UI_TEXTS_DIR || "./assets/locales";
   let texts = {};
-
   const FALLBACK_EN = {
     uiLangLabel: "Interface",
     startPauseBtn: "Start",
@@ -292,7 +253,6 @@ function createLangLoader({ config }) {
     btnStop: "Stop",
     btnContinue: "Continue",
   };
-
   async function loadLang(code) {
     try {
       const res = await fetch(`${PATH}/${code}.json`, { cache: "no-cache" });
@@ -301,11 +261,9 @@ function createLangLoader({ config }) {
       if (!json || typeof json !== "object") throw new Error("Invalid JSON");
       return json;
     } catch (err) {
-      console.warn(`Failed to load UI texts for ${code}:`, err);
       return null;
     }
   }
-
   async function loadAll(langs) {
     texts = {};
     await Promise.all(
@@ -314,28 +272,18 @@ function createLangLoader({ config }) {
         if (data) texts[code] = data;
       })
     );
-    if (!texts.en) {
-      texts.en = FALLBACK_EN;
-      console.warn("Fallback EN texts injected.");
-    }
+    if (!texts.en) texts.en = FALLBACK_EN;
     return texts;
   }
-
   const getTexts = (lang) => texts[lang] || texts.en || FALLBACK_EN;
-
   return { loadAll, getTexts };
 }
 
-/* 
-Store
-*/
 function createStore({ bus, config, utils }) {
   const SETTINGS_KEY = "CLT_settings";
-
   let appConfig = {};
   let defaultActive = {};
   let currentSettings = {};
-
   let flags = {
     isSpeaking: false,
     isSequenceMode: false,
@@ -345,17 +293,14 @@ function createStore({ bus, config, utils }) {
   let sequenceTimeoutId = null;
   let currentSpeakButton = null;
   let utterance = null;
-
   const setAppConfig = (cfg) => (appConfig = cfg || {});
   const getAppConfig = () => appConfig;
   const setDefaultActive = (d) => (defaultActive = d || {});
   const getDefaultActive = () => defaultActive;
   const setSettings = (s) => (currentSettings = s || {});
   const getSettings = () => currentSettings;
-
   const playbackFlags = () => ({ ...flags });
   const setPlaybackFlags = (patch) => (flags = { ...flags, ...patch });
-
   const getSequenceTimeout = () => sequenceTimeoutId;
   const setSequenceTimeout = (id) => (sequenceTimeoutId = id);
   const clearSequenceTimeout = () => {
@@ -364,12 +309,10 @@ function createStore({ bus, config, utils }) {
       sequenceTimeoutId = null;
     }
   };
-
   const getCurrentSpeakButton = () => currentSpeakButton;
   const setCurrentSpeakButton = (b) => (currentSpeakButton = b);
   const getUtterance = () => utterance;
   const setUtterance = (u) => (utterance = u);
-
   function allowed(selectEl, value) {
     if (!selectEl || !selectEl.options) return false;
     const v = value == null ? "" : String(value);
@@ -378,7 +321,6 @@ function createStore({ bus, config, utils }) {
     }
     return false;
   }
-
   function mergeWithDefaults(stored, defaults, els) {
     const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els || {};
     const out = {};
@@ -388,21 +330,18 @@ function createStore({ bus, config, utils }) {
       allowed(uiLangSelectEl, stored.uiLang)
         ? stored.uiLang
         : defaults?.uiLang ?? config.FALLBACK.uiLang;
-
     out.delay = (() => {
       const v = stored?.delay;
       const n = parseInt(v, 10);
       if (!isNaN(n) && allowed(delaySelectEl, String(n))) return String(n);
       return defaults?.delay ?? config.FALLBACK.delay;
     })();
-
     out.speed = (() => {
       const v = stored?.speed;
       const n = parseFloat(v);
       if (!isNaN(n) && allowed(speedSelectEl, String(v))) return String(v);
       return defaults?.speed ?? config.FALLBACK.speed;
     })();
-
     out.fullscreen =
       stored?.fullscreen ?? defaults?.fullscreen ?? config.FALLBACK.fullscreen;
     out.languageCode =
@@ -413,7 +352,6 @@ function createStore({ bus, config, utils }) {
       stored?.voiceName ?? defaults?.voiceName ?? config.FALLBACK.voiceName;
     return out;
   }
-
   function saveSettings(s, els) {
     const toSave = mergeWithDefaults(s || {}, defaultActive || {}, els);
     currentSettings = toSave;
@@ -426,7 +364,6 @@ function createStore({ bus, config, utils }) {
     }
     bus.emit(EventTypes.SETTINGS_SAVE, toSave);
   }
-
   function loadSettingsFromLocal(els) {
     const useLocal =
       appConfig?.USE_LOCAL_STORAGE ?? config.DEFAULT_CONFIG.USE_LOCAL_STORAGE;
@@ -442,7 +379,6 @@ function createStore({ bus, config, utils }) {
     }
     return { raw: {}, merged: mergeWithDefaults({}, defaultActive || {}, els) };
   }
-
   return {
     setAppConfig,
     getAppConfig,
@@ -464,15 +400,10 @@ function createStore({ bus, config, utils }) {
   };
 }
 
-/* 
-Voices
-*/
 function createVoices({ bus }) {
   let voices = [];
   let availableLanguages = [];
-
-  function collectVoices() {
-    voices = speechSynthesis.getVoices() || [];
+  function computeAvailableLanguages() {
     availableLanguages = Array.from(
       new Set(
         voices
@@ -481,9 +412,15 @@ function createVoices({ bus }) {
       )
     ).sort();
     if (!availableLanguages.includes("ALL")) availableLanguages.push("ALL");
-    bus.emit(EventTypes.VOICES_CHANGED, { voices, availableLanguages });
   }
-
+  function collectVoices() {
+    voices = speechSynthesis.getVoices() || [];
+    computeAvailableLanguages();
+    bus.emit(EventTypes.VOICES_CHANGED, {
+      voices: voices.slice(),
+      availableLanguages: availableLanguages.slice(),
+    });
+  }
   async function loadVoices() {
     collectVoices();
     if (!voices.length) {
@@ -491,63 +428,153 @@ function createVoices({ bus }) {
       await new Promise((r) => setTimeout(r, 250));
       collectVoices();
     }
-    bus.emit(EventTypes.VOICES_LOADED, { voices, availableLanguages });
+    bus.emit(EventTypes.VOICES_LOADED, {
+      voices: voices.slice(),
+      availableLanguages: availableLanguages.slice(),
+    });
   }
-
   if ("onvoiceschanged" in speechSynthesis)
     speechSynthesis.onvoiceschanged = collectVoices;
-
-  return {
-    loadVoices,
-    getVoices: () => voices.slice(),
-    getAvailableLanguages: () => availableLanguages.slice(),
-  };
+  return { loadVoices, getVoices: () => voices.slice() };
 }
 
-/* 
-Speaker (Web Speech API wrapper + bus events)
-*/
-function createSpeaker({ bus }) {
-  const synth = window.speechSynthesis;
+function createSpeaker({ bus, voicesProvider, settingsProvider }) {
   let currentUtterance = null;
-
-  function speak({ text, rate = 1, lang = "nl-NL", button = null }) {
-    stopAll();
-    if (!text) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = rate;
-    utterance.lang = lang || "nl-NL";
-
-    currentUtterance = utterance;
-    bus.emit(EventTypes.SPEECH_START, { button });
-
-    utterance.onend = () => {
-      currentUtterance = null;
-      bus.emit(EventTypes.SPEECH_END, { button });
-    };
-
-    synth.speak(utterance);
+  function selectVoice(allVoices, settings) {
+    if (!allVoices || !allVoices.length) return null;
+    const desiredName = String(settings.voiceName || "").trim();
+    const desiredLang = String(settings.languageCode || "")
+      .trim()
+      .toLowerCase();
+    if (desiredName) {
+      let exact = allVoices.find((v) => v.name === desiredName);
+      if (exact) return exact;
+      const norm = (n) =>
+        String(n || "")
+          .trim()
+          .toLowerCase();
+      let partial = allVoices.find((v) =>
+        norm(v.name).includes(norm(desiredName))
+      );
+      if (partial) return partial;
+    }
+    if (desiredLang) {
+      const langFull = desiredLang;
+      let byFull = allVoices.find(
+        (v) => (v.lang || "").toLowerCase() === langFull
+      );
+      if (byFull) return byFull;
+      const base = langFull.split(/[-_]/)[0];
+      if (base) {
+        let byBase = allVoices.find((v) =>
+          (v.lang || "").toLowerCase().startsWith(base)
+        );
+        if (byBase) return byBase;
+      }
+    }
+    const navigatorBase = (navigator.language || "").split(/[-_]/)[0];
+    if (navigatorBase) {
+      const navMatch = allVoices.find((v) =>
+        (v.lang || "").toLowerCase().startsWith(navigatorBase)
+      );
+      if (navMatch) return navMatch;
+    }
+    return allVoices[0] || null;
   }
-
-  function stopAll() {
-    if (synth.speaking || synth.pending) synth.cancel();
+  async function speakAsync(text, options = {}) {
+    if (!text) return;
+    const allVoices =
+      (typeof voicesProvider === "function" ? voicesProvider() : []) || [];
+    const settings =
+      (typeof settingsProvider === "function" ? settingsProvider() : {}) || {};
+    const s = { ...settings, ...options };
+    if (options.interrupt !== false) speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(String(text));
+    const chosen = selectVoice(allVoices, s);
+    if (chosen) {
+      try {
+        utter.voice = chosen;
+        utter.lang = chosen.lang || s.languageCode || utter.lang || "";
+      } catch (e) {
+        if (s.languageCode) utter.lang = s.languageCode;
+      }
+    } else {
+      if (s.languageCode) utter.lang = s.languageCode;
+    }
+    const rate =
+      Number.isFinite(Number(s.rate ?? s.speed)) &&
+      Number(s.rate ?? s.speed) > 0
+        ? Number(s.rate ?? s.speed)
+        : 1.0;
+    const pitch =
+      Number.isFinite(Number(s.pitch)) && Number(s.pitch) > 0
+        ? Number(s.pitch)
+        : 1.0;
+    const volume =
+      Number.isFinite(Number(s.volume)) &&
+      Number(s.volume) >= 0 &&
+      Number(s.volume) <= 1
+        ? Number(s.volume)
+        : 1.0;
+    utter.rate = rate;
+    utter.pitch = pitch;
+    utter.volume = volume;
+    return new Promise((resolve) => {
+      const done = () => {
+        currentUtterance = null;
+        bus.emit(EventTypes.SPEECH_END, { button: options.button || null });
+        resolve();
+      };
+      utter.onend = done;
+      utter.onerror = done;
+      currentUtterance = utter;
+      bus.emit(EventTypes.SPEECH_START, { button: options.button || null });
+      speechSynthesis.speak(utter);
+    });
+  }
+  function speak(obj) {
+    if (!obj || typeof obj !== "object") return;
+    const { text, rate = 1, lang = "nl-NL", button = null } = obj;
+    speakAsync(text, {
+      rate,
+      languageCode: lang,
+      speed: rate,
+      voiceName: obj.voiceName,
+      pitch: obj.pitch,
+      volume: obj.volume,
+      button,
+    }).catch((e) => console.warn("speak failed", e));
+  }
+  function cancel() {
+    if (speechSynthesis.speaking || speechSynthesis.pending)
+      speechSynthesis.cancel();
     if (currentUtterance) {
       bus.emit(EventTypes.SPEECH_END, { button: null });
       currentUtterance = null;
     }
   }
-
-  return { speak, stopAll };
+  function pause() {
+    try {
+      speechSynthesis.pause();
+    } catch (_) {}
+  }
+  function resume() {
+    try {
+      speechSynthesis.resume();
+    } catch (_) {}
+  }
+  function isSpeaking() {
+    return speechSynthesis.speaking;
+  }
+  function isPaused() {
+    return speechSynthesis.paused;
+  }
+  return { speak, speakAsync, cancel, pause, resume, isSpeaking, isPaused };
 }
 
-/* 
-UI
-*/
 function createUI({ bus, store, config, langLoader, utils }) {
   const PLAY_ICON = "▶️";
   const STOP_ICON = "⏹️";
-
   const els = {
     delaySelectEl: document.getElementById("delaySelect"),
     speedSelectEl: document.getElementById("speedSelect"),
@@ -562,11 +589,9 @@ function createUI({ bus, store, config, langLoader, utils }) {
     clockContainerEls: document.querySelectorAll(".clock-container"),
     developerBlockEl: document.getElementById("developer"),
   };
-
   function disableSpeakButtons(disable) {
     els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
   }
-
   function toggleControls(enabled) {
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enabled;
     if (els.delaySelectEl) els.delaySelectEl.disabled = !enabled;
@@ -574,7 +599,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       .querySelectorAll('label[for="speedSelect"],label[for="delaySelect"]')
       .forEach((l) => l.classList.toggle("disabled", !enabled));
   }
-
   function setActiveInput(index) {
     els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
     els.randomBtnEls.forEach((btn) => btn && (btn.disabled = false));
@@ -585,19 +609,15 @@ function createUI({ bus, store, config, langLoader, utils }) {
       if (rnd) rnd.disabled = true;
     }
   }
-
   function updateButtonIcon(activeButton = null) {
     const flags = store.playbackFlags();
     els.speakBtnEls.forEach((b) => b && (b.textContent = PLAY_ICON));
     if (flags.isSpeaking && activeButton) activeButton.textContent = STOP_ICON;
   }
-
   const setBtnText = (btn, text) => btn && (btn.textContent = text);
-
   function translateUI(lang) {
     const texts = langLoader?.getTexts?.(lang);
     if (!texts) return;
-
     const textMap = {
       uiLangLabel: "uiLangLabel",
       startPauseBtn: "startPauseBtn",
@@ -610,26 +630,12 @@ function createUI({ bus, store, config, langLoader, utils }) {
       const el = document.getElementById(id);
       if (el && texts[key]) el.textContent = texts[key];
     });
-
-    const titleMap = {
-      resetSettingsBtn: "resetSettingsTitle",
-      uiLangSelect: "uiLangSelectTitle",
-      startPauseBtn: "startPauseBtnTitle",
-      resetBtn: "resetBtnTitle",
-      randomBtn: "randomBtnTitle",
-      fillRandomBtn: "fillRandomBtnTitle",
-    };
     document
       .querySelectorAll(".speak-btn")
       .forEach((btn) => (btn.title = texts.speakBtnTitle || ""));
     document
       .querySelectorAll(".random-btn")
       .forEach((btn) => (btn.title = texts.randomBtnTitle || ""));
-    Object.entries(titleMap).forEach(([id, key]) => {
-      const el = document.getElementById(id);
-      if (el && texts[key]) el.title = texts[key];
-    });
-
     window.alertTexts = {
       invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
       invalidPhrase:
@@ -643,7 +649,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     };
     setBtnText(els.startPauseBtnEl, window.btnStates.start || "Start");
   }
-
   function applySettingsToUI(
     s,
     { preferBlankForInvalid = true, raw = {} } = {}
@@ -661,7 +666,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
     setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
     setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
-
     const effectiveLang =
       els.uiLangSelectEl?.value ||
       s.uiLang ||
@@ -669,7 +673,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       config.FALLBACK.uiLang;
     translateUI(effectiveLang);
   }
-
   function readSettingsFromUI() {
     const base = {
       uiLang: els.uiLangSelectEl?.value,
@@ -702,7 +705,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       voiceName: defaults.voiceName,
     };
   }
-
   function setDeveloperVisibility(appCfg) {
     const devMode =
       appCfg?.DEVELOPER_MODE ??
@@ -711,7 +713,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (els.developerBlockEl)
       els.developerBlockEl.style.display = devMode ? "" : "none";
   }
-
   function updateStartPauseBtnTo(state) {
     if (state === "start")
       setBtnText(els.startPauseBtnEl, window.btnStates.start);
@@ -720,18 +721,15 @@ function createUI({ bus, store, config, langLoader, utils }) {
     else if (state === "cont")
       setBtnText(els.startPauseBtnEl, window.btnStates.cont);
   }
-
   function updateControlsAvailability() {
     const flags = store.playbackFlags();
     const activeBtn = store.getCurrentSpeakButton();
     const activeIdx = flags.sequenceIndex;
-
     els.speakBtnEls.forEach((btn, idx) => {
       if (flags.isSequenceMode) btn.disabled = true;
       else if (flags.isSpeaking && activeBtn) btn.disabled = btn !== activeBtn;
       else btn.disabled = flags.isPaused;
     });
-
     els.randomBtnEls.forEach((btn, idx) => {
       if (flags.isSequenceMode && idx === activeIdx) btn.disabled = true;
       else if (activeBtn) {
@@ -739,13 +737,9 @@ function createUI({ bus, store, config, langLoader, utils }) {
         btn.disabled = speakBtn && speakBtn === activeBtn;
       } else btn.disabled = false;
     });
-    // selectors active unless playback is running (sequence mode without pause)
     toggleControls(!(flags.isSequenceMode && !flags.isPaused));
-
-    // resetBtn: active only when paused
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
-
   els.fillRandomBtnEl?.addEventListener("click", () => {
     const { isPaused, sequenceIndex } = store.playbackFlags();
     els.timeInputEls.forEach((inp, idx) => {
@@ -758,40 +752,32 @@ function createUI({ bus, store, config, langLoader, utils }) {
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
   });
-
   bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
-
   function bindHandlers() {
     els.clockContainerEls.forEach((group) => {
       const rndBtn = group.querySelector(".random-btn");
       const input = group.querySelector(".time-input");
       const speakBtn = group.querySelector(".speak-btn");
-
       if (rndBtn && input) {
         rndBtn.addEventListener("click", () => {
           input.value = utils.generateRandomTimeString();
           bus.emit(EventTypes.UPDATE_CONTROLS);
         });
       }
-
       if (speakBtn && input) {
         speakBtn.addEventListener("click", () => {
           const { isSpeaking } = store.playbackFlags();
           if (isSpeaking) return bus.emit(EventTypes.PLAYBACK_STOP);
-
           const raw = input.value?.trim() || "";
           const timeStr = utils.parseTimeInput(raw);
           if (!timeStr) return alert(window.alertTexts.invalidFormat);
           const phrase = utils.getDutchTimeString(timeStr);
           if (!phrase) return alert(window.alertTexts.invalidPhrase);
-
           els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
           input.classList.add("highlight");
-
           const rate = parseFloat(
             els.speedSelectEl?.value || store.getDefaultActive().speed
           );
-
           bus.emit(EventTypes.UI_SPEAK_SINGLE, {
             phrase,
             rate,
@@ -800,7 +786,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
         });
       }
     });
-
     els.startPauseBtnEl?.addEventListener("click", () => {
       const f = store.playbackFlags();
       if (!f.isSequenceMode) {
@@ -816,7 +801,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
         return;
       }
     });
-
     function setPlaybackStartForSequence() {
       store.setPlaybackFlags({
         isSequenceMode: true,
@@ -828,7 +812,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       updateStartPauseBtnTo("stop");
       toggleControls(false);
     }
-
     function setPlaybackPauseForSequence() {
       store.setPlaybackFlags({ isPaused: true });
       bus.emit(EventTypes.UPDATE_CONTROLS);
@@ -836,18 +819,14 @@ function createUI({ bus, store, config, langLoader, utils }) {
       updateStartPauseBtnTo("cont");
       toggleControls(true);
     }
-
     function setPlaybackContinueForSequence() {
       const f = store.playbackFlags();
       store.setPlaybackFlags({ isPaused: false });
       bus.emit(EventTypes.UPDATE_CONTROLS);
-      bus.emit(EventTypes.PLAYBACK_CONTINUE, {
-        index: f.sequenceIndex || 0,
-      });
+      bus.emit(EventTypes.PLAYBACK_CONTINUE, { index: f.sequenceIndex || 0 });
       updateStartPauseBtnTo("stop");
       toggleControls(false);
     }
-
     els.resetBtnEl?.addEventListener("click", () =>
       bus.emit(EventTypes.PLAYBACK_STOP)
     );
@@ -864,15 +843,12 @@ function createUI({ bus, store, config, langLoader, utils }) {
     els.resetSettingsBtnEl?.addEventListener("click", () =>
       bus.emit(EventTypes.SETTINGS_RESET_TO_DEFAULTS)
     );
-
     const allEmpty = Array.from(els.timeInputEls || []).every(
       (inp) => !(inp.value && inp.value.trim())
     );
     if (allEmpty) els.fillRandomBtnEl?.click();
-
     bus.emit(EventTypes.UPDATE_CONTROLS);
   }
-
   return {
     els,
     disableSpeakButtons,
@@ -890,80 +866,62 @@ function createUI({ bus, store, config, langLoader, utils }) {
   };
 }
 
-/* 
-Playback
-*/
 function createPlayback({ bus, store, ui, speaker }) {
   let currentTimeout = null;
-
   function clearTimer() {
     if (currentTimeout) {
       clearTimeout(currentTimeout);
       currentTimeout = null;
     }
   }
-
   function speakPhrase(phrase, btn, after) {
     store.setPlaybackFlags({ isSpeaking: true });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     ui.updateButtonIcon(btn);
-
     const rate = parseFloat(
       ui.els.speedSelectEl?.value || store.getDefaultActive().speed
     );
-
     speaker.speak({
       text: phrase,
       rate,
       lang: store.getSettings().languageCode,
       button: btn,
     });
-
     const off = bus.on(EventTypes.SPEECH_END, () => {
       off();
       store.setPlaybackFlags({ isSpeaking: false });
       bus.emit(EventTypes.UPDATE_CONTROLS);
       ui.updateButtonIcon(btn);
-
       const f = store.playbackFlags();
       if (f.isSequenceMode && !f.isPaused) after && after();
     });
   }
-
   function playAt(index = 0) {
     const inputs = ui.els.timeInputEls;
     if (!inputs || index >= inputs.length) return finish();
-
     store.setPlaybackFlags({
       sequenceIndex: index,
       isSequenceMode: true,
       isPaused: false,
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
-
     ui.setActiveInput(index);
-
     ui.els.speakBtnEls.forEach((b, idx) => {
       if (b) b.disabled = true;
     });
     ui.els.randomBtnEls.forEach((b, idx) => {
       if (b) b.disabled = idx === index;
     });
-
     const inp = inputs[index];
     const raw = inp?.value?.trim();
     if (!raw) return next(index);
-
     const timeStr = window.utils.parseTimeInput(raw);
     if (!timeStr) return next(index);
-
     const phrase = window.utils.getDutchTimeString(timeStr);
     if (!phrase) return next(index);
-
     const speakBtn = inp?.parentElement?.querySelector(".speak-btn") || null;
     speakPhrase(phrase, speakBtn, () => scheduleNext(index));
   }
-
   function scheduleNext(index) {
     if (store.playbackFlags().isPaused) return;
     const delayMs = parseInt(
@@ -972,13 +930,11 @@ function createPlayback({ bus, store, ui, speaker }) {
     );
     currentTimeout = setTimeout(() => next(index), delayMs);
   }
-
   function next(index) {
     const nextIndex = index + 1;
     if (nextIndex >= ui.els.timeInputEls.length) return finish();
     playAt(nextIndex);
   }
-
   function finish() {
     clearTimer();
     store.setPlaybackFlags({
@@ -996,7 +952,6 @@ function createPlayback({ bus, store, ui, speaker }) {
     ui.els.randomBtnEls.forEach((b) => (b.disabled = false));
     bus.emit(EventTypes.PLAYBACK_FINISH);
   }
-
   function stop() {
     clearTimer();
     store.setPlaybackFlags({
@@ -1006,8 +961,8 @@ function createPlayback({ bus, store, ui, speaker }) {
       sequenceIndex: 0,
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
-    if (speaker && typeof speaker.stopAll === "function") {
-      speaker.stopAll();
+    if (speaker && typeof speaker.cancel === "function") {
+      speaker.cancel();
     } else {
       window.speechSynthesis.cancel();
       bus.emit(EventTypes.SPEECH_END, {
@@ -1016,16 +971,14 @@ function createPlayback({ bus, store, ui, speaker }) {
     }
     finish();
   }
-
   function pause() {
     clearTimer();
     store.setPlaybackFlags({ isPaused: true, isSpeaking: false });
     bus.emit(EventTypes.UPDATE_CONTROLS);
-    if (speaker && typeof speaker.stopAll === "function") speaker.stopAll();
+    if (speaker && typeof speaker.cancel === "function") speaker.cancel();
     ui.updateStartPauseBtnTo("cont");
     ui.toggleControls(true);
   }
-
   function cont() {
     const i = store.playbackFlags().sequenceIndex || 0;
     store.setPlaybackFlags({ isPaused: false });
@@ -1034,47 +987,41 @@ function createPlayback({ bus, store, ui, speaker }) {
     ui.updateStartPauseBtnTo("stop");
     ui.toggleControls(false);
   }
-
   bus.on(EventTypes.PLAYBACK_START, ({ index }) => playAt(index || 0));
   bus.on(EventTypes.PLAYBACK_STOP, stop);
   bus.on(EventTypes.PLAYBACK_PAUSE, pause);
   bus.on(EventTypes.PLAYBACK_CONTINUE, cont);
-
   return { playAt, stop, pause, cont };
 }
 
-/* 
-Bootstrap
-*/
 (async function bootstrap() {
   const bus = createEventBus();
   const utils = createUtils();
   const config = createConfig(utils);
   const langLoader = createLangLoader({ config });
   const store = createStore({ bus, config, utils });
-  const ui = createUI({ bus, store, config, langLoader, utils });
-  const speaker = createSpeaker({ bus });
-  const playback = createPlayback({ bus, store, ui, speaker });
   const voices = createVoices({ bus });
-
+  const ui = createUI({ bus, store, config, langLoader, utils });
+  const speaker = createSpeaker({
+    bus,
+    voicesProvider: () => (voices.getVoices ? voices.getVoices() : []),
+    settingsProvider: () => (store.getSettings ? store.getSettings() : {}),
+  });
   window.utils = utils;
-
   const appCfg = await config.loadExternal();
   store.setAppConfig(appCfg);
   const platformDefaults = config.selectPlatformDefaults(
     appCfg.DEFAULT_SETTINGS
   );
   store.setDefaultActive(platformDefaults);
-
   await langLoader.loadAll(utils.ALLOWED_LANGS);
   ui.setDeveloperVisibility(appCfg);
-
   const { raw, merged } = store.loadSettingsFromLocal(ui.els);
   store.setSettings(merged);
   ui.applySettingsToUI(merged, { raw });
-
-  voices.loadVoices();
+  await voices.loadVoices();
   ui.bindHandlers();
+  const playback = createPlayback({ bus, store, ui, speaker });
   [
     EventTypes.SPEECH_START,
     EventTypes.SPEECH_END,
@@ -1083,24 +1030,19 @@ Bootstrap
     EventTypes.PLAYBACK_CONTINUE,
     EventTypes.PLAYBACK_STOP,
   ].forEach((ev) => bus.on(ev, () => ui.updateControlsAvailability()));
-
   ui.els.fillRandomBtnEl?.click();
-
   bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => ui.translateUI(lang));
-
   bus.on(EventTypes.SETTINGS_APPLY_TO_UI, ({ saveFromUI }) => {
     const s = ui.readSettingsFromUI();
     store.setSettings(s);
     if (saveFromUI) store.saveSettings(s, ui.els);
   });
-
   bus.on(EventTypes.SETTINGS_RESET_TO_DEFAULTS, () => {
     const defs = store.getDefaultActive();
     store.setSettings(defs);
     ui.applySettingsToUI(defs);
     store.saveSettings(defs, ui.els);
   });
-
   bus.on(EventTypes.UI_SPEAK_SINGLE, ({ phrase, rate, button }) => {
     speaker.speak({
       text: phrase,
@@ -1109,14 +1051,12 @@ Bootstrap
       button,
     });
   });
-
   bus.on(EventTypes.SPEECH_START, ({ button }) => {
     store.setPlaybackFlags({ isSpeaking: true });
     store.setCurrentSpeakButton(button);
     ui.updateControlsAvailability();
     ui.updateButtonIcon(button);
   });
-
   bus.on(EventTypes.SPEECH_END, () => {
     store.setPlaybackFlags({ isSpeaking: false });
     store.setCurrentSpeakButton(null);
@@ -1126,6 +1066,5 @@ Bootstrap
       ui.els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
     }
   });
-
-  console.log("App initialized");
+  console.log("Main CLT initialized with unified speaker");
 })();
