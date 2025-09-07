@@ -400,97 +400,131 @@ function createStore({ bus, config, utils }) {
   };
 }
 
-function createVoices({ bus }) {
+function createVoices({ bus, events }) {
   let voices = [];
   let availableLanguages = [];
+  const emitter = bus || events;
+
   function computeAvailableLanguages() {
     availableLanguages = Array.from(
       new Set(
         voices
-          .map((v) => (v.lang || "").split("-")[0].toUpperCase())
+          .map((v) => (v.lang || "").split(/[-_]/)[0].toUpperCase())
           .filter(Boolean)
       )
     ).sort();
     if (!availableLanguages.includes("ALL")) availableLanguages.push("ALL");
   }
-  function collectVoices() {
+
+  function publish(evt) {
+    const lightweight = voices.map((v) => ({ name: v.name, lang: v.lang }));
+    emitter?.emit?.(evt, {
+      voices: lightweight,
+      availableLanguages: availableLanguages.slice(),
+    });
+  }
+
+  function collect() {
     voices = speechSynthesis.getVoices() || [];
     computeAvailableLanguages();
-    bus.emit(EventTypes.VOICES_CHANGED, {
-      voices: voices.slice(),
-      availableLanguages: availableLanguages.slice(),
-    });
+    publish("voices:changed");
   }
-  async function loadVoices() {
-    collectVoices();
+
+  async function load() {
+    collect();
     if (!voices.length) {
-      speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-      await new Promise((r) => setTimeout(r, 250));
-      collectVoices();
+      try {
+        speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        await new Promise((r) => setTimeout(r, 250));
+        collect();
+      } catch (err) {
+        console.warn("Voices.load fallback failed", err);
+      }
     }
-    bus.emit(EventTypes.VOICES_LOADED, {
-      voices: voices.slice(),
-      availableLanguages: availableLanguages.slice(),
-    });
+    publish("voices:loaded");
   }
+
   if ("onvoiceschanged" in speechSynthesis)
-    speechSynthesis.onvoiceschanged = collectVoices;
-  return { loadVoices, getVoices: () => voices.slice() };
+    speechSynthesis.onvoiceschanged = () => collect();
+
+  return {
+    collect,
+    load,
+    getVoices: () => voices.slice(),
+    getAvailableLanguages: () => availableLanguages.slice(),
+  };
 }
 
-function createSpeaker({ bus, voicesProvider, settingsProvider }) {
+function createSpeaker({ bus, events, voicesProvider, settingsProvider } = {}) {
+  const emitter = bus || events;
+  let getVoices = () =>
+    typeof voicesProvider === "function" ? voicesProvider() : [];
+  let getSettings = () =>
+    typeof settingsProvider === "function" ? settingsProvider() : {};
   let currentUtterance = null;
-  function selectVoice(allVoices, settings) {
-    if (!allVoices || !allVoices.length) return null;
-    const desiredName = String(settings.voiceName || "").trim();
-    const desiredLang = String(settings.languageCode || "")
+
+  function init(voicesProv, settingsProv) {
+    if (typeof voicesProv === "function") getVoices = voicesProv;
+    if (typeof settingsProv === "function") getSettings = settingsProv;
+  }
+
+  function _selectVoice(s) {
+    const voices = getVoices() || [];
+    if (!voices.length) return null;
+    const desiredName = String(s.voiceName || "").trim();
+    const desiredLang = String(s.languageCode || "")
       .trim()
       .toLowerCase();
+
     if (desiredName) {
-      let exact = allVoices.find((v) => v.name === desiredName);
+      let exact = voices.find((v) => v.name === desiredName);
       if (exact) return exact;
       const norm = (n) =>
         String(n || "")
           .trim()
           .toLowerCase();
-      let partial = allVoices.find((v) =>
+      let partial = voices.find((v) =>
         norm(v.name).includes(norm(desiredName))
       );
       if (partial) return partial;
     }
+
     if (desiredLang) {
       const langFull = desiredLang;
-      let byFull = allVoices.find(
+      let byFull = voices.find(
         (v) => (v.lang || "").toLowerCase() === langFull
       );
       if (byFull) return byFull;
       const base = langFull.split(/[-_]/)[0];
       if (base) {
-        let byBase = allVoices.find((v) =>
+        let byBase = voices.find((v) =>
           (v.lang || "").toLowerCase().startsWith(base)
         );
         if (byBase) return byBase;
       }
     }
+
     const navigatorBase = (navigator.language || "").split(/[-_]/)[0];
     if (navigatorBase) {
-      const navMatch = allVoices.find((v) =>
+      const navMatch = voices.find((v) =>
         (v.lang || "").toLowerCase().startsWith(navigatorBase)
       );
       if (navMatch) return navMatch;
     }
-    return allVoices[0] || null;
+
+    return voices[0] || null;
   }
+
   async function speakAsync(text, options = {}) {
     if (!text) return;
-    const allVoices =
-      (typeof voicesProvider === "function" ? voicesProvider() : []) || [];
     const settings =
-      (typeof settingsProvider === "function" ? settingsProvider() : {}) || {};
+      (typeof getSettings === "function" ? getSettings() : {}) || {};
     const s = { ...settings, ...options };
     if (options.interrupt !== false) speechSynthesis.cancel();
+
     const utter = new SpeechSynthesisUtterance(String(text));
-    const chosen = selectVoice(allVoices, s);
+    const chosen = _selectVoice(s);
+
     if (chosen) {
       try {
         utter.voice = chosen;
@@ -501,6 +535,7 @@ function createSpeaker({ bus, voicesProvider, settingsProvider }) {
     } else {
       if (s.languageCode) utter.lang = s.languageCode;
     }
+
     const rate =
       Number.isFinite(Number(s.rate ?? s.speed)) &&
       Number(s.rate ?? s.speed) > 0
@@ -516,60 +551,74 @@ function createSpeaker({ bus, voicesProvider, settingsProvider }) {
       Number(s.volume) <= 1
         ? Number(s.volume)
         : 1.0;
+
     utter.rate = rate;
     utter.pitch = pitch;
     utter.volume = volume;
+
     return new Promise((resolve) => {
       const done = () => {
         currentUtterance = null;
-        bus.emit(EventTypes.SPEECH_END, { button: options.button || null });
+        emitter?.emit?.("speech:end", { button: options.button || null });
         resolve();
       };
       utter.onend = done;
       utter.onerror = done;
       currentUtterance = utter;
-      bus.emit(EventTypes.SPEECH_START, { button: options.button || null });
+      emitter?.emit?.("speech:start", { button: options.button || null });
       speechSynthesis.speak(utter);
     });
   }
+
   function speak(obj) {
-    if (!obj || typeof obj !== "object") return;
-    const { text, rate = 1, lang = "nl-NL", button = null } = obj;
-    speakAsync(text, {
+    if (!obj) return;
+    if (typeof obj === "string") {
+      return speakAsync(obj).catch((e) => console.warn("speak failed", e));
+    }
+    const { text, rate = 1, lang, button, voiceName, pitch, volume } = obj;
+    return speakAsync(text, {
       rate,
       languageCode: lang,
       speed: rate,
-      voiceName: obj.voiceName,
-      pitch: obj.pitch,
-      volume: obj.volume,
+      voiceName,
+      pitch,
+      volume,
       button,
     }).catch((e) => console.warn("speak failed", e));
   }
+
   function cancel() {
     if (speechSynthesis.speaking || speechSynthesis.pending)
       speechSynthesis.cancel();
     if (currentUtterance) {
-      bus.emit(EventTypes.SPEECH_END, { button: null });
+      emitter?.emit?.("speech:end", { button: null });
       currentUtterance = null;
     }
   }
-  function pause() {
+
+  const pause = () => {
     try {
       speechSynthesis.pause();
     } catch (_) {}
-  }
-  function resume() {
+  };
+  const resume = () => {
     try {
       speechSynthesis.resume();
     } catch (_) {}
-  }
-  function isSpeaking() {
-    return speechSynthesis.speaking;
-  }
-  function isPaused() {
-    return speechSynthesis.paused;
-  }
-  return { speak, speakAsync, cancel, pause, resume, isSpeaking, isPaused };
+  };
+  const isSpeaking = () => speechSynthesis.speaking;
+  const isPaused = () => speechSynthesis.paused;
+
+  return {
+    init,
+    speak,
+    speakAsync,
+    cancel,
+    pause,
+    resume,
+    isSpeaking,
+    isPaused,
+  };
 }
 
 function createUI({ bus, store, config, langLoader, utils }) {
@@ -1019,7 +1068,7 @@ function createPlayback({ bus, store, ui, speaker }) {
   const { raw, merged } = store.loadSettingsFromLocal(ui.els);
   store.setSettings(merged);
   ui.applySettingsToUI(merged, { raw });
-  await voices.loadVoices();
+  await voices.load();
   ui.bindHandlers();
   const playback = createPlayback({ bus, store, ui, speaker });
   [
@@ -1040,10 +1089,14 @@ function createPlayback({ bus, store, ui, speaker }) {
   bus.on(EventTypes.SETTINGS_RESET_TO_DEFAULTS, () => {
     const defs = store.getDefaultActive();
     store.setSettings(defs);
-    ui.applySettingsToUI(defs);
+    ui.applySettingsToUI(defs, { raw: {} });
     store.saveSettings(defs, ui.els);
   });
   bus.on(EventTypes.UI_SPEAK_SINGLE, ({ phrase, rate, button }) => {
+    const f = store.playbackFlags();
+    if (f.isSpeaking) return;
+    store.setPlaybackFlags({ isSpeaking: true });
+    store.setCurrentSpeakButton && store.setCurrentSpeakButton(button);
     speaker.speak({
       text: phrase,
       rate,
@@ -1051,20 +1104,20 @@ function createPlayback({ bus, store, ui, speaker }) {
       button,
     });
   });
-  bus.on(EventTypes.SPEECH_START, ({ button }) => {
-    store.setPlaybackFlags({ isSpeaking: true });
-    store.setCurrentSpeakButton(button);
-    ui.updateControlsAvailability();
-    ui.updateButtonIcon(button);
+  bus.on(EventTypes.VOICES_CHANGED, ({ voices: v }) => {
+    ui.updateControlsAvailability && ui.updateControlsAvailability();
   });
-  bus.on(EventTypes.SPEECH_END, () => {
-    store.setPlaybackFlags({ isSpeaking: false });
-    store.setCurrentSpeakButton(null);
-    ui.updateControlsAvailability();
-    ui.updateButtonIcon();
-    if (!store.playbackFlags().isSequenceMode) {
-      ui.els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
+  bus.on(EventTypes.VOICES_LOADED, () => {
+    const currentSettings = store.getSettings();
+    if (!currentSettings.voiceName && voices.getVoices) {
+      const all = voices.getVoices();
+      if (all && all.length && currentSettings) {
+        const match = all.find((vv) => vv.name === currentSettings.voiceName);
+        if (!match && all.length) {
+          currentSettings.voiceName = all[0].name;
+          store.setSettings(currentSettings);
+        }
+      }
     }
   });
-  console.log("Main CLT initialized with unified speaker");
 })();
