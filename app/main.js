@@ -28,6 +28,9 @@ const EventTypes = Object.freeze({
   PLAYBACK_STOP: "playback:stop",
   PLAYBACK_FINISH: "playback:finish",
 
+  SETTINGS_APPLY_TO_UI: "settings:applyToUI",
+  SETTINGS_RESET_TO_DEFAULTS: "settings:resetToDefaults",
+
   UPDATE_CONTROLS: "ui:updateControls",
 });
 
@@ -823,11 +826,9 @@ function createUI({ bus, store, config, langLoader, utils }) {
     clockContainerEls: document.querySelectorAll(".clock-container"),
     developerBlockEl: document.getElementById("developer"),
   };
-
   function disableSpeakButtons(disable) {
     els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
   }
-
   function toggleControls(enabled) {
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enabled;
     if (els.delaySelectEl) els.delaySelectEl.disabled = !enabled;
@@ -835,7 +836,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       .querySelectorAll('label[for="speedSelect"],label[for="delaySelect"]')
       .forEach((l) => l.classList.toggle("disabled", !enabled));
   }
-
   function setActiveInput(index) {
     els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
     els.randomBtnEls.forEach((btn) => btn && (btn.disabled = false));
@@ -846,18 +846,18 @@ function createUI({ bus, store, config, langLoader, utils }) {
       if (rnd) rnd.disabled = true;
     }
   }
-
   function updateButtonIcon(btn, state) {
     if (!btn) return;
     if (state === "speaking") btn.textContent = STOP_ICON;
     else btn.textContent = PLAY_ICON;
   }
-
   function setBtnText(el, text) {
     if (!el) return;
     if (el.textContent !== text) el.textContent = text;
   }
-
+  function getNested(obj, path) {
+    return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj);
+  }
   function translateUI(lang) {
     const texts = langLoader.getTexts(lang);
     if (!texts) return;
@@ -882,9 +882,14 @@ function createUI({ bus, store, config, langLoader, utils }) {
       stop: texts.btnStop || "Stop",
       cont: texts.btnContinue || "Continue",
     };
-    setBtnText(els.startPauseBtnEl, window.btnStates.start || "Start");
+    const f = store.playbackFlags();
+    if (f.isSequenceMode && !f.isPaused)
+      setBtnText(els.startPauseBtnEl, window.btnStates.stop || "Stop");
+    else if (f.isSequenceMode && f.isPaused)
+      setBtnText(els.startPauseBtnEl, window.btnStates.cont || "Continue");
+    else setBtnText(els.startPauseBtnEl, window.btnStates.start || "Start");
+    bus.emit(EventTypes.UI_TEXTS_UPDATE, { lang });
   }
-
   function applySettingsToUI(
     s,
     { preferBlankForInvalid = true, raw = {} } = {}
@@ -908,7 +913,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       config.FALLBACK?.uiLang;
     translateUI(effectiveLang);
   }
-
   function readSettingsFromUI() {
     const base = {
       uiLang: els.uiLangSelectEl?.value,
@@ -941,7 +945,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       voiceName: defaults.voiceName,
     };
   }
-
   function setDeveloperVisibility(appCfg) {
     const devMode =
       appCfg?.DEVELOPER_MODE ??
@@ -950,7 +953,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (els.developerBlockEl)
       els.developerBlockEl.style.display = devMode ? "" : "none";
   }
-
   function updateStartPauseBtnTo(state) {
     if (state === "start")
       setBtnText(els.startPauseBtnEl, window.btnStates.start);
@@ -959,7 +961,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     else if (state === "cont")
       setBtnText(els.startPauseBtnEl, window.btnStates.cont);
   }
-
   function updateControlsAvailability() {
     const flags = store.playbackFlags();
     const activeBtn = store.getCurrentSpeakButton();
@@ -979,7 +980,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     toggleControls(!(flags.isSequenceMode && !flags.isPaused));
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
-
   function bindHandlers() {
     els.clockContainerEls.forEach((group) => {
       const rnd = group.querySelector(".random-btn");
@@ -1031,7 +1031,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     els.resetSettingsBtnEl?.addEventListener("click", () =>
-      bus.emit(EventTypes.SETTINGS_RESET_TO_DEFAULTS)
+      bus.emit(EventTypes.SETTINGS_RESET)
     );
     els.uiLangSelectEl?.addEventListener("change", (e) => {
       bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
@@ -1048,11 +1048,31 @@ function createUI({ bus, store, config, langLoader, utils }) {
     );
     els.startPauseBtnEl?.addEventListener("click", () => {
       const flags = store.playbackFlags();
-      if (flags.isSequenceMode && !flags.isPaused) {
+      if (!flags.isSequenceMode) {
+        store.setPlaybackFlags({
+          isSequenceMode: true,
+          isPaused: false,
+          sequenceIndex: 0,
+        });
+        bus.emit(EventTypes.UPDATE_CONTROLS);
+        bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
+        updateStartPauseBtnTo("stop");
+        toggleControls(false);
+      } else if (flags.isSequenceMode && !flags.isPaused) {
+        store.setPlaybackFlags({ isPaused: true });
+        bus.emit(EventTypes.UPDATE_CONTROLS);
         bus.emit(EventTypes.PLAYBACK_PAUSE);
+        updateStartPauseBtnTo("cont");
+        toggleControls(true);
       } else if (flags.isSequenceMode && flags.isPaused) {
-        bus.emit(EventTypes.PLAYBACK_CONTINUE);
-      } else bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
+        store.setPlaybackFlags({ isPaused: false });
+        bus.emit(EventTypes.UPDATE_CONTROLS);
+        bus.emit(EventTypes.PLAYBACK_CONTINUE, {
+          index: flags.sequenceIndex || 0,
+        });
+        updateStartPauseBtnTo("stop");
+        toggleControls(false);
+      }
     });
     bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
     bus.on(EventTypes.SPEECH_START, () => {
@@ -1063,10 +1083,9 @@ function createUI({ bus, store, config, langLoader, utils }) {
       store.setPlaybackFlags({ isSpeaking: false });
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
-    bus.on(EventTypes.VOICES_CHANGED, () => updateControlsAvailability);
-    bus.on(EventTypes.VOICES_LOADED, () => updateControlsAvailability);
+    bus.on(EventTypes.VOICES_CHANGED, updateControlsAvailability);
+    bus.on(EventTypes.VOICES_LOADED, updateControlsAvailability);
   }
-
   function init() {
     bindHandlers();
     const allEmpty = Array.from(els.timeInputEls || []).every(
@@ -1075,7 +1094,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (allEmpty) els.fillRandomBtnEl?.click();
     bus.emit(EventTypes.UPDATE_CONTROLS);
   }
-
   return {
     els,
     disableSpeakButtons,
@@ -1311,6 +1329,15 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     const s = ui.readSettingsFromUI();
     store.setSettings(s);
     if (saveFromUI) store.saveSettings(s, ui.els);
+  });
+  bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => {
+    ui.translateUI(lang);
+  });
+  bus.on(EventTypes.SETTINGS_RESET, () => {
+    const defaults = store.getDefaultActive();
+    store.setSettings(defaults);
+    store.saveSettings(defaults, ui.els);
+    ui.applySettingsToUI(defaults, { raw: defaults });
   });
 
   window.app = {
