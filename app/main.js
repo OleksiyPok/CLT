@@ -72,7 +72,7 @@ function createEventBus() {
   };
 }
 
-function createUtils(timeDictLoader) {
+function createUtils(timeDictLoader, utils) {
   const ALLOWED_LANGS = [
     "ar",
     "de",
@@ -86,6 +86,15 @@ function createUtils(timeDictLoader) {
     "uk",
   ];
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+
+  function getBaseLang(code) {
+    return String(code || "").split(/[-_]/)[0];
+  }
+
+  function normalizeLangCode(code) {
+    if (!code) return "";
+    return String(code).trim().toLowerCase().replace("_", "-");
+  }
 
   function deepMerge(a, b) {
     if (!b) return JSON.parse(JSON.stringify(a || {}));
@@ -130,14 +139,15 @@ function createUtils(timeDictLoader) {
   }
 
   function getTimePhrase(langCode, { h, mm }, { use24h = false } = {}) {
+    const baseLang = getBaseLang(langCode);
     const dict =
-      timeDictLoader.getDict(langCode) || timeDictLoader.getDict("en");
+      timeDictLoader.getDict(baseLang) || timeDictLoader.getDict("en");
     if (!dict) return "";
 
     const hours = dict.hours || {};
     const minutes = dict.minutes || {};
     const words = dict.words || {};
-    const lang = langCode.toLowerCase();
+    const lang = getBaseLang(langCode).toLowerCase();
 
     let algo = "default";
     if (["ru", "uk"].includes(lang)) algo = "slavic";
@@ -230,6 +240,8 @@ function createUtils(timeDictLoader) {
     generateRandomTimeString,
     getTimePhrase,
     capitalize,
+    getBaseLang,
+    normalizeLangCode,
   };
 }
 
@@ -302,13 +314,15 @@ function createConfig(utils, { paths = null } = {}) {
   };
 }
 
-function createTimeDictLoader({ config }) {
+function createTimeDictLoader({ config, utils }) {
   const PATH = config.PATHS.TIME_DICTS_DIR;
   let dicts = {};
 
   async function loadDict(code) {
+    // const baseCode = code.split(/[-_]/)[0];
+    const baseCode = utils.getBaseLang(code).toLowerCase();
     try {
-      const res = await fetch(`${PATH}/${code}_vocab.json`, {
+      const res = await fetch(`${PATH}/${baseCode}.json`, {
         cache: "no-cache",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -578,24 +592,17 @@ function createWakeLock({ bus } = {}) {
   return { request, release, init };
 }
 
-function createVoices({ bus }) {
+function createVoices({ bus, utils }) {
   let voices = [];
   let availableLanguages = [];
-
-  function baseLang(code) {
-    return String(code || "")
-      .split(/[-_]/)[0]
-      .toUpperCase();
-  }
 
   function computeAvailableLanguages() {
     const set = new Set();
     for (const v of voices) {
-      const b = baseLang(v.lang);
+      const b = utils.getBaseLang(v.lang).toUpperCase();
       if (b) set.add(b);
     }
     availableLanguages = Array.from(set).sort();
-    // "ALL" добавляем в конец для контроля (UI добавим позже)
     if (!availableLanguages.includes("ALL")) availableLanguages.push("ALL");
   }
 
@@ -604,11 +611,6 @@ function createVoices({ bus }) {
       voices: (voices || []).map((v) => ({ name: v.name, lang: v.lang })),
       availableLanguages: availableLanguages.slice(),
     };
-    console.log(`[voices] ${evt}`, {
-      count: payload.voices.length,
-      langs: payload.availableLanguages,
-      sample: payload.voices.slice(0, 5),
-    });
     bus.emit(evt, payload);
   }
 
@@ -627,7 +629,6 @@ function createVoices({ bus }) {
   }
 
   async function load() {
-    console.log("[voices] load:start");
     collect();
     if (!voices.length && typeof speechSynthesis !== "undefined") {
       try {
@@ -639,10 +640,6 @@ function createVoices({ bus }) {
         console.warn("[voices] lazy-load failed", e);
       }
     }
-    console.log("[voices] load:done", {
-      count: voices.length,
-      langs: availableLanguages,
-    });
     publish(EventTypes.VOICES_LOADED);
   }
 
@@ -651,7 +648,6 @@ function createVoices({ bus }) {
     "onvoiceschanged" in speechSynthesis
   ) {
     speechSynthesis.onvoiceschanged = () => {
-      console.log("[voices] onvoiceschanged");
       collect();
     };
   }
@@ -855,7 +851,8 @@ function createUI({ bus, store, config, langLoader, utils }) {
     clockContainerEls: document.querySelectorAll(".clock-container"),
     developerBlockEl: document.getElementById("developer"),
   };
-  let ttsVoices = [];
+  let cachedVoices = [];
+
   function disableSpeakButtons(disable) {
     els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
   }
@@ -885,6 +882,9 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (!el) return;
     if (el.textContent !== text) el.textContent = text;
   }
+  function getNested(obj, path) {
+    return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj);
+  }
   function translateUI(lang) {
     const texts = langLoader.getTexts(lang);
     if (!texts) return;
@@ -896,16 +896,11 @@ function createUI({ bus, store, config, langLoader, utils }) {
       const key = el.getAttribute("data-i18n-title");
       if (key && texts[key]) el.title = texts[key];
     });
-    document
-      .querySelectorAll(".speak-btn")
-      .forEach((b) => (b.title = texts.speakBtnTitle || ""));
-    document
-      .querySelectorAll(".random-btn")
-      .forEach((b) => (b.title = texts.randomBtnTitle || ""));
     window.alertTexts = {
       invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
       invalidPhrase:
-        texts.alertInvalidPhrase || "Invalid time or unable to generate phrase",
+        texts.alertInvalidPhrase ||
+        "Invalid time or unable to generate Dutch phrase.",
     };
     window.btnStates = {
       start: texts.btnStart || "Start",
@@ -1010,70 +1005,73 @@ function createUI({ bus, store, config, langLoader, utils }) {
     toggleControls(!(flags.isSequenceMode && !flags.isPaused));
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
-  function toLang2(code) {
-    if (!code) return "";
-    const s = String(code).replace("_", "-").toLowerCase();
-    return s.split("-")[0].toUpperCase();
-  }
-  function normalizeCode(code) {
-    if (!code) return "";
-    const s = String(code).replace("_", "-");
-    const parts = s.split("-");
-    if (parts.length === 1) return parts[0].toLowerCase();
-    return parts[0].toLowerCase() + "-" + parts[1].toUpperCase();
-  }
-  function populateTTSLanguagesAndVoices(payload) {
-    if (!els.languageCodeSelectEl || !els.voiceSelectEl) return;
-    if (!payload || !Array.isArray(payload.voices)) return;
-    ttsVoices = payload.voices.slice();
-    const currentS = store.getSettings
-      ? store.getSettings()
-      : store.getDefaultActive();
-    const desiredLang2 = toLang2(currentS.languageCode) || "";
-    const langs = Array.from(
-      new Set(ttsVoices.map((v) => toLang2(v.lang)).filter(Boolean))
-    ).sort();
-    const opts = [];
-    langs.forEach((l) => opts.push({ value: l, label: l }));
-    if (!opts.some((o) => o.value === "ALL"))
-      opts.push({ value: "ALL", label: "ALL" });
-    els.languageCodeSelectEl.innerHTML = opts
-      .map((o) => `<option value="${o.value}">${o.label}</option>`)
-      .join("");
-    const toSelectLang = opts.some((o) => o.value === desiredLang2)
-      ? desiredLang2
-      : opts[0]?.value || "";
-    els.languageCodeSelectEl.value = toSelectLang;
-    populateVoicesForLang(toSelectLang, currentS.voiceName);
-  }
-  function populateVoicesForLang(lang2, preferName) {
-    if (!els.voiceSelectEl) return;
-    const list =
-      lang2 && lang2 !== "ALL"
-        ? ttsVoices.filter((v) => toLang2(v.lang) === lang2)
-        : ttsVoices.slice();
-    const uniqueByName = [];
-    const seen = new Set();
-    list.forEach((v) => {
-      if (seen.has(v.name)) return;
-      seen.add(v.name);
-      uniqueByName.push(v);
+
+  function uniqueLangsFromVoices(list) {
+    const set = new Set();
+    (list || []).forEach((v) => {
+      const norm = utils.normalizeLangCode(v.lang);
+      if (norm) set.add(norm);
     });
-    uniqueByName.sort((a, b) => a.name.localeCompare(b.name));
-    els.voiceSelectEl.innerHTML = uniqueByName
-      .map((v) => `<option value="${v.name}">${v.name} — ${v.lang}</option>`)
-      .join("");
-    const s = store.getSettings
-      ? store.getSettings()
-      : store.getDefaultActive();
-    let nameToPick =
-      preferName && uniqueByName.some((v) => v.name === preferName)
-        ? preferName
-        : s.voiceName && uniqueByName.some((v) => v.name === s.voiceName)
-        ? s.voiceName
-        : uniqueByName[0]?.name || "";
-    if (nameToPick) els.voiceSelectEl.value = nameToPick;
+    return Array.from(set);
   }
+  function labelForLang(code) {
+    const norm = utils.normalizeLangCode(code);
+    return norm.split(/[-_]/)[0].toUpperCase();
+  }
+  function populateLanguageSelectFromVoices(list) {
+    if (!els.languageCodeSelectEl) return;
+    const s = store.getSettings();
+    const langs = uniqueLangsFromVoices(list);
+    const cur = utils.normalizeLangCode(s.languageCode || langs[0] || "");
+    els.languageCodeSelectEl.innerHTML = "";
+    langs.forEach((lc) => {
+      const opt = document.createElement("option");
+      opt.value = lc;
+      opt.textContent = labelForLang(lc);
+      els.languageCodeSelectEl.appendChild(opt);
+    });
+    if (cur) els.languageCodeSelectEl.value = cur;
+  }
+  function populateVoiceSelectForLang(list, langCode) {
+    if (!els.voiceSelectEl) return;
+    const s = store.getSettings();
+    const norm = utils.normalizeLangCode(langCode);
+    const filtered = (list || []).filter(
+      (v) => utils.normalizeLangCode(v.lang) === norm
+    );
+    els.voiceSelectEl.innerHTML = "";
+    filtered.forEach((v) => {
+      const opt = document.createElement("option");
+      opt.value = v.name;
+      opt.textContent = v.name;
+      els.voiceSelectEl.appendChild(opt);
+    });
+    const targetName =
+      s.voiceName && filtered.some((v) => v.name === s.voiceName)
+        ? s.voiceName
+        : filtered[0]?.name;
+    if (targetName) els.voiceSelectEl.value = targetName;
+  }
+  function renderLangVoiceUI() {
+    if (!cachedVoices || !cachedVoices.length) return;
+    const s = store.getSettings();
+    populateLanguageSelectFromVoices(cachedVoices);
+    const currentLang =
+      els.languageCodeSelectEl?.value ||
+      utils.normalizeLangCode(s.languageCode);
+    populateVoiceSelectForLang(cachedVoices, currentLang);
+    const selectedVoice = els.voiceSelectEl?.value;
+    if (selectedVoice) {
+      const chosen = cachedVoices.find((v) => v.name === selectedVoice);
+      if (chosen) {
+        s.voiceName = chosen.name;
+        s.languageCode = utils.normalizeLangCode(chosen.lang);
+        store.setSettings(s);
+        store.saveSettings(s, els);
+      }
+    }
+  }
+
   function bindHandlers() {
     els.clockContainerEls.forEach((group) => {
       const rnd = group.querySelector(".random-btn");
@@ -1137,61 +1135,30 @@ function createUI({ bus, store, config, langLoader, utils }) {
     els.delaySelectEl?.addEventListener("change", () =>
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
     );
-    if (els.languageCodeSelectEl)
-      els.languageCodeSelectEl.addEventListener("change", (e) => {
-        const lang2 = e.target.value;
-        populateVoicesForLang(lang2);
-        const s = store.getSettings();
-        const list =
-          lang2 && lang2 !== "ALL"
-            ? ttsVoices.filter((v) => toLang2(v.lang) === lang2)
-            : ttsVoices.slice();
-        const pick = list[0];
-        if (pick) s.languageCode = normalizeCode(pick.lang);
+    els.languageCodeSelectEl?.addEventListener("change", (e) => {
+      const newLang = utils.normalizeLangCode(e.target.value);
+      populateVoiceSelectForLang(cachedVoices, newLang);
+      const s = store.getSettings();
+      const voiceName = els.voiceSelectEl?.value;
+      s.languageCode = newLang;
+      if (voiceName) s.voiceName = voiceName;
+      store.setSettings(s);
+      store.saveSettings(s, els);
+      bus.emit(EventTypes.UPDATE_CONTROLS);
+    });
+    els.voiceSelectEl?.addEventListener("change", (e) => {
+      const s = store.getSettings();
+      const selectedName = e.target.value;
+      const v = (cachedVoices || []).find((x) => x.name === selectedName);
+      if (v) {
+        s.voiceName = v.name;
+        s.languageCode = utils.normalizeLangCode(v.lang);
+        if (els.languageCodeSelectEl)
+          els.languageCodeSelectEl.value = s.languageCode;
         store.setSettings(s);
         store.saveSettings(s, els);
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-      });
-    if (els.voiceSelectEl)
-      els.voiceSelectEl.addEventListener("change", (e) => {
-        const s = store.getSettings();
-        s.voiceName = e.target.value;
-        const v = ttsVoices.find((v) => v.name === s.voiceName);
-        if (v) s.languageCode = normalizeCode(v.lang);
-        store.setSettings(s);
-        store.saveSettings(s, els);
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-      });
-    els.resetBtnEl?.addEventListener("click", () =>
-      bus.emit(EventTypes.PLAYBACK_STOP)
-    );
-    els.startPauseBtnEl?.addEventListener("click", () => {
-      const flags = store.playbackFlags();
-      if (!flags.isSequenceMode) {
-        store.setPlaybackFlags({
-          isSequenceMode: true,
-          isPaused: false,
-          sequenceIndex: 0,
-        });
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-        bus.emit(EventTypes.PLAYBACK_START, { index: 0 });
-        updateStartPauseBtnTo("stop");
-        toggleControls(false);
-      } else if (flags.isSequenceMode && !flags.isPaused) {
-        store.setPlaybackFlags({ isPaused: true });
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-        bus.emit(EventTypes.PLAYBACK_PAUSE);
-        updateStartPauseBtnTo("cont");
-        toggleControls(true);
-      } else if (flags.isSequenceMode && flags.isPaused) {
-        store.setPlaybackFlags({ isPaused: false });
-        bus.emit(EventTypes.UPDATE_CONTROLS);
-        bus.emit(EventTypes.PLAYBACK_CONTINUE, {
-          index: flags.sequenceIndex || 0,
-        });
-        updateStartPauseBtnTo("stop");
-        toggleControls(false);
       }
+      bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
     bus.on(EventTypes.SPEECH_START, () => {
@@ -1203,22 +1170,23 @@ function createUI({ bus, store, config, langLoader, utils }) {
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     bus.on(EventTypes.VOICES_CHANGED, (p) => {
-      populateTTSLanguagesAndVoices(p);
+      cachedVoices = (p && p.voices) || cachedVoices || [];
+      renderLangVoiceUI();
       updateControlsAvailability();
     });
     bus.on(EventTypes.VOICES_LOADED, (p) => {
-      populateTTSLanguagesAndVoices(p);
+      cachedVoices = (p && p.voices) || cachedVoices || [];
+      renderLangVoiceUI();
       updateControlsAvailability();
     });
   }
+
   function init() {
     bindHandlers();
-    const allEmpty = Array.from(els.timeInputEls || []).every(
-      (inp) => !(inp.value && inp.value.trim())
-    );
-    if (allEmpty) els.fillRandomBtnEl?.click();
+    els.fillRandomBtnEl?.click();
     bus.emit(EventTypes.UPDATE_CONTROLS);
   }
+
   return {
     els,
     disableSpeakButtons,
@@ -1402,6 +1370,8 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
 
 (async function bootstrap() {
   const bus = createEventBus();
+
+  // сначала создаём utilsStub, чтобы сконфигурировать пути
   const utilsStub = createUtils({ getDict: () => null });
   const config = createConfig(utilsStub, {
     paths: {
@@ -1410,37 +1380,45 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
       TIME_DICTS_DIR: "./assets/vocabs",
     },
   });
-  const timeDictLoader = createTimeDictLoader({ config });
-  await timeDictLoader.loadAll(utilsStub.ALLOWED_LANGS);
-  const utils = createUtils(timeDictLoader);
-  window.utils = utils;
-  const langLoader = createLangLoader({ config, utils });
-  const store = createStore({ bus, config, utils });
+
+  // временный utils, чтобы использовать normalize, getBaseLang и т.п.
+  const utils = createUtils({ getDict: () => null });
+
+  // создаём загрузчик словарей времени с utils
+  const timeDictLoader = createTimeDictLoader({ config, utils });
+  await timeDictLoader.loadAll(utils.ALLOWED_LANGS);
+
+  // пересоздаём utils уже с настоящим timeDictLoader
+  const fullUtils = createUtils(timeDictLoader);
+  window.utils = fullUtils;
+
+  // остальная инициализация
+  const langLoader = createLangLoader({ config, utils: fullUtils });
+  const store = createStore({ bus, config, utils: fullUtils });
   const wakeLock = createWakeLock({ bus });
-  const voices = createVoices({ bus });
+  const voices = createVoices({ bus, utils: fullUtils });
   const speaker = createSpeaker({
     bus,
     voicesProvider: () => voices.getVoices(),
     settingsProvider: () => store.getSettings(),
   });
-  const ui = createUI({ bus, store, config, langLoader, utils });
-  const playback = createPlayback({ bus, store, ui, speaker, utils, wakeLock });
-
-  // ---------- DIAGNOSTIC LOGS (временные) ----------
-  bus.on(EventTypes.VOICES_CHANGED, (p) => {
-    console.log("[DEBUG] VOICES_CHANGED", p);
+  const ui = createUI({ bus, store, config, langLoader, utils: fullUtils });
+  const playback = createPlayback({
+    bus,
+    store,
+    ui,
+    speaker,
+    utils: fullUtils,
+    wakeLock,
   });
-  bus.on(EventTypes.VOICES_LOADED, (p) => {
-    console.log("[DEBUG] VOICES_LOADED", p);
-  });
-  // -------------------------------------------------
 
   const appCfg = await config.loadExternal();
   store.setDefaultActive(
     config.selectPlatformDefaults(appCfg.DEFAULT_SETTINGS)
   );
   ui.setDeveloperVisibility(appCfg);
-  await langLoader.loadAll(utils.ALLOWED_LANGS);
+
+  await langLoader.loadAll(fullUtils.ALLOWED_LANGS);
   const { raw, merged } = store.loadSettingsFromLocal(ui.els);
   store.setSettings(merged);
   ui.applySettingsToUI(merged, { raw });
@@ -1463,21 +1441,18 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     ui.init();
     wakeLock.init();
     await voices.load();
-    console.log("[app] voices ready", {
-      voicesCount: (voices.getVoices() || []).length,
-      languages: voices.getAvailableLanguages
-        ? voices.getAvailableLanguages()
-        : [],
-    });
   });
+
   bus.on(EventTypes.SETTINGS_APPLY_TO_UI, ({ saveFromUI }) => {
     const s = ui.readSettingsFromUI();
     store.setSettings(s);
     if (saveFromUI) store.saveSettings(s, ui.els);
   });
+
   bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => {
     ui.translateUI(lang);
   });
+
   bus.on(EventTypes.SETTINGS_RESET, () => {
     const defaults = store.getDefaultActive();
     store.setSettings(defaults);
@@ -1487,7 +1462,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
 
   window.app = {
     bus,
-    utils,
+    utils: fullUtils,
     config,
     langLoader,
     store,
