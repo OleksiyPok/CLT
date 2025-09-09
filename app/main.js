@@ -593,13 +593,10 @@ function createVoices({ bus, utils }) {
     collect();
     if (!voices.length && typeof speechSynthesis !== "undefined") {
       try {
-        // триггерим ленивую подгрузку голосов
         speechSynthesis.speak(new SpeechSynthesisUtterance(""));
         await new Promise((r) => setTimeout(r, 300));
         collect();
-      } catch (e) {
-        console.warn("[voices] lazy-load failed", e);
-      }
+      } catch (e) {}
     }
     publish(EventTypes.VOICES_LOADED);
   }
@@ -791,6 +788,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     developerBlockEl: document.getElementById("developer"),
   };
   let cachedVoices = [];
+  let cachedLanguages = [];
 
   function disableSpeakButtons(disable) {
     els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
@@ -818,9 +816,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
   function setBtnText(el, text) {
     if (!el) return;
     if (el.textContent !== text) el.textContent = text;
-  }
-  function getNested(obj, path) {
-    return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj);
   }
   function translateUI(lang) {
     const texts = langLoader.getTexts(lang);
@@ -908,63 +903,55 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
 
-  function uniqueLangsFromVoices(list) {
-    const set = new Set();
-    (list || []).forEach((v) => {
-      const norm = utils.normalizeLangCode(v.lang);
-      if (norm) set.add(norm);
-    });
-    return Array.from(set);
-  }
   function labelForLang(code) {
-    const norm = utils.normalizeLangCode(code);
-    return norm.split(/[-_]/)[0].toUpperCase();
+    return code;
   }
-  function populateLanguageSelectFromVoices(list) {
+  function populateLanguageSelectFromAvailableLanguages(list) {
     if (!els.languageCodeSelectEl) return;
     const s = store.getSettings();
-    const langs = uniqueLangsFromVoices(list);
-    const cur = utils.normalizeLangCode(s.languageCode || langs[0] || "");
+    const base = utils.getBaseLang(s.languageCode || "");
+    const preferred = base ? base.toUpperCase() : "";
     els.languageCodeSelectEl.innerHTML = "";
-    langs.forEach((lc) => {
+    (list || []).forEach((lc) => {
       const opt = document.createElement("option");
       opt.value = lc;
       opt.textContent = labelForLang(lc);
       els.languageCodeSelectEl.appendChild(opt);
     });
-    if (cur) els.languageCodeSelectEl.value = cur;
+    const toSet = (list || []).includes(preferred) ? preferred : (list || [])[0] || "";
+    if (toSet) els.languageCodeSelectEl.value = toSet;
   }
-  function populateVoiceSelectForLang(list, langCode) {
+  function populateVoiceSelectForLanguage(list, langCodeOrAll) {
     if (!els.voiceSelectEl) return;
     const s = store.getSettings();
-    const norm = utils.normalizeLangCode(langCode);
-    const filtered = (list || []).filter((v) => utils.normalizeLangCode(v.lang) === norm);
+    let filtered = [];
+    if (langCodeOrAll === "ALL") {
+      filtered = list || [];
+    } else {
+      const base = (utils.getBaseLang(langCodeOrAll) || "").toUpperCase();
+      filtered = (list || []).filter((v) => (utils.getBaseLang(v.lang) || "").toUpperCase() === base);
+    }
     els.voiceSelectEl.innerHTML = "";
     filtered.forEach((v) => {
       const opt = document.createElement("option");
       opt.value = v.name;
-      opt.textContent = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
       els.voiceSelectEl.appendChild(opt);
     });
-    const targetName = s.voiceName && filtered.some((v) => v.name === s.voiceName) ? s.voiceName : filtered[0]?.name;
-    if (targetName) els.voiceSelectEl.value = targetName;
+    const target = filtered.find((v) => v.name === s.voiceName) || filtered.find((v) => utils.normalizeLangCode(v.lang) === utils.normalizeLangCode(s.languageCode)) || filtered[0];
+    if (target) {
+      els.voiceSelectEl.value = target.name;
+      s.voiceName = target.name;
+      s.languageCode = utils.normalizeLangCode(target.lang);
+      store.setSettings(s);
+      store.saveSettings(s, els);
+    }
   }
   function renderLangVoiceUI() {
-    if (!cachedVoices || !cachedVoices.length) return;
-    const s = store.getSettings();
-    populateLanguageSelectFromVoices(cachedVoices);
-    const currentLang = els.languageCodeSelectEl?.value || utils.normalizeLangCode(s.languageCode);
-    populateVoiceSelectForLang(cachedVoices, currentLang);
-    const selectedVoice = els.voiceSelectEl?.value;
-    if (selectedVoice) {
-      const chosen = cachedVoices.find((v) => v.name === selectedVoice);
-      if (chosen) {
-        s.voiceName = chosen.name;
-        s.languageCode = utils.normalizeLangCode(chosen.lang);
-        store.setSettings(s);
-        store.saveSettings(s, els);
-      }
-    }
+    if (!cachedVoices.length || !cachedLanguages.length) return;
+    populateLanguageSelectFromAvailableLanguages(cachedLanguages);
+    const selectedLang = els.languageCodeSelectEl?.value || "";
+    populateVoiceSelectForLanguage(cachedVoices, selectedLang);
   }
 
   function bindHandlers() {
@@ -989,7 +976,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
             return;
           }
           const phrase = utils.getTimePhrase(store.getSettings().languageCode, timeStr);
-          console.log(phrase);
           if (!phrase) {
             alert(window.alertTexts.invalidPhrase);
             return;
@@ -1017,14 +1003,8 @@ function createUI({ bus, store, config, langLoader, utils }) {
     els.speedSelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
     els.delaySelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
     els.languageCodeSelectEl?.addEventListener("change", (e) => {
-      const newLang = utils.normalizeLangCode(e.target.value);
-      populateVoiceSelectForLang(cachedVoices, newLang);
-      const s = store.getSettings();
-      const voiceName = els.voiceSelectEl?.value;
-      s.languageCode = newLang;
-      if (voiceName) s.voiceName = voiceName;
-      store.setSettings(s);
-      store.saveSettings(s, els);
+      const newLang = e.target.value;
+      populateVoiceSelectForLanguage(cachedVoices, newLang);
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     els.voiceSelectEl?.addEventListener("change", (e) => {
@@ -1034,7 +1014,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
       if (v) {
         s.voiceName = v.name;
         s.languageCode = utils.normalizeLangCode(v.lang);
-        if (els.languageCodeSelectEl) els.languageCodeSelectEl.value = s.languageCode;
         store.setSettings(s);
         store.saveSettings(s, els);
       }
@@ -1066,14 +1045,24 @@ function createUI({ bus, store, config, langLoader, utils }) {
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     bus.on(EventTypes.VOICES_CHANGED, (p) => {
-      cachedVoices = (p && p.voices) || cachedVoices || [];
+      cachedVoices = (p && p.voices) || [];
+      cachedLanguages = (p && p.availableLanguages) || [];
       renderLangVoiceUI();
       updateControlsAvailability();
     });
     bus.on(EventTypes.VOICES_LOADED, (p) => {
-      cachedVoices = (p && p.voices) || cachedVoices || [];
+      cachedVoices = (p && p.voices) || [];
+      cachedLanguages = (p && p.availableLanguages) || [];
       renderLangVoiceUI();
       updateControlsAvailability();
+    });
+    bus.on(EventTypes.SETTINGS_RESET, () => {
+      const s = store.getDefaultActive ? store.getDefaultActive() : store.getSettings();
+      populateLanguageSelectFromAvailableLanguages(cachedLanguages);
+      const base = (utils.getBaseLang(s.languageCode) || "").toUpperCase();
+      if (base && els.languageCodeSelectEl && cachedLanguages.includes(base)) els.languageCodeSelectEl.value = base;
+      populateVoiceSelectForLanguage(cachedVoices, els.languageCodeSelectEl?.value || "ALL");
+      bus.emit(EventTypes.UPDATE_CONTROLS);
     });
   }
 
