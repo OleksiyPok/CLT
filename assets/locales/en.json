@@ -1,5 +1,9 @@
 {
   "languageCode": "EN",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Clock Listening Trainer",
   "versionText": "version",
   "btnContinue": "Continue",

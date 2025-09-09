@@ -1,5 +1,9 @@
 {
   "languageCode": "TR",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Saat Dinleme Eğitmeni",
   "versionText": "sürüm",
   "btnContinue": "Devam",

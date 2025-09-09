@@ -1,5 +1,9 @@
 {
   "languageCode": "UK",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Тренажер годинника",
   "versionText": "версія",
   "btnContinue": "Далі",

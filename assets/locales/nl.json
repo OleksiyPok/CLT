@@ -1,5 +1,9 @@
 {
   "languageCode": "NL",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Klokluistertrainer",
   "versionText": "versie",
   "btnContinue": "Doorgaan",

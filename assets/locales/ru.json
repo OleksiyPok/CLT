@@ -1,5 +1,9 @@
 {
   "languageCode": "RU",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Тренажёр часов",
   "versionText": "версия",
   "btnContinue": "Дальше",

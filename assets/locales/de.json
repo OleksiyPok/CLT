@@ -1,5 +1,9 @@
 {
   "languageCode": "DE",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Uhren-Hörtrainer",
   "versionText": "version",
   "btnContinue": "Weiter",

@@ -1,5 +1,9 @@
 {
   "languageCode": "FR",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
   "titleText": "Entraîneur d'écoute de l'horloge",
   "versionText": "version",
   "btnContinue": "Continuer",
