@@ -1,6 +1,7 @@
 {
   "DEVELOPER_MODE": true,
   "USE_LOCAL_STORAGE": true,
+  "FILTER_LANGS": true,
   "DEFAULT_VOICE": "Google Nederlands",
   "DEFAULT_SETTINGS": {
     "shared": {
