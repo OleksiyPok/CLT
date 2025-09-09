@@ -847,12 +847,15 @@ function createUI({ bus, store, config, langLoader, utils }) {
     resetSettingsBtnEl: document.getElementById("resetSettingsBtn"),
     fillRandomBtnEl: document.getElementById("fillRandomBtn"),
     uiLangSelectEl: document.getElementById("uiLangSelect"),
+    languageCodeSelectEl: document.getElementById("languageCodeSelect"),
+    voiceSelectEl: document.getElementById("voiceSelect"),
     randomBtnEls: document.querySelectorAll(".random-btn"),
     speakBtnEls: document.querySelectorAll(".speak-btn"),
     timeInputEls: document.querySelectorAll(".time-input"),
     clockContainerEls: document.querySelectorAll(".clock-container"),
     developerBlockEl: document.getElementById("developer"),
   };
+  let ttsVoices = [];
   function disableSpeakButtons(disable) {
     els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
   }
@@ -882,15 +885,16 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (!el) return;
     if (el.textContent !== text) el.textContent = text;
   }
-  function getNested(obj, path) {
-    return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj);
-  }
   function translateUI(lang) {
     const texts = langLoader.getTexts(lang);
     if (!texts) return;
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
       if (key && texts[key]) el.textContent = texts[key];
+    });
+    document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-title");
+      if (key && texts[key]) el.title = texts[key];
     });
     document
       .querySelectorAll(".speak-btn")
@@ -901,8 +905,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     window.alertTexts = {
       invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
       invalidPhrase:
-        texts.alertInvalidPhrase ||
-        "Invalid time or unable to generate Dutch phrase.",
+        texts.alertInvalidPhrase || "Invalid time or unable to generate phrase",
     };
     window.btnStates = {
       start: texts.btnStart || "Start",
@@ -992,7 +995,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     const flags = store.playbackFlags();
     const activeBtn = store.getCurrentSpeakButton();
     const activeIdx = flags.sequenceIndex;
-    els.speakBtnEls.forEach((btn, idx) => {
+    els.speakBtnEls.forEach((btn) => {
       if (flags.isSequenceMode) btn.disabled = true;
       else if (flags.isSpeaking && activeBtn) btn.disabled = btn !== activeBtn;
       else btn.disabled = flags.isPaused;
@@ -1006,6 +1009,70 @@ function createUI({ bus, store, config, langLoader, utils }) {
     });
     toggleControls(!(flags.isSequenceMode && !flags.isPaused));
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
+  }
+  function toLang2(code) {
+    if (!code) return "";
+    const s = String(code).replace("_", "-").toLowerCase();
+    return s.split("-")[0].toUpperCase();
+  }
+  function normalizeCode(code) {
+    if (!code) return "";
+    const s = String(code).replace("_", "-");
+    const parts = s.split("-");
+    if (parts.length === 1) return parts[0].toLowerCase();
+    return parts[0].toLowerCase() + "-" + parts[1].toUpperCase();
+  }
+  function populateTTSLanguagesAndVoices(payload) {
+    if (!els.languageCodeSelectEl || !els.voiceSelectEl) return;
+    if (!payload || !Array.isArray(payload.voices)) return;
+    ttsVoices = payload.voices.slice();
+    const currentS = store.getSettings
+      ? store.getSettings()
+      : store.getDefaultActive();
+    const desiredLang2 = toLang2(currentS.languageCode) || "";
+    const langs = Array.from(
+      new Set(ttsVoices.map((v) => toLang2(v.lang)).filter(Boolean))
+    ).sort();
+    const opts = [];
+    langs.forEach((l) => opts.push({ value: l, label: l }));
+    if (!opts.some((o) => o.value === "ALL"))
+      opts.push({ value: "ALL", label: "ALL" });
+    els.languageCodeSelectEl.innerHTML = opts
+      .map((o) => `<option value="${o.value}">${o.label}</option>`)
+      .join("");
+    const toSelectLang = opts.some((o) => o.value === desiredLang2)
+      ? desiredLang2
+      : opts[0]?.value || "";
+    els.languageCodeSelectEl.value = toSelectLang;
+    populateVoicesForLang(toSelectLang, currentS.voiceName);
+  }
+  function populateVoicesForLang(lang2, preferName) {
+    if (!els.voiceSelectEl) return;
+    const list =
+      lang2 && lang2 !== "ALL"
+        ? ttsVoices.filter((v) => toLang2(v.lang) === lang2)
+        : ttsVoices.slice();
+    const uniqueByName = [];
+    const seen = new Set();
+    list.forEach((v) => {
+      if (seen.has(v.name)) return;
+      seen.add(v.name);
+      uniqueByName.push(v);
+    });
+    uniqueByName.sort((a, b) => a.name.localeCompare(b.name));
+    els.voiceSelectEl.innerHTML = uniqueByName
+      .map((v) => `<option value="${v.name}">${v.name} — ${v.lang}</option>`)
+      .join("");
+    const s = store.getSettings
+      ? store.getSettings()
+      : store.getDefaultActive();
+    let nameToPick =
+      preferName && uniqueByName.some((v) => v.name === preferName)
+        ? preferName
+        : s.voiceName && uniqueByName.some((v) => v.name === s.voiceName)
+        ? s.voiceName
+        : uniqueByName[0]?.name || "";
+    if (nameToPick) els.voiceSelectEl.value = nameToPick;
   }
   function bindHandlers() {
     els.clockContainerEls.forEach((group) => {
@@ -1070,6 +1137,31 @@ function createUI({ bus, store, config, langLoader, utils }) {
     els.delaySelectEl?.addEventListener("change", () =>
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
     );
+    if (els.languageCodeSelectEl)
+      els.languageCodeSelectEl.addEventListener("change", (e) => {
+        const lang2 = e.target.value;
+        populateVoicesForLang(lang2);
+        const s = store.getSettings();
+        const list =
+          lang2 && lang2 !== "ALL"
+            ? ttsVoices.filter((v) => toLang2(v.lang) === lang2)
+            : ttsVoices.slice();
+        const pick = list[0];
+        if (pick) s.languageCode = normalizeCode(pick.lang);
+        store.setSettings(s);
+        store.saveSettings(s, els);
+        bus.emit(EventTypes.UPDATE_CONTROLS);
+      });
+    if (els.voiceSelectEl)
+      els.voiceSelectEl.addEventListener("change", (e) => {
+        const s = store.getSettings();
+        s.voiceName = e.target.value;
+        const v = ttsVoices.find((v) => v.name === s.voiceName);
+        if (v) s.languageCode = normalizeCode(v.lang);
+        store.setSettings(s);
+        store.saveSettings(s, els);
+        bus.emit(EventTypes.UPDATE_CONTROLS);
+      });
     els.resetBtnEl?.addEventListener("click", () =>
       bus.emit(EventTypes.PLAYBACK_STOP)
     );
@@ -1110,8 +1202,14 @@ function createUI({ bus, store, config, langLoader, utils }) {
       store.setPlaybackFlags({ isSpeaking: false });
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
-    bus.on(EventTypes.VOICES_CHANGED, updateControlsAvailability);
-    bus.on(EventTypes.VOICES_LOADED, updateControlsAvailability);
+    bus.on(EventTypes.VOICES_CHANGED, (p) => {
+      populateTTSLanguagesAndVoices(p);
+      updateControlsAvailability();
+    });
+    bus.on(EventTypes.VOICES_LOADED, (p) => {
+      populateTTSLanguagesAndVoices(p);
+      updateControlsAvailability();
+    });
   }
   function init() {
     bindHandlers();
@@ -1361,9 +1459,16 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     }
   });
 
-  bus.on(EventTypes.APP_INIT, () => {
+  bus.on(EventTypes.APP_INIT, async () => {
     ui.init();
     wakeLock.init();
+    await voices.load();
+    console.log("[app] voices ready", {
+      voicesCount: (voices.getVoices() || []).length,
+      languages: voices.getAvailableLanguages
+        ? voices.getAvailableLanguages()
+        : [],
+    });
   });
   bus.on(EventTypes.SETTINGS_APPLY_TO_UI, ({ saveFromUI }) => {
     const s = ui.readSettingsFromUI();
