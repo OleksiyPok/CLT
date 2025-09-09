@@ -73,18 +73,7 @@ function createEventBus() {
 }
 
 function createUtils(timeDictLoader, utils) {
-  const ALLOWED_LANGS = [
-    "ar",
-    "de",
-    "en",
-    "fr",
-    "nl",
-    "pl",
-    "pt",
-    "ru",
-    "tr",
-    "uk",
-  ];
+  const ALLOWED_LANGS = ["ar", "de", "en", "fr", "nl", "pl", "pt", "ru", "tr", "uk"];
   const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
   function getBaseLang(code) {
@@ -104,14 +93,7 @@ function createUtils(timeDictLoader, utils) {
     keys.forEach((k) => {
       const va = a[k],
         vb = b[k];
-      if (
-        va &&
-        typeof va === "object" &&
-        !Array.isArray(va) &&
-        vb &&
-        typeof vb === "object" &&
-        !Array.isArray(vb)
-      ) {
+      if (va && typeof va === "object" && !Array.isArray(va) && vb && typeof vb === "object" && !Array.isArray(vb)) {
         out[k] = deepMerge(va, vb);
       } else if (vb !== undefined) {
         out[k] = vb;
@@ -132,6 +114,22 @@ function createUtils(timeDictLoader, utils) {
     return { h, mm: min };
   }
 
+  function chooseForm(n, forms) {
+    if (!forms || !forms.length) return "";
+    n = Math.abs(n);
+    if (forms.length === 3) {
+      // slavic: "1 минута", "2 минуты", "5 минут"
+      if (n % 10 === 1 && n % 100 !== 11) return forms[0];
+      if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return forms[1];
+      return forms[2];
+    }
+    if (forms.length === 2) {
+      // simple: 1 minute, 2 minutes
+      return n === 1 ? forms[0] : forms[1];
+    }
+    return forms[0];
+  }
+
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
     const m = Math.floor(Math.random() * 12) * 5;
@@ -140,12 +138,13 @@ function createUtils(timeDictLoader, utils) {
 
   function getTimePhrase(langCode, { h, mm }, { use24h = false } = {}) {
     const baseLang = getBaseLang(langCode);
-    const dict =
-      timeDictLoader.getDict(baseLang) || timeDictLoader.getDict("en");
+    const dict = timeDictLoader.getDict(baseLang) || timeDictLoader.getDict("en");
     if (!dict) return "";
 
     const hours = dict.hours || {};
+    const hoursGenitive = dict.hoursGenitive || {};
     const minutes = dict.minutes || {};
+    const minutesGenitive = dict.minutesGenitive || {};
     const words = dict.words || {};
     const lang = getBaseLang(langCode).toLowerCase();
 
@@ -157,7 +156,7 @@ function createUtils(timeDictLoader, utils) {
     if (["tr"].includes(lang)) algo = "turkic";
     if (["pl"].includes(lang)) algo = "slavic";
 
-    let hourWord, nextHourWord;
+    let hourWord, nextHourWord, nextHourWordGenitive;
     if (use24h) {
       hourWord = hours[h] || h;
       nextHourWord = hours[(h + 1) % 24] || h + 1;
@@ -166,70 +165,60 @@ function createUtils(timeDictLoader, utils) {
       const nextIdx = (h + 1) % 12;
       hourWord = hours[idx] || h;
       nextHourWord = hours[nextIdx] || h + 1;
+      nextHourWordGenitive = hoursGenitive[nextIdx] || h + 1;
     }
+
+    console.log(`algo`, algo);
 
     switch (algo) {
       case "slavic": // 🇷🇺 🇺🇦 🇵🇱
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${words.quarterOver || ""} ${hourWord}`;
-        if (mm === 30) return `${words.half || ""} ${nextHourWord}`;
+        if (mm === 15) return `${words.quarter || ""} ${words.of || ""} ${nextHourWordGenitive}`;
+        if (mm < 30) return `${minutes[mm]} ${chooseForm(mm, words.minuteForms)} ${words.of || ""} ${nextHourWordGenitive}`;
+        if (mm === 30) return `${words.half || ""} ${nextHourWordGenitive}`;
+        if (mm === 40) return `${words.without || ""} ${minutesGenitive[60 - mm]} ${chooseForm(mm, words.minuteForms)} ${words.of || ""} ${nextHourWord}`;
+        if (mm < 45) return `${minutes[mm]} ${chooseForm(mm, words.minuteForms)} ${nextHourWordGenitive}`;
         if (mm === 45) return `${words.quarterBefore || ""} ${nextHourWord}`;
-        if (mm < 30)
-          return `${minutes[mm] || mm} ${words.over || ""} ${hourWord}`;
-        return `${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        } ${nextHourWord}`;
+        if (mm < 50) return `${minutes[mm]} ${chooseForm(60 - mm, words.minuteForms)} ${nextHourWordGenitive}`;
+        return `${words.without || ""} ${minutesGenitive[60 - mm]} ${chooseForm(mm, words.minuteForms)} ${nextHourWord}`;
 
       case "germanic": // 🇩🇪 🇳🇱
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${words.quarterOver || ""} ${hourWord}`;
-        if (mm === 30) return `${words.half || ""} ${nextHourWord}`;
-        if (mm === 45) return `${words.quarterBefore || ""} ${nextHourWord}`;
-        if (mm < 30)
-          return `${minutes[mm] || mm} ${words.over || ""} ${hourWord}`;
-        return `${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        } ${nextHourWord}`;
+        if (mm < 15) return `${minutes[mm]} ${words.over} ${hourWord}`;
+        if (mm === 15) return `${words.quarter} ${words.over} ${hourWord}`;
+        if (mm < 30) return `${minutes[30 - mm]} ${words.before} ${words.half} ${nextHourWord}`;
+        if (mm === 30) return `${words.half} ${nextHourWord}`;
+        if (mm < 45) return `${minutes[mm - 30]} ${words.over} ${words.half} ${nextHourWord}`;
+        if (mm === 45) return `${words.quarter} ${words.before}${nextHourWord}`;
+        return `${minutes[60 - mm]} ${words.before} ${nextHourWord}`;
 
-      case "latin": // 🇫🇷 🇵🇹 🇬🇧
+      case "latin": // 🇬🇧 🇫🇷 🇵🇹
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${hourWord} ${words.quarterOver || ""}`;
-        if (mm === 30) return `${hourWord} ${words.half || ""}`;
-        if (mm === 45) return `${hourWord} ${words.quarterBefore || ""}`;
-        if (mm < 30) return `${hourWord} ${minutes[mm] || mm}`;
-        return `${hourWord} ${words.before || ""} ${
-          minutes[60 - mm] || 60 - mm
-        }`;
+        if (mm === 15) return `${words.quarterOver} ${hourWord}`;
+        if (mm === 30) return `${words.half} ${hourWord}`;
+        if (mm === 45) return `${words.quarterBefore} ${nextHourWord}`;
+        if (mm < 30) return `${minutes[mm]} ${chooseForm(mm, words.minuteForms)} ${words.past} ${hourWord}`;
+        return `${minutes[60 - mm]} ${chooseForm(60 - mm, words.minuteForms)} ${words.to} ${nextHourWord}`;
 
-      case "arabic": // 🇦🇪
+      case "arabic": // 🇸🇦
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${hourWord} ${words.quarterOver || ""}`;
-        if (mm === 30) return `${hourWord} ${words.half || ""}`;
-        if (mm === 45) return `${nextHourWord} ${words.quarterBefore || ""}`;
-        if (mm < 30) return `${hourWord} و${minutes[mm] || mm}`;
-        return `${nextHourWord} ${words.before || ""} ${
-          minutes[60 - mm] || 60 - mm
-        }`;
+        if (mm === 15) return `${hourWord} ${words.quarterOver}`;
+        if (mm === 30) return `${hourWord} ${words.half}`;
+        if (mm === 45) return `${nextHourWord} ${words.quarterBefore}`;
+        if (mm < 30) return `${hourWord} و ${minutes[mm]} ${chooseForm(mm, words.minuteForms)}`;
+        return `${nextHourWord} ${words.before} ${minutes[60 - mm]} ${chooseForm(60 - mm, words.minuteForms)}`;
 
       case "turkic": // 🇹🇷
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 15) return `${hourWord} ${words.quarterOver || ""}`;
-        if (mm === 30) return `${hourWord} ${words.half || ""}`;
-        if (mm === 45) return `${hourWord} ${words.quarterBefore || ""}`;
-        if (mm < 30)
-          return `${hourWord} ${minutes[mm] || mm} ${words.over || ""}`;
-        return `${hourWord} ${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        }`;
+        if (mm === 30) return `${hourWord} ${words.half}`;
+        if (mm < 30) return `${hourWord} ${minutes[mm]} ${chooseForm(mm, words.minuteForms)} ${words.past}`;
+        return `${nextHourWord} ${minutes[60 - mm]} ${chooseForm(60 - mm, words.minuteForms)} ${words.to}`;
 
       default: // fallback
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
-        if (mm === 30) return `${words.half || ""} ${nextHourWord}`;
-        if (mm < 30)
-          return `${minutes[mm] || mm} ${words.over || ""} ${hourWord}`;
-        return `${minutes[60 - mm] || 60 - mm} ${
-          words.before || ""
-        } ${nextHourWord}`;
+        if (mm === 30) return `${words.half} ${nextHourWord}`;
+        if (mm < 30) return `${minutes[mm]} ${chooseForm(mm, words.minuteForms)} ${words.over} ${hourWord}`;
+        return `${minutes[60 - mm]} ${chooseForm(60 - mm, words.minuteForms)} ${words.before} ${nextHourWord}`;
     }
   }
 
@@ -242,6 +231,7 @@ function createUtils(timeDictLoader, utils) {
     capitalize,
     getBaseLang,
     normalizeLangCode,
+    chooseForm,
   };
 }
 
@@ -293,16 +283,9 @@ function createConfig(utils, { paths = null } = {}) {
   }
 
   function selectPlatformDefaults(defs) {
-    const isMobile = /Mobi|Android|iPhone|iPad|Windows Phone|IEMobile/i.test(
-      navigator.userAgent || ""
-    );
-    const platformSettings = isMobile
-      ? defs?.mobile || {}
-      : defs?.desktop || {};
-    return utils.deepMerge(
-      DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop,
-      platformSettings
-    );
+    const isMobile = /Mobi|Android|iPhone|iPad|Windows Phone|IEMobile/i.test(navigator.userAgent || "");
+    const platformSettings = isMobile ? defs?.mobile || {} : defs?.desktop || {};
+    return utils.deepMerge(DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop, platformSettings);
   }
 
   return {
@@ -382,11 +365,7 @@ function createLangLoader({ config, utils }) {
 
   async function loadAll(allowed) {
     texts = {};
-    const langs = Array.isArray(allowed)
-      ? allowed
-      : config.DEFAULT_CONFIG
-      ? Object.keys(config.DEFAULT_CONFIG.DEFAULT_SETTINGS)
-      : ["en"];
+    const langs = Array.isArray(allowed) ? allowed : config.DEFAULT_CONFIG ? Object.keys(config.DEFAULT_CONFIG.DEFAULT_SETTINGS) : ["en"];
     await Promise.all(
       langs.map(async (code) => {
         const d = await loadLang(code);
@@ -405,10 +384,7 @@ function createLangLoader({ config, utils }) {
 function createStore({ bus, config, utils }) {
   const KEY = "CLT-settings";
   const LEGACY_KEY = "CLT_settings";
-  const canUseLocal = Boolean(
-    config.DEFAULT_CONFIG?.USE_LOCAL_STORAGE ||
-      config.FALLBACK?.USE_LOCAL_STORAGE
-  );
+  const canUseLocal = Boolean(config.DEFAULT_CONFIG?.USE_LOCAL_STORAGE || config.FALLBACK?.USE_LOCAL_STORAGE);
   const Storage = {
     save(s) {
       if (!canUseLocal) return;
@@ -462,12 +438,7 @@ function createStore({ bus, config, utils }) {
   function mergeWithDefaults(stored, defaults, els) {
     const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els || {};
     const out = {};
-    out.uiLang =
-      stored?.uiLang &&
-      utils.ALLOWED_LANGS.includes(stored.uiLang) &&
-      allowed(uiLangSelectEl, stored.uiLang)
-        ? stored.uiLang
-        : defaults?.uiLang ?? config.FALLBACK?.uiLang;
+    out.uiLang = stored?.uiLang && utils.ALLOWED_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang ?? config.FALLBACK?.uiLang;
     out.delay = (() => {
       const v = stored?.delay;
       const n = parseInt(v, 10);
@@ -480,14 +451,9 @@ function createStore({ bus, config, utils }) {
       if (!isNaN(n) && allowed(speedSelectEl, String(v))) return String(v);
       return defaults?.speed ?? config.FALLBACK?.speed;
     })();
-    out.fullscreen =
-      stored?.fullscreen ?? defaults?.fullscreen ?? config.FALLBACK?.fullscreen;
-    out.languageCode =
-      stored?.languageCode ??
-      defaults?.languageCode ??
-      config.FALLBACK?.languageCode;
-    out.voiceName =
-      stored?.voiceName ?? defaults?.voiceName ?? config.FALLBACK?.voiceName;
+    out.fullscreen = stored?.fullscreen ?? defaults?.fullscreen ?? config.FALLBACK?.fullscreen;
+    out.languageCode = stored?.languageCode ?? defaults?.languageCode ?? config.FALLBACK?.languageCode;
+    out.voiceName = stored?.voiceName ?? defaults?.voiceName ?? config.FALLBACK?.voiceName;
     return out;
   }
   function setSettings(s) {
@@ -508,8 +474,7 @@ function createStore({ bus, config, utils }) {
     bus.emit(EventTypes.SETTINGS_SAVE, toSave);
   }
   function loadSettingsFromLocal(els) {
-    if (!canUseLocal)
-      return { raw: {}, merged: mergeWithDefaults({}, defaultsActive, els) };
+    if (!canUseLocal) return { raw: {}, merged: mergeWithDefaults({}, defaultsActive, els) };
     try {
       const raw = Storage.load() || {};
       const merged = mergeWithDefaults(raw, defaultsActive, els);
@@ -616,11 +581,7 @@ function createVoices({ bus, utils }) {
 
   function collect() {
     try {
-      voices =
-        (typeof speechSynthesis !== "undefined" &&
-          speechSynthesis.getVoices &&
-          speechSynthesis.getVoices()) ||
-        [];
+      voices = (typeof speechSynthesis !== "undefined" && speechSynthesis.getVoices && speechSynthesis.getVoices()) || [];
     } catch (e) {
       voices = [];
     }
@@ -643,10 +604,7 @@ function createVoices({ bus, utils }) {
     publish(EventTypes.VOICES_LOADED);
   }
 
-  if (
-    typeof speechSynthesis !== "undefined" &&
-    "onvoiceschanged" in speechSynthesis
-  ) {
+  if (typeof speechSynthesis !== "undefined" && "onvoiceschanged" in speechSynthesis) {
     speechSynthesis.onvoiceschanged = () => {
       collect();
     };
@@ -662,10 +620,8 @@ function createVoices({ bus, utils }) {
 
 function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
   let currentUtter = null;
-  let getVoices = () =>
-    typeof voicesProvider === "function" ? voicesProvider() : [];
-  let getSettings = () =>
-    typeof settingsProvider === "function" ? settingsProvider() : {};
+  let getVoices = () => (typeof voicesProvider === "function" ? voicesProvider() : []);
+  let getSettings = () => (typeof settingsProvider === "function" ? settingsProvider() : {});
 
   function _selectVoice(settings) {
     const all = getVoices() || [];
@@ -685,23 +641,17 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
       if (partial) return partial;
     }
     if (desiredLang) {
-      const byFull = all.find(
-        (v) => (v.lang || "").toLowerCase() === desiredLang
-      );
+      const byFull = all.find((v) => (v.lang || "").toLowerCase() === desiredLang);
       if (byFull) return byFull;
       const base = desiredLang.split(/[-_]/)[0];
       if (base) {
-        const byBase = all.find(
-          (v) => ((v.lang || "").split(/[-_]/)[0] || "").toLowerCase() === base
-        );
+        const byBase = all.find((v) => ((v.lang || "").split(/[-_]/)[0] || "").toLowerCase() === base);
         if (byBase) return byBase;
       }
     }
     const navBase = (navigator.language || "").split(/[-_]/)[0];
     if (navBase) {
-      const nav = all.find((v) =>
-        (v.lang || "").toLowerCase().startsWith(navBase)
-      );
+      const nav = all.find((v) => (v.lang || "").toLowerCase().startsWith(navBase));
       if (nav) return nav;
     }
     return all[0] || null;
@@ -728,15 +678,9 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
       } else if (settings.languageCode) {
         utter.lang = settings.languageCode;
       }
-      utter.rate =
-        Number(settings.rate ?? settings.speed) > 0
-          ? Number(settings.rate ?? settings.speed)
-          : 1.0;
+      utter.rate = Number(settings.rate ?? settings.speed) > 0 ? Number(settings.rate ?? settings.speed) : 1.0;
       utter.pitch = Number(settings.pitch) > 0 ? Number(settings.pitch) : 1.0;
-      utter.volume =
-        Number(settings.volume) >= 0 && Number(settings.volume) <= 1
-          ? Number(settings.volume)
-          : 1.0;
+      utter.volume = Number(settings.volume) >= 0 && Number(settings.volume) <= 1 ? Number(settings.volume) : 1.0;
       return new Promise((resolve) => {
         const done = () => {
           currentUtter = null;
@@ -767,8 +711,7 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
 
   function speak(obj) {
     if (!obj) return;
-    if (typeof obj === "string")
-      return speakAsync(obj).catch((e) => console.warn("speak failed", e));
+    if (typeof obj === "string") return speakAsync(obj).catch((e) => console.warn("speak failed", e));
     const { text, rate = 1, lang, button, voiceName, pitch, volume } = obj;
     return speakAsync(text, {
       rate,
@@ -783,11 +726,7 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
 
   function cancel() {
     try {
-      if (
-        "speechSynthesis" in window &&
-        (speechSynthesis.speaking || speechSynthesis.pending)
-      )
-        speechSynthesis.cancel();
+      if ("speechSynthesis" in window && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
     } catch (e) {}
     if (currentUtter) {
       bus.emit(EventTypes.SPEECH_END, { button: null });
@@ -859,9 +798,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
   function toggleControls(enabled) {
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enabled;
     if (els.delaySelectEl) els.delaySelectEl.disabled = !enabled;
-    document
-      .querySelectorAll('label[for="speedSelect"],label[for="delaySelect"]')
-      .forEach((l) => l.classList.toggle("disabled", !enabled));
+    document.querySelectorAll('label[for="speedSelect"],label[for="delaySelect"]').forEach((l) => l.classList.toggle("disabled", !enabled));
   }
   function setActiveInput(index) {
     els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
@@ -898,9 +835,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     });
     window.alertTexts = {
       invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
-      invalidPhrase:
-        texts.alertInvalidPhrase ||
-        "Invalid time or unable to generate Dutch phrase.",
+      invalidPhrase: texts.alertInvalidPhrase || "Invalid time or unable to generate Dutch phrase.",
     };
     window.btnStates = {
       start: texts.btnStart || "Start",
@@ -908,34 +843,23 @@ function createUI({ bus, store, config, langLoader, utils }) {
       cont: texts.btnContinue || "Continue",
     };
     const f = store.playbackFlags();
-    if (f.isSequenceMode && !f.isPaused)
-      setBtnText(els.startPauseBtnEl, window.btnStates.stop || "Stop");
-    else if (f.isSequenceMode && f.isPaused)
-      setBtnText(els.startPauseBtnEl, window.btnStates.cont || "Continue");
+    if (f.isSequenceMode && !f.isPaused) setBtnText(els.startPauseBtnEl, window.btnStates.stop || "Stop");
+    else if (f.isSequenceMode && f.isPaused) setBtnText(els.startPauseBtnEl, window.btnStates.cont || "Continue");
     else setBtnText(els.startPauseBtnEl, window.btnStates.start || "Start");
     bus.emit(EventTypes.UI_TEXTS_UPDATE, { lang });
   }
-  function applySettingsToUI(
-    s,
-    { preferBlankForInvalid = true, raw = {} } = {}
-  ) {
+  function applySettingsToUI(s, { preferBlankForInvalid = true, raw = {} } = {}) {
     const setOrBlank = (sel, cand, fallback) => {
       if (!sel) return;
-      const hasOpt = (val) =>
-        Array.from(sel.options).some((o) => String(o.value) === String(val));
+      const hasOpt = (val) => Array.from(sel.options).some((o) => String(o.value) === String(val));
       if (cand !== undefined && hasOpt(cand)) sel.value = String(cand);
       else if (preferBlankForInvalid) sel.value = "";
-      else if (fallback !== undefined && hasOpt(fallback))
-        sel.value = String(fallback);
+      else if (fallback !== undefined && hasOpt(fallback)) sel.value = String(fallback);
     };
     setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
     setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
     setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
-    const effectiveLang =
-      els.uiLangSelectEl?.value ||
-      s.uiLang ||
-      store.getDefaultActive().uiLang ||
-      config.FALLBACK?.uiLang;
+    const effectiveLang = els.uiLangSelectEl?.value || s.uiLang || store.getDefaultActive().uiLang || config.FALLBACK?.uiLang;
     translateUI(effectiveLang);
   }
   function readSettingsFromUI() {
@@ -945,46 +869,24 @@ function createUI({ bus, store, config, langLoader, utils }) {
       delay: els.delaySelectEl?.value,
     };
     const defaults = store.getDefaultActive ? store.getDefaultActive() : {};
-    const allowedOpt = (sel, val) =>
-      sel &&
-      Array.from(sel.options).some((opt) => String(opt.value) === String(val));
+    const allowedOpt = (sel, val) => sel && Array.from(sel.options).some((opt) => String(opt.value) === String(val));
     return {
-      uiLang:
-        base.uiLang &&
-        utils.ALLOWED_LANGS.includes(base.uiLang) &&
-        allowedOpt(els.uiLangSelectEl, base.uiLang)
-          ? base.uiLang
-          : defaults.uiLang,
-      speed:
-        !isNaN(parseFloat(base.speed)) &&
-        allowedOpt(els.speedSelectEl, base.speed)
-          ? base.speed
-          : defaults.speed,
-      delay:
-        !isNaN(parseInt(base.delay, 10)) &&
-        allowedOpt(els.delaySelectEl, base.delay)
-          ? base.delay
-          : defaults.delay,
+      uiLang: base.uiLang && utils.ALLOWED_LANGS.includes(base.uiLang) && allowedOpt(els.uiLangSelectEl, base.uiLang) ? base.uiLang : defaults.uiLang,
+      speed: !isNaN(parseFloat(base.speed)) && allowedOpt(els.speedSelectEl, base.speed) ? base.speed : defaults.speed,
+      delay: !isNaN(parseInt(base.delay, 10)) && allowedOpt(els.delaySelectEl, base.delay) ? base.delay : defaults.delay,
       fullscreen: defaults.fullscreen,
       languageCode: defaults.languageCode,
       voiceName: defaults.voiceName,
     };
   }
   function setDeveloperVisibility(appCfg) {
-    const devMode =
-      appCfg?.DEVELOPER_MODE ??
-      config.DEFAULT_CONFIG.DEVELOPER_MODE ??
-      config.FALLBACK?.DEVELOPER_MODE;
-    if (els.developerBlockEl)
-      els.developerBlockEl.style.display = devMode ? "" : "none";
+    const devMode = appCfg?.DEVELOPER_MODE ?? config.DEFAULT_CONFIG.DEVELOPER_MODE ?? config.FALLBACK?.DEVELOPER_MODE;
+    if (els.developerBlockEl) els.developerBlockEl.style.display = devMode ? "" : "none";
   }
   function updateStartPauseBtnTo(state) {
-    if (state === "start")
-      setBtnText(els.startPauseBtnEl, window.btnStates.start);
-    else if (state === "stop")
-      setBtnText(els.startPauseBtnEl, window.btnStates.stop);
-    else if (state === "cont")
-      setBtnText(els.startPauseBtnEl, window.btnStates.cont);
+    if (state === "start") setBtnText(els.startPauseBtnEl, window.btnStates.start);
+    else if (state === "stop") setBtnText(els.startPauseBtnEl, window.btnStates.stop);
+    else if (state === "cont") setBtnText(els.startPauseBtnEl, window.btnStates.cont);
   }
   function updateControlsAvailability() {
     const flags = store.playbackFlags();
@@ -1036,9 +938,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     if (!els.voiceSelectEl) return;
     const s = store.getSettings();
     const norm = utils.normalizeLangCode(langCode);
-    const filtered = (list || []).filter(
-      (v) => utils.normalizeLangCode(v.lang) === norm
-    );
+    const filtered = (list || []).filter((v) => utils.normalizeLangCode(v.lang) === norm);
     els.voiceSelectEl.innerHTML = "";
     filtered.forEach((v) => {
       const opt = document.createElement("option");
@@ -1046,19 +946,14 @@ function createUI({ bus, store, config, langLoader, utils }) {
       opt.textContent = v.name;
       els.voiceSelectEl.appendChild(opt);
     });
-    const targetName =
-      s.voiceName && filtered.some((v) => v.name === s.voiceName)
-        ? s.voiceName
-        : filtered[0]?.name;
+    const targetName = s.voiceName && filtered.some((v) => v.name === s.voiceName) ? s.voiceName : filtered[0]?.name;
     if (targetName) els.voiceSelectEl.value = targetName;
   }
   function renderLangVoiceUI() {
     if (!cachedVoices || !cachedVoices.length) return;
     const s = store.getSettings();
     populateLanguageSelectFromVoices(cachedVoices);
-    const currentLang =
-      els.languageCodeSelectEl?.value ||
-      utils.normalizeLangCode(s.languageCode);
+    const currentLang = els.languageCodeSelectEl?.value || utils.normalizeLangCode(s.languageCode);
     populateVoiceSelectForLang(cachedVoices, currentLang);
     const selectedVoice = els.voiceSelectEl?.value;
     if (selectedVoice) {
@@ -1093,19 +988,16 @@ function createUI({ bus, store, config, langLoader, utils }) {
             alert(window.alertTexts.invalidFormat);
             return;
           }
-          const phrase = utils.getTimePhrase(
-            store.getSettings().languageCode,
-            timeStr
-          );
+          const phrase = utils.getTimePhrase(store.getSettings().languageCode, timeStr);
+
+          console.log(phrase);
           if (!phrase) {
             alert(window.alertTexts.invalidPhrase);
             return;
           }
           bus.emit(EventTypes.UI_SPEAK_SINGLE, {
             phrase,
-            rate: parseFloat(
-              els.speedSelectEl?.value || store.getDefaultActive().speed
-            ),
+            rate: parseFloat(els.speedSelectEl?.value || store.getDefaultActive().speed),
             button: speakBtn,
           });
         });
@@ -1113,28 +1005,18 @@ function createUI({ bus, store, config, langLoader, utils }) {
     els.fillRandomBtnEl?.addEventListener("click", () => {
       els.timeInputEls.forEach((inp, idx) => {
         const flags = store.playbackFlags();
-        if (
-          (flags.isSequenceMode || flags.isPaused) &&
-          idx === flags.sequenceIndex
-        )
-          return;
+        if ((flags.isSequenceMode || flags.isPaused) && idx === flags.sequenceIndex) return;
         inp.value = utils.generateRandomTimeString();
       });
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
-    els.resetSettingsBtnEl?.addEventListener("click", () =>
-      bus.emit(EventTypes.SETTINGS_RESET)
-    );
+    els.resetSettingsBtnEl?.addEventListener("click", () => bus.emit(EventTypes.SETTINGS_RESET));
     els.uiLangSelectEl?.addEventListener("change", (e) => {
       bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
     });
-    els.speedSelectEl?.addEventListener("change", () =>
-      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
-    );
-    els.delaySelectEl?.addEventListener("change", () =>
-      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true })
-    );
+    els.speedSelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
+    els.delaySelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
     els.languageCodeSelectEl?.addEventListener("change", (e) => {
       const newLang = utils.normalizeLangCode(e.target.value);
       populateVoiceSelectForLang(cachedVoices, newLang);
@@ -1153,8 +1035,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
       if (v) {
         s.voiceName = v.name;
         s.languageCode = utils.normalizeLangCode(v.lang);
-        if (els.languageCodeSelectEl)
-          els.languageCodeSelectEl.value = s.languageCode;
+        if (els.languageCodeSelectEl) els.languageCodeSelectEl.value = s.languageCode;
         store.setSettings(s);
         store.saveSettings(s, els);
       }
@@ -1217,9 +1098,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     store.setPlaybackFlags({ isSpeaking: true });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     ui.updateButtonIcon(btn, "speaking");
-    const rate = parseFloat(
-      ui.els.speedSelectEl?.value || store.getDefaultActive().speed
-    );
+    const rate = parseFloat(ui.els.speedSelectEl?.value || store.getDefaultActive().speed);
     store.setCurrentSpeakButton(btn);
     speaker.speak({
       text: phrase,
@@ -1234,8 +1113,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
       ui.updateButtonIcon(btn);
       const f = store.playbackFlags();
       if (f.isSequenceMode && !f.isPaused) after && after();
-      if (store.getCurrentSpeakButton() === btn)
-        store.setCurrentSpeakButton(null);
+      if (store.getCurrentSpeakButton() === btn) store.setCurrentSpeakButton(null);
     });
   }
   function playAt(index = 0) {
@@ -1259,20 +1137,14 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     if (!raw) return next(index);
     const timeStr = utils.parseTimeInput(raw);
     if (!timeStr) return next(index);
-    const phrase = utils.getTimePhrase(
-      store.getSettings().languageCode,
-      timeStr
-    );
+    const phrase = utils.getTimePhrase(store.getSettings().languageCode, timeStr);
     if (!phrase) return next(index);
     const speakBtn = inp?.parentElement?.querySelector(".speak-btn") || null;
     speakPhrase(phrase, speakBtn, () => scheduleNext(index));
   }
   function scheduleNext(index) {
     if (store.playbackFlags().isPaused) return;
-    const delayMs = parseInt(
-      ui.els.delaySelectEl?.value || store.getDefaultActive().delay,
-      10
-    );
+    const delayMs = parseInt(ui.els.delaySelectEl?.value || store.getDefaultActive().delay, 10);
     currentTimeout = setTimeout(() => next(index), delayMs);
   }
   function next(index) {
@@ -1348,8 +1220,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
       })
       .catch((e) => console.warn("single speak failed", e))
       .finally(() => {
-        if (store.getCurrentSpeakButton() === button)
-          store.setCurrentSpeakButton(null);
+        if (store.getCurrentSpeakButton() === button) store.setCurrentSpeakButton(null);
         bus.emit(EventTypes.UPDATE_CONTROLS);
       });
   }
@@ -1413,9 +1284,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   });
 
   const appCfg = await config.loadExternal();
-  store.setDefaultActive(
-    config.selectPlatformDefaults(appCfg.DEFAULT_SETTINGS)
-  );
+  store.setDefaultActive(config.selectPlatformDefaults(appCfg.DEFAULT_SETTINGS));
   ui.setDeveloperVisibility(appCfg);
 
   await langLoader.loadAll(fullUtils.ALLOWED_LANGS);

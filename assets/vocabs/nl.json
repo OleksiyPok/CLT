@@ -4,8 +4,14 @@
     "half": "half",
     "over": "over",
     "before": "voor",
+    "quarter": "kwart",
     "quarterOver": "kwart over",
-    "quarterBefore": "kwart voor"
+    "quarterBefore": "kwart voor",
+    "past": "over",
+    "to": "voor",
+    "of": "van",
+    "without": "zonder",
+    "minuteForms": ["minuut", "minuten"]
   },
   "hours": {
     "0": "twaalf",
@@ -48,7 +54,7 @@
     "12": "twaalf",
     "13": "dertien",
     "14": "veertien",
-    "15": "kwart",
+    "15": "vijftien",
     "16": "zestien",
     "17": "zeventien",
     "18": "achttien",

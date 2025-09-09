@@ -3,9 +3,15 @@
     "hour": "ساعة",
     "half": "نصف",
     "over": "بعد",
-    "before": "إلا",
+    "before": "قبل",
+    "quarter": "ربع",
     "quarterOver": "وربع",
-    "quarterBefore": "إلا ربع"
+    "quarterBefore": "إلا ربع",
+    "past": "و",
+    "to": "إلا",
+    "of": "من",
+    "without": "بدون",
+    "minuteForms": ["دقيقة", "دقائق"]
   },
   "hours": {
     "0": "اثنا عشر",

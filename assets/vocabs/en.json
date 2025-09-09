@@ -4,8 +4,14 @@
     "half": "half",
     "over": "past",
     "before": "to",
+    "quarter": "quarter",
     "quarterOver": "quarter past",
-    "quarterBefore": "quarter to"
+    "quarterBefore": "quarter to",
+    "past": "past",
+    "to": "to",
+    "of": "of",
+    "without": "without",
+    "minuteForms": ["minute", "minutes"]
   },
   "hours": {
     "0": "twelve",

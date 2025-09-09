@@ -4,8 +4,14 @@
     "half": "wpół do",
     "over": "po",
     "before": "przed",
+    "quarter": "kwadrans",
     "quarterOver": "kwadrans po",
-    "quarterBefore": "kwadrans przed"
+    "quarterBefore": "kwadrans przed",
+    "past": "po",
+    "to": "do",
+    "of": "",
+    "without": "bez",
+    "minuteForms": ["minuta", "minuty", "minut"]
   },
   "hours": {
     "0": "dwunasta",

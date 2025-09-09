@@ -2,10 +2,16 @@
   "words": {
     "hour": "hora",
     "half": "meia",
-    "over": "passadas",
-    "before": "para",
+    "over": "depois",
+    "before": "antes",
+    "quarter": "quarto",
     "quarterOver": "um quarto depois",
-    "quarterBefore": "um quarto para"
+    "quarterBefore": "um quarto para",
+    "past": "depois de",
+    "to": "para",
+    "of": "de",
+    "without": "sem",
+    "minuteForms": ["minuto", "minutos"]
   },
   "hours": {
     "0": "doze",

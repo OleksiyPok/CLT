@@ -3,9 +3,15 @@
     "hour": "heures",
     "half": "et demie",
     "over": "après",
-    "before": "moins",
+    "before": "avant",
+    "quarter": "quart",
     "quarterOver": "et quart",
-    "quarterBefore": "moins le quart"
+    "quarterBefore": "moins le quart",
+    "past": "et",
+    "to": "moins",
+    "of": "de",
+    "without": "sans",
+    "minuteForms": ["minute", "minutes"]
   },
   "hours": {
     "0": "douze",

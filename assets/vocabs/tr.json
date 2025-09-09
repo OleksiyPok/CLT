@@ -2,10 +2,16 @@
   "words": {
     "hour": "saat",
     "half": "buçuk",
-    "over": "geçe",
+    "over": "geçiyor",
     "before": "kala",
-    "quarterOver": "çeyrek geçe",
-    "quarterBefore": "çeyrek kala"
+    "quarter": "çeyrek",
+    "quarterOver": "çeyrek geçiyor",
+    "quarterBefore": "çeyrek var",
+    "past": "geçiyor",
+    "to": "var",
+    "of": "",
+    "without": "eksik",
+    "minuteForms": ["dakika", "dakika"]
   },
   "hours": {
     "0": "on iki",
