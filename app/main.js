@@ -1050,11 +1050,13 @@ function createUI({ bus, store, config, langLoader, utils }) {
     const flags = store.playbackFlags();
     const activeBtn = store.getCurrentSpeakButton();
     const activeIdx = flags.sequenceIndex;
+
     els.speakBtnEls.forEach((btn) => {
       if (flags.isSequenceMode) btn.disabled = true;
       else if (flags.isSpeaking && activeBtn) btn.disabled = btn !== activeBtn;
       else btn.disabled = flags.isPaused;
     });
+
     els.randomBtnEls.forEach((btn, idx) => {
       if (flags.isSequenceMode && idx === activeIdx) btn.disabled = true;
       else if (activeBtn) {
@@ -1062,7 +1064,25 @@ function createUI({ bus, store, config, langLoader, utils }) {
         btn.disabled = speakBtn && speakBtn === activeBtn;
       } else btn.disabled = false;
     });
-    toggleControls(!(flags.isSequenceMode && !flags.isPaused));
+
+    let enableControls = !(flags.isSequenceMode && !flags.isPaused);
+
+    if (!flags.isSequenceMode && flags.isSpeaking) {
+      enableControls = false;
+    }
+
+    if (els.speedSelectEl) els.speedSelectEl.disabled = !enableControls;
+    if (els.delaySelectEl) els.delaySelectEl.disabled = !enableControls;
+    if (els.languageCodeSelectEl)
+      els.languageCodeSelectEl.disabled = !enableControls;
+    if (els.voiceSelectEl) els.voiceSelectEl.disabled = !enableControls;
+
+    document
+      .querySelectorAll(
+        'label[for="speedSelect"],label[for="delaySelect"],label[for="languageCodeSelect"],label[for="voiceSelect"]'
+      )
+      .forEach((l) => l.classList.toggle("disabled", !enableControls));
+
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
 
