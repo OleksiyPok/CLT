@@ -72,7 +72,7 @@ function createEventBus() {
   };
 }
 
-function createUtils(timeDictLoader, utils) {
+function createUtils(timeDictLoader, utils, config) {
   const ALLOWED_LANGS = [
     "ar",
     "de",
@@ -188,7 +188,7 @@ function createUtils(timeDictLoader, utils) {
       nextHourWordGenitive = hoursGenitive[nextIdx] || h + 1;
     }
 
-    console.log(`algo`, algo);
+    utils.log(`algo`, algo);
 
     switch (algo) {
       case "slavic": // 🇷🇺 🇺🇦 🇵🇱
@@ -293,6 +293,20 @@ function createUtils(timeDictLoader, utils) {
     }
   }
 
+  function log(...args) {
+    const on =
+      typeof config === "boolean"
+        ? config
+        : typeof config === "function"
+        ? !!config()
+        : !!(
+            config &&
+            (config.DEVELOPER_MODE === true ||
+              config.DEFAULT_CONFIG?.DEVELOPER_MODE === true)
+          );
+    if (on) console.log(...args);
+  }
+
   return {
     ALLOWED_LANGS,
     deepMerge,
@@ -303,6 +317,7 @@ function createUtils(timeDictLoader, utils) {
     getBaseLang,
     normalizeLangCode,
     chooseForm,
+    log,
   };
 }
 
@@ -689,7 +704,12 @@ function createVoices({ bus, utils, filterLangs = false } = {}) {
     } catch (e) {
       voices = [];
     }
+    utils.log(
+      "Available Langs: ",
+      voices.map((v) => v.lang)
+    );
     computeAvailableLanguages();
+    utils.log("Filtered Langs: ", availableLanguages);
     publish(EventTypes.VOICES_CHANGED);
   }
 
@@ -770,6 +790,7 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
   }
 
   async function speakAsync(text, opts = {}) {
+    utils.log(text, opts);
     if (!text) return;
     const settings = { ...(getSettings() || {}), ...opts };
     if (opts.interrupt !== false && "speechSynthesis" in window) {
@@ -1485,14 +1506,18 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   const timeDictLoader = createTimeDictLoader({ config, utils });
   await timeDictLoader.loadAll(utils.ALLOWED_LANGS);
 
-  const fullUtils = createUtils(timeDictLoader);
+  const appCfg = await config.loadExternal();
+
+  const fullUtils = createUtils(
+    timeDictLoader,
+    utils,
+    Boolean(appCfg?.DEVELOPER_MODE)
+  );
   window.utils = fullUtils;
 
   const langLoader = createLangLoader({ config, utils: fullUtils });
   const store = createStore({ bus, config, utils: fullUtils });
   const wakeLock = createWakeLock({ bus });
-
-  const appCfg = await config.loadExternal();
 
   const voices = createVoices({
     bus,
@@ -1505,7 +1530,9 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     voicesProvider: () => voices.getVoices(),
     settingsProvider: () => store.getSettings(),
   });
+
   const ui = createUI({ bus, store, config, langLoader, utils: fullUtils });
+
   const playback = createPlayback({
     bus,
     store,
@@ -1575,5 +1602,6 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     playback,
     appCfg,
   };
+
   bus.emit(EventTypes.APP_INIT);
 })();
