@@ -989,7 +989,6 @@ function createUI({ bus, store, config, langLoader, utils }) {
             return;
           }
           const phrase = utils.getTimePhrase(store.getSettings().languageCode, timeStr);
-
           console.log(phrase);
           if (!phrase) {
             alert(window.alertTexts.invalidPhrase);
@@ -1040,6 +1039,22 @@ function createUI({ bus, store, config, langLoader, utils }) {
         store.saveSettings(s, els);
       }
       bus.emit(EventTypes.UPDATE_CONTROLS);
+    });
+    els.startPauseBtnEl?.addEventListener("click", () => {
+      const f = store.playbackFlags();
+      if (!f.isSequenceMode) {
+        updateStartPauseBtnTo("stop");
+        bus.emit(EventTypes.PLAYBACK_START, { index: f.sequenceIndex || 0 });
+      } else if (f.isPaused) {
+        bus.emit(EventTypes.PLAYBACK_CONTINUE);
+        updateStartPauseBtnTo("stop");
+      } else {
+        bus.emit(EventTypes.PLAYBACK_PAUSE);
+      }
+    });
+    els.resetBtnEl?.addEventListener("click", () => {
+      bus.emit(EventTypes.PLAYBACK_STOP);
+      updateStartPauseBtnTo("start");
     });
     bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
     bus.on(EventTypes.SPEECH_START, () => {
