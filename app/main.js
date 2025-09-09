@@ -246,7 +246,7 @@ function createConfig(utils, { paths = null } = {}) {
     DEFAULT_VOICE: "Google Nederlands",
     DEFAULT_SETTINGS: {
       shared: {
-        uiLang: "en",
+        uiLang: "ru",
         delay: "2000",
         speed: "1.0",
         fullscreen: "0",
@@ -262,10 +262,9 @@ function createConfig(utils, { paths = null } = {}) {
     DEVELOPER_MODE: true,
     USE_LOCAL_STORAGE: true,
     DEFAULT_VOICE: "Google Nederlands",
-    uiLang: "en",
+    uiLang: "ru",
     delay: "1000",
     speed: "1.0",
-    fullscreen: "0",
     languageCode: "nl-NL",
     voiceName: "Google Nederlands",
   });
@@ -583,50 +582,78 @@ function createVoices({ bus }) {
   let voices = [];
   let availableLanguages = [];
 
+  function baseLang(code) {
+    return String(code || "")
+      .split(/[-_]/)[0]
+      .toUpperCase();
+  }
+
   function computeAvailableLanguages() {
-    availableLanguages = Array.from(
-      new Set(
-        (voices || [])
-          .map((v) => (v.lang || "").split(/[-_]/)[0].toUpperCase())
-          .filter(Boolean)
-      )
-    ).sort();
-    if (!availableLanguages.includes("ALL")) availableLanguages.unshift("ALL");
+    const set = new Set();
+    for (const v of voices) {
+      const b = baseLang(v.lang);
+      if (b) set.add(b);
+    }
+    availableLanguages = Array.from(set).sort();
+    // "ALL" добавляем в конец для контроля (UI добавим позже)
+    if (!availableLanguages.includes("ALL")) availableLanguages.push("ALL");
   }
 
   function publish(evt) {
-    const lightweight = (voices || []).map((v) => ({
-      name: v.name,
-      lang: v.lang,
-    }));
-    bus.emit(evt, {
-      voices: lightweight,
+    const payload = {
+      voices: (voices || []).map((v) => ({ name: v.name, lang: v.lang })),
       availableLanguages: availableLanguages.slice(),
+    };
+    console.log(`[voices] ${evt}`, {
+      count: payload.voices.length,
+      langs: payload.availableLanguages,
+      sample: payload.voices.slice(0, 5),
     });
+    bus.emit(evt, payload);
   }
 
   function collect() {
-    voices = speechSynthesis.getVoices() || [];
+    try {
+      voices =
+        (typeof speechSynthesis !== "undefined" &&
+          speechSynthesis.getVoices &&
+          speechSynthesis.getVoices()) ||
+        [];
+    } catch (e) {
+      voices = [];
+    }
     computeAvailableLanguages();
     publish(EventTypes.VOICES_CHANGED);
   }
 
   async function load() {
+    console.log("[voices] load:start");
     collect();
-    if (!voices.length) {
+    if (!voices.length && typeof speechSynthesis !== "undefined") {
       try {
+        // триггерим ленивую подгрузку голосов
         speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise((r) => setTimeout(r, 300));
         collect();
       } catch (e) {
-        console.warn("Voices.load fallback failed", e);
+        console.warn("[voices] lazy-load failed", e);
       }
     }
+    console.log("[voices] load:done", {
+      count: voices.length,
+      langs: availableLanguages,
+    });
     publish(EventTypes.VOICES_LOADED);
   }
 
-  if ("onvoiceschanged" in speechSynthesis) {
-    speechSynthesis.onvoiceschanged = () => collect();
+  if (
+    typeof speechSynthesis !== "undefined" &&
+    "onvoiceschanged" in speechSynthesis
+  ) {
+    speechSynthesis.onvoiceschanged = () => {
+      console.log("[voices] onvoiceschanged");
+      collect();
+    };
   }
 
   return {
@@ -1300,6 +1327,16 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   });
   const ui = createUI({ bus, store, config, langLoader, utils });
   const playback = createPlayback({ bus, store, ui, speaker, utils, wakeLock });
+
+  // ---------- DIAGNOSTIC LOGS (временные) ----------
+  bus.on(EventTypes.VOICES_CHANGED, (p) => {
+    console.log("[DEBUG] VOICES_CHANGED", p);
+  });
+  bus.on(EventTypes.VOICES_LOADED, (p) => {
+    console.log("[DEBUG] VOICES_LOADED", p);
+  });
+  // -------------------------------------------------
+
   const appCfg = await config.loadExternal();
   store.setDefaultActive(
     config.selectPlatformDefaults(appCfg.DEFAULT_SETTINGS)
@@ -1310,7 +1347,9 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   store.setSettings(merged);
   ui.applySettingsToUI(merged, { raw });
   store.saveSettings(merged, ui.els);
+
   await voices.load();
+
   bus.on(EventTypes.VOICES_LOADED, () => {
     const currentSettings = store.getSettings();
     if (!currentSettings.voiceName && voices.getVoices) {
@@ -1321,6 +1360,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
       }
     }
   });
+
   bus.on(EventTypes.APP_INIT, () => {
     ui.init();
     wakeLock.init();
