@@ -195,7 +195,7 @@ function createUtils(timeDictLoader, utils, config) {
       case "latin": // 🇬🇧 🇫🇷 🇵🇹
         if (mm === 0) return `${hourWord} ${words.hour || ""}`;
         if (mm === 15) return `${words.quarterOver} ${hourWord}`;
-        if (mm === 30) return `${words.half} ${hourWord}`;
+        if (mm === 30) return `${words.half} ${nextHourWord}`;
         if (mm === 45) return `${words.quarterBefore} ${nextHourWord}`;
         if (mm < 30) return `${minutes[mm]} ${chooseForm(mm, words.minuteForms)} ${words.past} ${hourWord}`;
         return `${minutes[60 - mm]} ${chooseForm(60 - mm, words.minuteForms)} ${words.to} ${nextHourWord}`;
