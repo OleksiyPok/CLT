@@ -1,22 +1,29 @@
 {
-    "languageCode": "AR",
-    "btnContinue": "متابعة",
-    "btnStart": "ابدأ",
-    "btnStop": "إيقاف",
-    "fillRandomBtn": "🎲 عشوائي",
-    "resetBtn": "إعادة ضبط",
-    "startPauseBtn": "ابدأ",
-    "labelDelay": "التأخير (مللي ثانية)",
-    "labelSpeed": "السرعة",
-    "uiLangLabel": "الواجهة:",
-    "alertInvalidFormat": "أدخل الوقت بصيغة HH:MM",
-    "alertInvalidPhrase": "وقت غير صالح أو تعذّر إنشاء العبارة",
-    "fillRandomBtnTitle": "املأ بأوقات عشوائية",
-    "randomBtnTitle": "إنشاء عشوائي",
-    "resetSettingsTitle": "إعادة الإعدادات الافتراضية",
-    "resetBtnTitle": "إعادة تسلسل",
-    "speakBtnTitle": "تشغيل هذا الوقت",
-    "startPauseBtnTitle": "بدء أو إيقاف التسلسل مؤقتًا",
-    "uiLangSelectTitle": "اختر لغة الواجهة"
-  }
-  
+  "languageCode": "AR",
+  "buttons": {},
+  "labels": {},
+  "titles": {},
+  "alerts": {},
+  "titleText": "مدرب الاستماع إلى الساعة",
+  "versionText": "الإصدار",
+  "btnContinue": "متابعة",
+  "btnStart": "ابدأ",
+  "btnStop": "إيقاف",
+  "fillRandomBtn": "🎲 عشوائي",
+  "resetBtn": "إعادة ضبط",
+  "startPauseBtn": "ابدأ",
+  "labelDelay": "التأخير (مللي ثانية)",
+  "labelSpeed": "السرعة",
+  "labelLanguageCode": "اللغة",
+  "labelVoice": "الصوت",
+  "uiLangLabel": "الواجهة:",
+  "alertInvalidFormat": "أدخل الوقت بصيغة HH:MM",
+  "alertInvalidPhrase": "وقت غير صالح أو تعذّر إنشاء العبارة",
+  "fillRandomBtnTitle": "املأ بأوقات عشوائية",
+  "randomBtnTitle": "إنشاء عشوائي",
+  "resetSettingsTitle": "إعادة الإعدادات الافتراضية",
+  "resetBtnTitle": "إعادة تسلسل",
+  "speakBtnTitle": "تشغيل هذا الوقت",
+  "startPauseBtnTitle": "بدء أو إيقاف التسلسل مؤقتًا",
+  "uiLangSelectTitle": "اختر لغة الواجهة"
+}

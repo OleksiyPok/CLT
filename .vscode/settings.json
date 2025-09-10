@@ -3,5 +3,8 @@
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    // "prettier.printWidth": 80,
+    // "prettier.printWidth": 120,
+        "prettier.printWidth": 1000
 }
