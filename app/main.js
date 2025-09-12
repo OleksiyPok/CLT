@@ -4,6 +4,8 @@ const EventTypes = Object.freeze({
   APP_INIT: "app:init",
   APP_STATE: "app:state",
   APP_STATE_SET: "app:state:set",
+  APP_CLOSED: "app:closed",
+
   CONFIG_LOADED: "app:config:loaded",
 
   SETTINGS_LOAD: "settings:load",
@@ -524,6 +526,7 @@ function createWakeLock({ bus } = {}) {
   let wakeLock = null;
 
   async function request() {
+    // console.log("wakeLock.request called");
     try {
       if ("wakeLock" in navigator && !wakeLock) {
         wakeLock = await navigator.wakeLock.request("screen");
@@ -538,6 +541,7 @@ function createWakeLock({ bus } = {}) {
   }
 
   async function release() {
+    // console.log("wakeLock.release called");
     try {
       if (wakeLock) {
         await (wakeLock.release?.() || Promise.resolve());
@@ -561,6 +565,9 @@ function createWakeLock({ bus } = {}) {
       else release();
     });
   }
+  bus.on(EventTypes.APP_CLOSED, () => {
+    release();
+  });
 
   return { request, release, init };
 }
@@ -1277,6 +1284,9 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
       bus.emit(EventTypes.UPDATE_CONTROLS);
     }
   });
+  bus.on(EventTypes.APP_CLOSED, () => {
+    stop();
+  });
   return { playAt, stop, pause, resume, finish };
 }
 
@@ -1373,6 +1383,9 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     store.saveSettings(defaults, ui.els);
     ui.applySettingsToUI(defaults, { raw: defaults });
   });
+
+  window.addEventListener("pagehide", () => bus.emit(EventTypes.APP_CLOSED));
+  window.addEventListener("beforeunload", () => bus.emit(EventTypes.APP_CLOSED));
 
   window.app = {
     bus,
