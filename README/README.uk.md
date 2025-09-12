@@ -1,4 +1,4 @@
-🌐 Available languages:  
+🌐 Доступні мови:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
 
 ---
@@ -11,5 +11,5 @@
 
 ---
 
-🌐 Available languages:  
+🌐 Доступні мови:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)

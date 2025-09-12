@@ -1,4 +1,4 @@
-🌐 Available languages:  
+🌐 Beschikbare talen:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
 
 ---
@@ -11,5 +11,5 @@ Dit is een kleine, eendelige applicatie om getallen en tijdswaarneming op gehoor
 
 ---
 
-🌐 Available languages:  
+🌐 Beschikbare talen:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)

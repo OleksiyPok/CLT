@@ -1,4 +1,4 @@
-🌐 Available languages:  
+🌐 Verfügbare Sprachen:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
 
 ---
@@ -11,5 +11,5 @@ Dies ist eine kleine, einseitige Anwendung zum Erlernen von Zahlen und Zeitwahrn
 
 ---
 
-🌐 Available languages:  
+🌐 Verfügbare Sprachen:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
