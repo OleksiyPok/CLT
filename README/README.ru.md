@@ -6,7 +6,6 @@
 # CLT Clock Listening Trainer
 Это небольшое одностраничное приложение для обучения числам и восприятию времени на слух на нескольких языках
 
--
  
 ![Appearance of the application](screenshots/app.png)
 

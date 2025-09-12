@@ -6,7 +6,6 @@
 # CLT Clock Listening Trainer
 Dit is een kleine, eendelige applicatie om getallen en tijdswaarneming op gehoor te leren in meerdere talen
 
--
  
 ![Appearance of the application](screenshots/app.png)
 
