@@ -20,7 +20,7 @@
           <img class="title-icon" id="titleIcon" src="icons/icon_CLT_64x64.png" alt="Icon" />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> 1.3.12</h6>
+            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> 1.3.14</h6>
           </div>
         </div>
         <h5>
@@ -45,87 +45,88 @@
           </div>
         </div>
 
-        <div class="section-block section-block-exercises">
-          <div class="clock-container">
-            <button class="random-btn" id="randomBtn_1" data-i18n-title="randomBtnTitle">🎲</button>
-            <input type="text" class="time-input" id="timeInput_1" maxlength="5" value="00:00" />
-            <button class="speak-btn" id="speakBtn_1" data-i18n-title="speakBtnTitle">▶️</button>
-          </div>
-          <div class="clock-container">
-            <button class="random-btn" id="randomBtn_2" data-i18n-title="randomBtnTitle">🎲</button>
-            <input type="text" class="time-input" id="timeInput_2" maxlength="5" value="00:00" />
-            <button class="speak-btn" id="speakBtn_2" data-i18n-title="speakBtnTitle">▶️</button>
-          </div>
-          <div class="clock-container">
-            <button class="random-btn" id="randomBtn_3" data-i18n-title="randomBtnTitle">🎲</button>
-            <input type="text" class="time-input" id="timeInput_3" maxlength="5" value="00:00" />
-            <button class="speak-btn" id="speakBtn_3" data-i18n-title="speakBtnTitle">▶️</button>
-          </div>
-          <div class="clock-container">
-            <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-            <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-            <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-          </div>
-          <div class="clock-container">
-            <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-            <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-            <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
-          </div>
-        </div>
-
-        <div class="setting-button-wrapper">
-          <div class="section-block section-block-buttons">
-            <button class="fill-random-btn" id="fillRandomBtn" data-i18n="fillRandomBtn" data-i18n-title="fillRandomBtnTitle">RND</button>
-            <button class="start-pause-btn" id="startPauseBtn" data-i18n="btnStart" data-i18n-title="startPauseBtnTitle">Start</button>
-            <button disabled class="reset-btn" id="resetBtn" data-i18n="resetBtn" data-i18n-title="resetBtnTitle">Reset</button>
-          </div>
-
-          <div class="section-block section-block-settings">
-            <div class="speed-delay-wrapper">
-              <div class="speed-group">
-                <label for="speedSelect" id="labelSpeed" data-i18n="labelSpeed">Speed</label>
-                <select id="speedSelect" class="speed-select">
-                  <option value="0.6">0.6</option>
-                  <option value="0.8">0.8</option>
-                  <option value="1.0" selected>1.0</option>
-                  <option value="1.2">1.2</option>
-                  <option value="1.4">1.4</option>
-                  <option value="1.6">1.6</option>
-                  <option value="1.8">1.8</option>
-                  <option value="2.0">2.0</option>
-                </select>
-              </div>
-              <div class="delay-group">
-                <label for="delaySelect" class="label-delay" id="labelDelay" data-i18n="labelDelay">Delay</label>
-                <select id="delaySelect" class="delay-select">
-                  <option value="1000" selected>1000</option>
-                  <option value="1500">1500</option>
-                  <option value="2000">2000</option>
-                  <option value="2500">2500</option>
-                  <option value="3000">3000</option>
-                  <option value="4000">4000</option>
-                  <option value="5000">5000</option>
-                  <option value="6000">6000</option>
-                  <option value="7000">7000</option>
-                  <option value="8000">8000</option>
-                  <option value="9000">9000</option>
-                  <option value="10000">10000</option>
-                </select>
-              </div>
+        <div class="section-row">
+          <div class="section-block section-block-exercises">
+            <div class="clock-container">
+              <button class="random-btn" id="randomBtn_1" data-i18n-title="randomBtnTitle">🎲</button>
+              <input type="text" class="time-input" id="timeInput_1" maxlength="5" value="00:00" />
+              <button class="speak-btn" id="speakBtn_1" data-i18n-title="speakBtnTitle">▶️</button>
             </div>
-            <div class="language-voice-wrapper">
-              <div class="language-group">
-                <label for="languageCodeSelect" class="label-language-code" id="labelLanguageCode" data-i18n="labelLanguageCode">Language</label>
-                <select class="language-code-select" id="languageCodeSelect" title="Language"></select>
-              </div>
-              <div class="voice-group">
-                <label for="voiceSelect" class="label-voice" id="labelVoice" data-i18n="labelVoice">Voice</label>
-                <select class="voice-select" id="voiceSelect" title="Voice"></select>
-              </div>
+            <div class="clock-container">
+              <button class="random-btn" id="randomBtn_2" data-i18n-title="randomBtnTitle">🎲</button>
+              <input type="text" class="time-input" id="timeInput_2" maxlength="5" value="00:00" />
+              <button class="speak-btn" id="speakBtn_2" data-i18n-title="speakBtnTitle">▶️</button>
+            </div>
+            <div class="clock-container">
+              <button class="random-btn" id="randomBtn_3" data-i18n-title="randomBtnTitle">🎲</button>
+              <input type="text" class="time-input" id="timeInput_3" maxlength="5" value="00:00" />
+              <button class="speak-btn" id="speakBtn_3" data-i18n-title="speakBtnTitle">▶️</button>
+            </div>
+            <div class="clock-container">
+              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
+              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
+              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
+            </div>
+            <div class="clock-container">
+              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
+              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
+              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
             </div>
           </div>
-        </div>
 
+          <div class="setting-button-wrapper">
+            <div class="section-block section-block-buttons">
+              <button class="fill-random-btn" id="fillRandomBtn" data-i18n="fillRandomBtn" data-i18n-title="fillRandomBtnTitle">RND</button>
+              <button class="start-pause-btn" id="startPauseBtn" data-i18n="btnStart" data-i18n-title="startPauseBtnTitle">Start</button>
+              <button disabled class="reset-btn" id="resetBtn" data-i18n="resetBtn" data-i18n-title="resetBtnTitle">Reset</button>
+            </div>
+
+            <div class="section-block section-block-settings">
+              <div class="speed-delay-wrapper">
+                <div class="speed-group">
+                  <label for="speedSelect" id="labelSpeed" data-i18n="labelSpeed">Speed</label>
+                  <select id="speedSelect" class="speed-select">
+                    <option value="0.6">0.6</option>
+                    <option value="0.8">0.8</option>
+                    <option value="1.0" selected>1.0</option>
+                    <option value="1.2">1.2</option>
+                    <option value="1.4">1.4</option>
+                    <option value="1.6">1.6</option>
+                    <option value="1.8">1.8</option>
+                    <option value="2.0">2.0</option>
+                  </select>
+                </div>
+                <div class="delay-group">
+                  <label for="delaySelect" class="label-delay" id="labelDelay" data-i18n="labelDelay">Delay</label>
+                  <select id="delaySelect" class="delay-select">
+                    <option value="1000" selected>1000</option>
+                    <option value="1500">1500</option>
+                    <option value="2000">2000</option>
+                    <option value="2500">2500</option>
+                    <option value="3000">3000</option>
+                    <option value="4000">4000</option>
+                    <option value="5000">5000</option>
+                    <option value="6000">6000</option>
+                    <option value="7000">7000</option>
+                    <option value="8000">8000</option>
+                    <option value="9000">9000</option>
+                    <option value="10000">10000</option>
+                  </select>
+                </div>
+              </div>
+              <div class="language-voice-wrapper">
+                <div class="language-group">
+                  <label for="languageCodeSelect" class="label-language-code" id="labelLanguageCode" data-i18n="labelLanguageCode">Language</label>
+                  <select class="language-code-select" id="languageCodeSelect" title="Language"></select>
+                </div>
+                <div class="voice-group">
+                  <label for="voiceSelect" class="label-voice" id="labelVoice" data-i18n="labelVoice">Voice</label>
+                  <select class="voice-select" id="voiceSelect" title="Voice"></select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="developer" id="developer">
           <button onclick="alert(location.href);" title="Path to this page">Path</button>
           <button onclick="localStorage.clear(); alert('localStorage cleared');" title="Clear local storage">Clear LS</button>

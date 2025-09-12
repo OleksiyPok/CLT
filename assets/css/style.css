@@ -1,6 +1,19 @@
 /* style.css */
 :root {
-  --max-content-width: 425px;
+  --content-max-xs: 425px; /* small containers */
+  --content-max-sm: 540px; /* small containers */
+  --content-max-md: 720px; /* medium */
+  --content-max-lg: 960px; /* large */
+  --content-max-xl: 1140px; /* extra large */
+  --content-max-2xl: 1320px; /* very large desktops */
+
+  --bp-xs: 480px; /* extra small phones */
+  --bp-sm: 576px; /* phones */
+  --bp-md: 640px; /* phablets / small tablets */
+  --bp-lg: 768px; /* tablets portrait */
+  --bp-xl: 1024px; /* tablets landscape / laptops */
+  --bp-2xl: 1280px; /* desktops */
+
   /*:root.theme-yellowblue-normal */
   --text-color: #1a1a1a;
   --text-muted: #555555;
@@ -86,7 +99,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: var(--max-content-width);
+  max-width: var(--content-max-xs);
   margin: 0 auto;
 }
 h2,
@@ -243,14 +256,21 @@ button:disabled {
 .section-block {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  justify-content: space-around;
   gap: 12px;
   width: 100%;
-  margin-top: 8px;
   padding: 10px;
   background: var(--surface-color);
   border: 2px solid var(--border-color);
   border-radius: 15px;
   box-shadow: 0 4px 12px var(--shadow-light);
+}
+.section-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
 }
 .section-block-buttons {
   display: flex;
@@ -262,7 +282,7 @@ button:disabled {
 .setting-button-wrapper {
   display: flex;
   flex-direction: column;
-  /* gap: 8px; */
+  gap: 12px;
   width: 100%;
 }
 .speed-delay-wrapper,
@@ -352,5 +372,27 @@ button:disabled {
   border-color: var(--primary-hover);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
+  .layout {
+    max-width: var(--content-max-md);
+    align-items: stretch;
+  }
+  .section-row {
+    flex-direction: row;
+    gap: 12px;
+  }
+  .section-block-exercises {
+    flex: 1 1 0%;
+  }
+  .setting-button-wrapper {
+    flex: 1;
+    flex-direction: column;
+  }
+  .setting-button-wrapper .section-block-settings {
+    order: 1;
+  }
+  .setting-button-wrapper .section-block-buttons {
+    order: 2;
+    margin-top: auto;
+  }
 }
