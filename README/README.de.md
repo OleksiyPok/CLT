@@ -4,7 +4,7 @@
 ---
 
 # CLT Clock Listening Trainer
-Dies ist eine kleine, einseitige Anwendung zum Erlernen von Zahlen und Zeitwahrnehmung durch Hören in mehreren Sprachen
+Dies ist eine kompakte, einseitige Anwendung, die dazu dient, Zahlen zu lernen und das Gehör für die Zeitwahrnehmung in mehreren Sprachen zu schulen
 
  
 ![Appearance of the application](screenshots/app.png)

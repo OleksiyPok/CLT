@@ -4,8 +4,8 @@
 ---
 
 # CLT Clock Listening Trainer
-This is a small, one-page application for learning numbers and time perception by ear in several languages
-
+This is a compact, single-page application designed to help you learn numbers and develop an ear for time perception across multiple languages
+ 
  
 ![Appearance of the application](README/screenshots/app.png)
 
