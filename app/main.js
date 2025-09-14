@@ -120,8 +120,9 @@ function createUtils(timeDictLoader, utils, config) {
     if (!forms || !forms.length) return "";
     n = Math.abs(n);
     if (forms.length === 3) {
-      // slavic: "1 минута", "2 минуты", "5 минут"
+      // slavic: "1 минута", "2 минуты", "5 минут", ",59 минут (без одной минуты)"
       if (n % 10 === 1 && n % 100 !== 11) return forms[0];
+      if (n === 59) return forms[1];
       if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return forms[1];
       return forms[2];
     }
@@ -134,11 +135,12 @@ function createUtils(timeDictLoader, utils, config) {
 
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
-    const m = Math.floor(Math.random() * 12) * 5;
+    // const m = Math.floor(Math.random() * 12) * 5;
+    const m = Math.floor(Math.random() * 60);
     return `${h}:${String(m).padStart(2, "0")}`;
   }
 
-  function getTimePhrase(langCode, { h, mm }, { use24h = false } = {}) {
+  function getTimePhrase(langCode, { h, mm }, { use24h = false, useMilitary = false } = {}) {
     const baseLang = getBaseLang(langCode);
     const dict = timeDictLoader.getDict(baseLang) || timeDictLoader.getDict("en");
     if (!dict) return "";
@@ -157,6 +159,20 @@ function createUtils(timeDictLoader, utils, config) {
     if (["ar"].includes(lang)) algo = "arabic";
     if (["tr"].includes(lang)) algo = "turkic";
     if (["pl"].includes(lang)) algo = "slavic";
+
+    // if (useMilitary) {
+    //   const hourWord = hours[h] || String(h);
+    //   if (mm === 0) {
+    //     return baseLang === "en" ? `${hourWord} hundred` : `${hourWord} ноль ноль`;
+    //   }
+    //   if (mm < 10) {
+    //     const zero = baseLang === "en" ? "oh" : "ноль";
+    //     const minWord = minutes[mm] || String(mm);
+    //     return `${hourWord} ${zero} ${minWord}`;
+    //   }
+    //   const minWord = minutes[mm] || String(mm);
+    //   return `${hourWord} ${minWord}`;
+    // }
 
     let hourWord, nextHourWord, nextHourWordGenitive;
     if (use24h) {
@@ -526,7 +542,7 @@ function createWakeLock({ bus } = {}) {
   let wakeLock = null;
 
   async function request() {
-    // console.log("wakeLock.request called");
+    utils.log("wakeLock.request called");
     try {
       if ("wakeLock" in navigator && !wakeLock) {
         wakeLock = await navigator.wakeLock.request("screen");
@@ -541,7 +557,7 @@ function createWakeLock({ bus } = {}) {
   }
 
   async function release() {
-    // console.log("wakeLock.release called");
+    utils.log("wakeLock.release called");
     try {
       if (wakeLock) {
         await (wakeLock.release?.() || Promise.resolve());
@@ -678,6 +694,7 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
 
   async function speakAsync(text, opts = {}) {
     utils.log(text, opts);
+    console.log(text, opts);
     if (!text) return;
     const settings = { ...(getSettings() || {}), ...opts };
     if (opts.interrupt !== false && "speechSynthesis" in window) {

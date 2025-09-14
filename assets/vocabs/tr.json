@@ -14,7 +14,7 @@
     "minuteForms": ["dakika", "dakika"]
   },
   "hours": {
-    "0": "on iki",
+    "0": "sıfır",
     "1": "bir",
     "2": "iki",
     "3": "üç",
@@ -40,6 +40,7 @@
     "23": "yirmi üç"
   },
   "minutes": {
+    "0": "sıfır",
     "1": "bir",
     "2": "iki",
     "3": "üç",
@@ -69,6 +70,35 @@
     "27": "yirmi yedi",
     "28": "yirmi sekiz",
     "29": "yirmi dokuz",
-    "30": "buçuk"
+    "30": "buçuk",
+    "31": "otuz bir",
+    "32": "otuz iki",
+    "33": "otuz üç",
+    "34": "otuz dört",
+    "35": "otuz beş",
+    "36": "otuz altı",
+    "37": "otuz yedi",
+    "38": "otuz sekiz",
+    "39": "otuz dokuz",
+    "40": "kırk",
+    "41": "kırk bir",
+    "42": "kırk iki",
+    "43": "kırk üç",
+    "44": "kırk dört",
+    "45": "kırk beş",
+    "46": "kırk altı",
+    "47": "kırk yedi",
+    "48": "kırk sekiz",
+    "49": "kırk dokuz",
+    "50": "elli",
+    "51": "elli bir",
+    "52": "elli iki",
+    "53": "elli üç",
+    "54": "elli dört",
+    "55": "elli beş",
+    "56": "elli altı",
+    "57": "elli yedi",
+    "58": "elli sekiz",
+    "59": "elli dokuz"
   }
 }
