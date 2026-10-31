@@ -31,5 +31,12 @@
   "themaModeContrast": "Contrast",
   "themaModeNormal": "Normaal",
   "themaModeEvening": "Avond",
-  "themaModeNight": "Nacht"
+  "themaModeNight": "Nacht",
+  "defaultSettings": "Standaardinstellingen",
+  "settingsTitle": "Instellingen",
+  "closeBtn": "Sluiten",
+  "helpTitle": "Informatie",
+  "helpLanguageLabel": "Taal",
+  "helpLanguageApp": "Als app-taal",
+  "helpUnavailable": "De helppagina is niet beschikbaar."
 }

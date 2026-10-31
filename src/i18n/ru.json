@@ -31,5 +31,12 @@
   "themaModeContrast": "Контраст",
   "themaModeNormal": "Обычный",
   "themaModeEvening": "Вечерний",
-  "themaModeNight": "Ночной"
+  "themaModeNight": "Ночной",
+  "defaultSettings": "Настройки по умолчанию",
+  "settingsTitle": "Настройки",
+  "closeBtn": "Закрыть",
+  "helpTitle": "Информация",
+  "helpLanguageLabel": "Язык",
+  "helpLanguageApp": "Как в приложении",
+  "helpUnavailable": "Страница справки недоступна."
 }

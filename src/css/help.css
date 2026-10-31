@@ -1,0 +1,122 @@
+/* In-app help panel (#helpAppContent); loaded with index.html */
+
+#helpAppContent {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  padding: 5px;
+  color: var(--text-color);
+}
+
+#helpAppContent p {
+  margin: 6px 0;
+}
+
+#helpAppContent .top-space {
+  height: 28px;
+}
+
+#helpAppContent h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+#helpAppContent h2 {
+  margin: 22px 0 10px;
+}
+
+#helpAppContent h3 {
+  margin: 18px 0 8px;
+  font-size: 17px;
+}
+
+#helpAppContent small {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+#helpAppContent img {
+  max-width: 100%;
+  display: block;
+  margin: 10px auto;
+
+  /* frame */
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  /* white inner padding effect */
+  background: var(--surface-color);
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+#helpAppContent .divider {
+  border-top: 1px solid var(--border-color);
+  margin: 15px 0;
+}
+
+.marker,
+.marker-circle {
+  background: var(--surface-alt-color);
+  color: var(--text-color);
+}
+
+.marker {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 18px;
+  margin-inline-end: 6px;
+}
+
+.marker-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 12px;
+  margin-inline-end: 6px;
+}
+
+/* ---------- Help language selector ---------- */
+.help-language-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  padding: 4px 4px 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.help-language-label {
+  flex: 0 0 auto;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.help-language-select {
+  flex: 0 0 145px;
+  width: 145px;
+  min-width: 145px;
+  max-width: 145px;
+  box-sizing: border-box;
+  padding: 7px 8px;
+  font: inherit;
+  font-size: 0.9rem;
+  color: inherit;
+  background: var(--surface-color);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.help-language-select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

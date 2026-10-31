@@ -31,5 +31,12 @@
   "themaModeContrast": "Kontrast",
   "themaModeNormal": "Normal",
   "themaModeEvening": "Akşam",
-  "themaModeNight": "Gece"
+  "themaModeNight": "Gece",
+  "defaultSettings": "Varsayılan ayarlar",
+  "settingsTitle": "Ayarlar",
+  "closeBtn": "Kapat",
+  "helpTitle": "Bilgi",
+  "helpLanguageLabel": "Dil",
+  "helpLanguageApp": "Uygulama dili",
+  "helpUnavailable": "Yardım sayfası kullanılamıyor."
 }

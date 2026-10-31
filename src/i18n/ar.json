@@ -31,5 +31,12 @@
   "themaModeContrast": "تباين",
   "themaModeNormal": "عادي",
   "themaModeEvening": "مسائي",
-  "themaModeNight": "ليلي"
+  "themaModeNight": "ليلي",
+  "defaultSettings": "الإعدادات الافتراضية",
+  "settingsTitle": "الإعدادات",
+  "closeBtn": "إغلاق",
+  "helpTitle": "معلومات",
+  "helpLanguageLabel": "اللغة",
+  "helpLanguageApp": "كما في التطبيق",
+  "helpUnavailable": "صفحة المساعدة غير متاحة."
 }

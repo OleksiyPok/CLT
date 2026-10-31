@@ -31,5 +31,12 @@
   "themaModeContrast": "Контраст",
   "themaModeNormal": "Нормальний",
   "themaModeEvening": "Вечірній",
-  "themaModeNight": "Нічний"
+  "themaModeNight": "Нічний",
+  "defaultSettings": "Стандартні налаштування",
+  "settingsTitle": "Налаштування",
+  "closeBtn": "Закрити",
+  "helpTitle": "Інформація",
+  "helpLanguageLabel": "Мова",
+  "helpLanguageApp": "Як у застосунку",
+  "helpUnavailable": "Сторінка довідки недоступна."
 }

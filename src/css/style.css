@@ -13,6 +13,9 @@
   --bp-lg: 768px; /* tablets portrait */
   --bp-xl: 1024px; /* tablets landscape / laptops */
   --bp-2xl: 1280px; /* desktops */
+
+  /* Colour of the "i" and gear icons */
+  --info-icon-color: var(--text-color);
 }
 
 *,
@@ -189,32 +192,93 @@ button:disabled {
   padding: 8px 0;
   gap: 12px;
   border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
-.mode-app-btn {
+.reset-settings-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+  margin-left: 0;
+  margin-bottom: 4px;
+  gap: 12px;
+  padding-top: 8px;
+  opacity: 0.75;
+  /* border-top: 1px solid var(--border-color); */
+}
+
+.help-app-btn,
+.settings-app-btn,
+.mode-app-btn,
+.reset-settings-btn {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  font-size: 26px;
-  background: var(--background-color);
   border: none;
   border-radius: 6px;
   cursor: pointer;
   outline: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+.help-app-btn,
+.settings-app-btn,
+.mode-app-btn {
+  font-size: 26px;
+  background: var(--background-color);
+}
+
+.help-app-btn:active,
+.settings-app-btn:active,
 .mode-app-btn:active {
   background: var(--surface-hover);
 }
+
 /* Hover highlight only for a real mouse: on touch screens it would stay after a tap */
 @media (hover: hover) {
+  .help-app-btn:hover,
+  .settings-app-btn:hover,
   .mode-app-btn:hover {
     background: var(--surface-hover);
   }
 }
-/* Theme-mode icon (SVG sprite in index.html) */
+
+.setting-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reset-settings-btn {
+  font-size: 18px;
+  background: var(--surface-color);
+}
+
+/* The reset icon: a line icon from the sprite, like the other buttons */
+.reset-settings-btn .ico {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.reset-settings-text {
+  font-weight: 600;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Theme-mode icon: same size as the framed "i" and gear icons next to it */
 .mode-icon svg {
   display: block;
   width: 28px;
@@ -224,21 +288,6 @@ button:disabled {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-.reset-settings-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  font-size: 26px;
-  background: var(--background-color);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 .section-block {
   display: flex;
@@ -262,9 +311,14 @@ button:disabled {
 .section-block-buttons {
   display: flex;
   flex-direction: row;
-  flex: 1;
+  flex: 0 0 auto;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+/* The buttons have a constant height; the block is a little higher than the buttons */
+.section-block-buttons button {
+  height: 30px;
 }
 .setting-button-wrapper {
   display: flex;
@@ -274,7 +328,8 @@ button:disabled {
 }
 .speed-delay-wrapper,
 .language-voice-wrapper,
-.thema-wrapper {
+.thema-wrapper,
+.interface-wrapper {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -297,7 +352,8 @@ button:disabled {
 }
 .language-group,
 .voice-group,
-.thema-group {
+.thema-group,
+.interface-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -308,7 +364,8 @@ button:disabled {
 }
 .language-group select,
 .voice-group select,
-.thema-group select {
+.thema-group select,
+.interface-group select {
   width: 100%;
   text-align: left;
 }
@@ -390,4 +447,11 @@ button:disabled {
 .author-link {
   text-decoration: none;
   color: inherit;
+}
+
+/* Settings window: groups one under another */
+#settingsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

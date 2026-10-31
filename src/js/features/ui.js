@@ -1,6 +1,13 @@
 // The page: fields, buttons, selects, texts and the time rows
 import { EventTypes } from "../core/event-types.js";
+import { createUiHelp } from "./ui-help.js";
+import { createUiMirrors } from "./ui-mirrors.js";
+import { createUiSettingsWindow } from "./ui-settings-window.js";
 import { createUiTheme } from "./ui-theme.js";
+
+// Number of the rows with the times: "rows" in config/config.json, in these limits
+const MIN_ROWS = 1;
+const MAX_ROWS = 15;
 
 export function createUI({ bus, store, config, langLoader, utils, timePhrase }) {
   let alertTexts = {};
@@ -17,12 +24,48 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     uiLangSelectEl: document.getElementById("uiLangSelect"),
     languageCodeSelectEl: document.getElementById("languageCodeSelect"),
     voiceSelectEl: document.getElementById("voiceSelect"),
-    randomBtnEls: document.querySelectorAll(".random-btn"),
-    speakBtnEls: document.querySelectorAll(".speak-btn"),
-    timeInputEls: document.querySelectorAll(".time-input"),
-    clockContainerEls: document.querySelectorAll(".clock-container"),
+    // The rows with the times are made by buildRows()
+    randomBtnEls: [],
+    speakBtnEls: [],
+    timeInputEls: [],
+    clockContainerEls: [],
     developerBlockEl: document.getElementById("developer"),
   };
+  // Elements of the windows (names are used by ui-help.js and ui-settings-window.js)
+  const windows = {
+    uiLangSelect: els.uiLangSelectEl,
+    helpAppBtn: document.getElementById("helpAppBtn"),
+    helpAppModal: document.getElementById("helpAppModal"),
+    helpAppCloseBtn: document.getElementById("helpAppCloseBtn"),
+    helpAppContent: document.getElementById("helpAppContent"),
+    settingsAppBtn: document.getElementById("settingsAppBtn"),
+    settingsAppModal: document.getElementById("settingsAppModal"),
+    settingsAppCloseBtn: document.getElementById("settingsAppCloseBtn"),
+  };
+  const mirrors = createUiMirrors();
+  const help = createUiHelp({ elements: windows, langLoader });
+  const settingsWindow = createUiSettingsWindow({ elements: windows, mirrors });
+
+  // Makes the rows (random button, time field, play button) and refreshes the lists of the elements
+  function buildRows(count) {
+    const container = document.getElementById("clockRows");
+    if (!container) return;
+    const n = Math.min(MAX_ROWS, Math.max(MIN_ROWS, parseInt(count, 10) || MIN_ROWS));
+    container.replaceChildren(
+      ...Array.from({ length: n }, (_, i) => {
+        const row = document.createElement("div");
+        row.className = "clock-container";
+        row.innerHTML = `<button type="button" class="random-btn" id="randomBtn_${i + 1}" data-i18n-title="randomBtnTitle">🎲</button>
+<input type="text" class="time-input" id="timeInput_${i + 1}" maxlength="5" value="00:00" />
+<button type="button" class="speak-btn" id="speakBtn_${i + 1}" data-i18n-title="speakBtnTitle">▶️</button>`;
+        return row;
+      })
+    );
+    els.randomBtnEls = container.querySelectorAll(".random-btn");
+    els.speakBtnEls = container.querySelectorAll(".speak-btn");
+    els.timeInputEls = container.querySelectorAll(".time-input");
+    els.clockContainerEls = container.querySelectorAll(".clock-container");
+  }
   const theme = createUiTheme({
     elements: {
       themaSelect: document.getElementById("themaSelect"),
@@ -89,6 +132,23 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     else if (f.isSequenceMode && f.isPaused) setBtnText(els.startPauseBtnEl, btnStates.cont || "Continue");
     else setBtnText(els.startPauseBtnEl, btnStates.start || "Start");
     theme.updateLabels(texts);
+    const setText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el && text) el.textContent = text;
+    };
+    setText("settingsTitle", texts.settingsTitle);
+    setText("helpTitle", texts.helpTitle);
+    [
+      [windows.helpAppBtn, texts.helpTitle],
+      [windows.settingsAppBtn, texts.settingsTitle],
+      [windows.settingsAppCloseBtn, texts.closeBtn],
+      [windows.helpAppCloseBtn, texts.closeBtn],
+    ].forEach(([el, text]) => {
+      if (!el || !text) return;
+      el.title = text;
+      el.setAttribute("aria-label", text);
+    });
+    mirrors.sync();
     bus.emit(EventTypes.UI_TEXTS_UPDATE, { lang });
   }
   function applySettingsToUI(s, { preferBlankForInvalid = true, raw = {} } = {}) {
@@ -267,6 +327,33 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     els.resetSettingsBtnEl?.addEventListener("click", () => bus.emit(EventTypes.SETTINGS_RESET));
+    document.getElementById("resetSettingsBtnCopy")?.addEventListener("click", () => {
+      bus.emit(EventTypes.SETTINGS_RESET);
+      mirrors.sync();
+    });
+    mirrors.attach();
+    windows.helpAppBtn?.addEventListener("click", () => bus.emit(EventTypes.UI_HELP_MODAL_OPEN));
+    windows.helpAppCloseBtn?.addEventListener("click", () => bus.emit(EventTypes.UI_HELP_MODAL_CLOSE));
+    windows.settingsAppBtn?.addEventListener("click", () => bus.emit(EventTypes.UI_SETTINGS_MODAL_OPEN));
+    windows.settingsAppCloseBtn?.addEventListener("click", () => bus.emit(EventTypes.UI_SETTINGS_MODAL_CLOSE));
+    windows.helpAppModal?.addEventListener("click", (e) => {
+      if (e.target === windows.helpAppModal) bus.emit(EventTypes.UI_HELP_MODAL_CLOSE);
+    });
+    windows.settingsAppModal?.addEventListener("click", (e) => {
+      if (e.target === windows.settingsAppModal) bus.emit(EventTypes.UI_SETTINGS_MODAL_CLOSE);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (help.isAppHelpModalOpen()) bus.emit(EventTypes.UI_HELP_MODAL_CLOSE);
+      else if (settingsWindow.isSettingsModalOpen()) bus.emit(EventTypes.UI_SETTINGS_MODAL_CLOSE);
+    });
+    bus.on(EventTypes.UI_HELP_MODAL_OPEN, () => {
+      help.loadHelpContent();
+      help.openHelpModal();
+    });
+    bus.on(EventTypes.UI_HELP_MODAL_CLOSE, help.closeHelpModal);
+    bus.on(EventTypes.UI_SETTINGS_MODAL_OPEN, settingsWindow.openSettingsModal);
+    bus.on(EventTypes.UI_SETTINGS_MODAL_CLOSE, settingsWindow.closeSettingsModal);
     els.uiLangSelectEl?.addEventListener("change", (e) => {
       bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
@@ -355,6 +442,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
 
   return {
     els,
+    buildRows,
     disableSpeakButtons,
     toggleControls,
     setActiveInput,

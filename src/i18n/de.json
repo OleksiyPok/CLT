@@ -31,5 +31,12 @@
   "themaModeContrast": "Kontrast",
   "themaModeNormal": "Normal",
   "themaModeEvening": "Abend",
-  "themaModeNight": "Nacht"
+  "themaModeNight": "Nacht",
+  "defaultSettings": "Standardeinstellungen",
+  "settingsTitle": "Einstellungen",
+  "closeBtn": "Schließen",
+  "helpTitle": "Information",
+  "helpLanguageLabel": "Sprache",
+  "helpLanguageApp": "Wie in der App",
+  "helpUnavailable": "Die Hilfeseite ist nicht verfügbar."
 }

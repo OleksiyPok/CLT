@@ -31,5 +31,12 @@
   "themaModeContrast": "Contrast",
   "themaModeNormal": "Normal",
   "themaModeEvening": "Evening",
-  "themaModeNight": "Night"
+  "themaModeNight": "Night",
+  "defaultSettings": "Reset defaults",
+  "settingsTitle": "Settings",
+  "closeBtn": "Close",
+  "helpTitle": "Information",
+  "helpLanguageLabel": "Language",
+  "helpLanguageApp": "Use app language",
+  "helpUnavailable": "The help page is not available."
 }

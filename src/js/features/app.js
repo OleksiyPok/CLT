@@ -19,6 +19,7 @@ export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, 
 
     await timeDictLoader.loadAll(config.UI_LANGS);
 
+    ui.buildRows(appCfg.rows);
     store.setDefaultActive(appCfg);
     ui.setDeveloperVisibility(appCfg);
 
