@@ -7,7 +7,7 @@
 Это компактное одностраничное приложение, созданное для изучения чисел и развития навыка восприятия времени на слух на нескольких языках
 
  
-![Appearance of the application](screenshots/app.png)
+![Appearance of the application](img/app.png)
 
 ---
 

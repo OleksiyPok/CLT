@@ -4,27 +4,25 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta charset="utf-8" />
     <title>Clock Listening Trainer</title>
-    <link rel="icon" type="image/png" sizes="x16" href="icons/icon_CLT_16x16.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/icon_CLT_16x16.png" />
 
-    <link rel="stylesheet" href="./assets/css/style.css" />
-    <link rel="stylesheet" href="./assets/css/themes.css" />
-    <!-- <script src="./assets/locales/ui_CLT_texts.js" defer></script> -->
-    <script src="./app/dutchVocab.js" defer></script>
-    <script src="./app/main.js" defer></script>
+    <link rel="stylesheet" href="./src/css/style.css" />
+    <link rel="stylesheet" href="./src/css/themes.css" />
+    <script src="./src/js/main.js" defer></script>
   </head>
   <!-- CLT -->
   <body>
     <div id="scroll-container" class="scroll-container">
       <div class="layout">
         <div class="titles-container" id="titlesContainer">
-          <img class="title-icon" id="titleIcon" src="icons/icon_CLT_64x64.png" alt="Icon" />
+          <img class="title-icon" id="titleIcon" src="./assets/icons/icon_CLT_64x64.png" alt="Icon" />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> 1.3.15 t</h6>
+            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> <span id="appVersion"></span></h6>
           </div>
         </div>
         <h5>
-          <a href="mailto:Oleksii.Pokormiakho.job@gmail.com" style="text-decoration: none; color: inherit"> Oleksii Pokormiakho </a>
+          <a class="author-link" href="mailto:Oleksii.Pokormiakho.job@gmail.com"> Oleksii Pokormiakho </a>
         </h5>
         <div class="setting-row" id="settingRow">
           <button class="reset-settings-btn" id="resetSettingsBtn" data-i18n-title="resetSettingsTitle">🔄</button>
@@ -61,56 +59,6 @@
               <button class="random-btn" id="randomBtn_3" data-i18n-title="randomBtnTitle">🎲</button>
               <input type="text" class="time-input" id="timeInput_3" maxlength="5" value="00:00" />
               <button class="speak-btn" id="speakBtn_3" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
             </div>
             <div class="clock-container">
               <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
@@ -178,8 +126,8 @@
           </div>
         </div>
         <div class="developer" id="developer">
-          <button onclick="alert(location.href);" title="Path to this page">Path</button>
-          <button onclick="localStorage.clear(); alert('localStorage cleared');" title="Clear local storage">Clear LS</button>
+          <button type="button" id="developerPathBtn" title="Path to this page">Path</button>
+          <button type="button" id="developerClearBtn" title="Clear the saved settings of this app">Clear LS</button>
         </div>
       </div>
     </div>

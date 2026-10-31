@@ -1,15 +1,15 @@
-🌐 Available languages:  
+🌐 Beschikbare talen:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
 
 ---
 
 # CLT Clock Listening Trainer
-This is a compact, single-page application designed to help you learn numbers and develop an ear for time perception across multiple languages
+Dit is een compacte, eendelige applicatie die is ontworpen om getallen te leren en het gehoor voor tijdswaarneming in meerdere talen te ontwikkelen
 
  
-![Appearance of the application](screenshots/app.png)
+![Appearance of the application](img/app.png)
 
 ---
 
-🌐 Available languages:  
+🌐 Beschikbare talen:  
 [English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)

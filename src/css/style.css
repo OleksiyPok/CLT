@@ -396,3 +396,8 @@ button:disabled {
     margin-top: auto;
   }
 }
+
+.author-link {
+  text-decoration: none;
+  color: inherit;
+}

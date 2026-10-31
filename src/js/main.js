@@ -1,3 +1,6 @@
+// Shown on the main screen (change it with every change of the app)
+const APP_VERSION = "1.4.1";
+
 "use strict";
 
 const EventTypes = Object.freeze({
@@ -135,12 +138,17 @@ function createUtils(timeDictLoader, utils, config) {
 
   function generateRandomTimeString() {
     const h = Math.floor(Math.random() * 24);
-    // const m = Math.floor(Math.random() * 12) * 5;
-    const m = Math.floor(Math.random() * 60);
+    // Random minutes go in steps of 5 (the dictionaries hold every minute)
+    const m = Math.floor(Math.random() * 12) * 5;
     return `${h}:${String(m).padStart(2, "0")}`;
   }
 
-  function getTimePhrase(langCode, { h, mm }, { use24h = false, useMilitary = false } = {}) {
+  // Empty dictionary words leave double spaces: collapse them
+  function getTimePhrase(...args) {
+    return buildTimePhrase(...args).replace(/\s+/g, " ").trim();
+  }
+
+  function buildTimePhrase(langCode, { h, mm }, { use24h = false, useMilitary = false } = {}) {
     const baseLang = getBaseLang(langCode);
     const dict = timeDictLoader.getDict(baseLang) || timeDictLoader.getDict("en");
     if (!dict) return "";
@@ -207,7 +215,7 @@ function createUtils(timeDictLoader, utils, config) {
         if (mm < 30) return `${minutes[30 - mm]} ${words.before} ${words.half} ${nextHourWord}`;
         if (mm === 30) return `${words.half} ${nextHourWord}`;
         if (mm < 45) return `${minutes[mm - 30]} ${words.over} ${words.half} ${nextHourWord}`;
-        if (mm === 45) return `${words.quarter} ${words.before}${nextHourWord}`;
+        if (mm === 45) return `${words.quarter} ${words.before} ${nextHourWord}`;
         return `${minutes[60 - mm]} ${words.before} ${nextHourWord}`;
 
       case "latin": // 🇬🇧 🇫🇷 🇵🇹
@@ -241,7 +249,7 @@ function createUtils(timeDictLoader, utils, config) {
   }
 
   function log(...args) {
-    const on = typeof config === "boolean" ? config : typeof config === "function" ? !!config() : !!(config && (config.DEVELOPER_MODE === true || config.DEFAULT_CONFIG?.DEVELOPER_MODE === true));
+    const on = typeof config === "boolean" ? config : typeof config === "function" ? !!config() : false;
     if (on) console.log(...args);
   }
 
@@ -260,66 +268,24 @@ function createUtils(timeDictLoader, utils, config) {
 }
 
 function createConfig(utils, { paths = null } = {}) {
+  // Default settings come only from config/config.json; "mobile" overrides them on phones and tablets.
   const PATHS = paths || {
-    CONFIG: "./assets/configs/config.json",
-    UI_TEXTS_DIR: "./assets/locales",
-    TIME_DICTS_DIR: "./assets/vocabs",
+    CONFIG: "config/config.json",
+    UI_TEXTS_DIR: "src/i18n",
+    TIME_DICTS_DIR: "src/vocabs",
   };
 
-  const DEFAULT_CONFIG = Object.freeze({
-    DEVELOPER_MODE: false,
-    USE_LOCAL_STORAGE: true,
-    FILTER_LANGS: false,
-    DEFAULT_VOICE: "Google Nederlands",
-    DEFAULT_SETTINGS: {
-      shared: {
-        uiLang: "ru",
-        delay: "2000",
-        speed: "1.0",
-        fullscreen: "0",
-        languageCode: "nl-NL",
-        voiceName: "Google Nederlands",
-      },
-      mobile: {},
-      desktop: {},
-    },
-  });
-
-  const FALLBACK = Object.freeze({
-    DEVELOPER_MODE: true,
-    USE_LOCAL_STORAGE: true,
-    FILTER_LANGS: false,
-    DEFAULT_VOICE: "Google Nederlands",
-    uiLang: "ru",
-    delay: "1000",
-    speed: "1.0",
-    languageCode: "nl-NL",
-    voiceName: "Google Nederlands",
-  });
-
   async function loadExternal() {
-    try {
-      const resp = await fetch(PATHS.CONFIG, { cache: "no-store" });
-      if (!resp.ok) return utils.deepMerge(DEFAULT_CONFIG, {});
-      const json = await resp.json();
-      return utils.deepMerge(DEFAULT_CONFIG, json);
-    } catch (e) {
-      return utils.deepMerge(DEFAULT_CONFIG, {});
-    }
-  }
-
-  function selectPlatformDefaults(defs) {
+    const resp = await fetch(PATHS.CONFIG, { cache: "no-store" });
+    if (!resp.ok) throw new Error(`${PATHS.CONFIG}: ${resp.status}`);
+    const { mobile, ...common } = await resp.json();
     const isMobile = /Mobi|Android|iPhone|iPad|Windows Phone|IEMobile/i.test(navigator.userAgent || "");
-    const platformSettings = isMobile ? defs?.mobile || {} : defs?.desktop || {};
-    return utils.deepMerge(DEFAULT_CONFIG.DEFAULT_SETTINGS.desktop, platformSettings);
+    return { ...common, ...(isMobile ? mobile || {} : {}) };
   }
 
   return {
     PATHS,
-    DEFAULT_CONFIG,
-    FALLBACK,
     loadExternal,
-    selectPlatformDefaults,
   };
 }
 
@@ -391,7 +357,7 @@ function createLangLoader({ config, utils }) {
 
   async function loadAll(allowed) {
     texts = {};
-    const langs = Array.isArray(allowed) ? allowed : config.DEFAULT_CONFIG ? Object.keys(config.DEFAULT_CONFIG.DEFAULT_SETTINGS) : ["en"];
+    const langs = Array.isArray(allowed) ? allowed : ["en"];
     await Promise.all(
       langs.map(async (code) => {
         const d = await loadLang(code);
@@ -409,8 +375,7 @@ function createLangLoader({ config, utils }) {
 
 function createStore({ bus, config, utils }) {
   const KEY = "CLT-settings";
-  const LEGACY_KEY = "CLT_settings";
-  const canUseLocal = Boolean(config.DEFAULT_CONFIG?.USE_LOCAL_STORAGE || config.FALLBACK?.USE_LOCAL_STORAGE);
+  const canUseLocal = true;
   const Storage = {
     save(s) {
       if (!canUseLocal) return;
@@ -421,7 +386,7 @@ function createStore({ bus, config, utils }) {
     load() {
       if (!canUseLocal) return null;
       try {
-        const v = localStorage.getItem(KEY) || localStorage.getItem(LEGACY_KEY);
+        const v = localStorage.getItem(KEY);
         return v ? JSON.parse(v) : null;
       } catch (e) {
         return null;
@@ -430,18 +395,11 @@ function createStore({ bus, config, utils }) {
     remove() {
       try {
         localStorage.removeItem(KEY);
-        localStorage.removeItem(LEGACY_KEY);
       } catch (e) {}
     },
   };
-  let defaultsActive = {
-    uiLang: "en",
-    delay: "2000",
-    speed: "1.0",
-    fullscreen: "0",
-    languageCode: "nl-NL",
-    voiceName: "Google Nederlands",
-  };
+  // Defaults come from config/config.json (store.setDefaultActive)
+  let defaultsActive = {};
   let current = { ...defaultsActive };
   let playbackFlags = {
     isSequenceMode: false,
@@ -464,22 +422,21 @@ function createStore({ bus, config, utils }) {
   function mergeWithDefaults(stored, defaults, els) {
     const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els || {};
     const out = {};
-    out.uiLang = stored?.uiLang && utils.ALLOWED_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang ?? config.FALLBACK?.uiLang;
+    out.uiLang = stored?.uiLang && utils.ALLOWED_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang;
     out.delay = (() => {
       const v = stored?.delay;
       const n = parseInt(v, 10);
       if (!isNaN(n) && allowed(delaySelectEl, String(n))) return String(n);
-      return defaults?.delay ?? config.FALLBACK?.delay;
+      return defaults?.delay;
     })();
     out.speed = (() => {
       const v = stored?.speed;
       const n = parseFloat(v);
       if (!isNaN(n) && allowed(speedSelectEl, String(v))) return String(v);
-      return defaults?.speed ?? config.FALLBACK?.speed;
+      return defaults?.speed;
     })();
-    out.fullscreen = stored?.fullscreen ?? defaults?.fullscreen ?? config.FALLBACK?.fullscreen;
-    out.languageCode = stored?.languageCode ?? defaults?.languageCode ?? config.FALLBACK?.languageCode;
-    out.voiceName = stored?.voiceName ?? defaults?.voiceName ?? config.FALLBACK?.voiceName;
+    out.languageCode = stored?.languageCode ?? defaults?.languageCode;
+    out.voiceName = stored?.voiceName ?? defaults?.voiceName;
     return out;
   }
   function setSettings(s) {
@@ -694,7 +651,6 @@ function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
 
   async function speakAsync(text, opts = {}) {
     utils.log(text, opts);
-    console.log(text, opts);
     if (!text) return;
     const settings = { ...(getSettings() || {}), ...opts };
     if (opts.interrupt !== false && "speechSynthesis" in window) {
@@ -894,7 +850,7 @@ function createUI({ bus, store, config, langLoader, utils }) {
     setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
     setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
     setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
-    const effectiveLang = els.uiLangSelectEl?.value || s.uiLang || store.getDefaultActive().uiLang || config.FALLBACK?.uiLang;
+    const effectiveLang = els.uiLangSelectEl?.value || s.uiLang || store.getDefaultActive().uiLang;
     translateUI(effectiveLang);
   }
   function readSettingsFromUI() {
@@ -914,14 +870,13 @@ function createUI({ bus, store, config, langLoader, utils }) {
 
       delay: !isNaN(parseInt(base.delay, 10)) && allowedOpt(els.delaySelectEl, base.delay) ? base.delay : current.delay || defaults.delay,
 
-      fullscreen: current.fullscreen ?? defaults.fullscreen,
       languageCode: current.languageCode ?? defaults.languageCode,
       voiceName: current.voiceName ?? defaults.voiceName,
     };
   }
 
   function setDeveloperVisibility(appCfg) {
-    const devMode = appCfg?.DEVELOPER_MODE ?? config.DEFAULT_CONFIG.DEVELOPER_MODE ?? config.FALLBACK?.DEVELOPER_MODE;
+    const devMode = appCfg?.developerMode;
     if (els.developerBlockEl) els.developerBlockEl.style.display = devMode ? "" : "none";
   }
   function updateStartPauseBtnTo(state) {
@@ -1313,9 +1268,9 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   const utilsStub = createUtils({ getDict: () => null });
   const config = createConfig(utilsStub, {
     paths: {
-      CONFIG: "./assets/configs/config.json",
-      UI_TEXTS_DIR: "./assets/locales",
-      TIME_DICTS_DIR: "./assets/vocabs",
+      CONFIG: "config/config.json",
+      UI_TEXTS_DIR: "src/i18n",
+      TIME_DICTS_DIR: "src/vocabs",
     },
   });
 
@@ -1326,7 +1281,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
 
   const appCfg = await config.loadExternal();
 
-  const fullUtils = createUtils(timeDictLoader, utils, Boolean(appCfg?.DEVELOPER_MODE));
+  const fullUtils = createUtils(timeDictLoader, utils, Boolean(appCfg?.developerMode));
   window.utils = fullUtils;
 
   const langLoader = createLangLoader({ config, utils: fullUtils });
@@ -1336,7 +1291,7 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
   const voices = createVoices({
     bus,
     utils: fullUtils,
-    filterLangs: Boolean(appCfg?.FILTER_LANGS),
+    filterLangs: true,
   });
 
   const speaker = createSpeaker({
@@ -1356,8 +1311,18 @@ function createPlayback({ bus, store, ui, speaker, utils, wakeLock } = {}) {
     wakeLock,
   });
 
-  store.setDefaultActive(config.selectPlatformDefaults(appCfg.DEFAULT_SETTINGS));
+  store.setDefaultActive(appCfg);
   ui.setDeveloperVisibility(appCfg);
+
+  const versionEl = document.getElementById("appVersion");
+  if (versionEl) versionEl.textContent = APP_VERSION;
+  document.getElementById("developerPathBtn")?.addEventListener("click", () => alert(location.href));
+  document.getElementById("developerClearBtn")?.addEventListener("click", () => {
+    try {
+      localStorage.removeItem("CLT-settings");
+    } catch (e) {}
+    alert("Saved settings cleared");
+  });
 
   await langLoader.loadAll(fullUtils.ALLOWED_LANGS);
   const { raw, merged } = store.loadSettingsFromLocal(ui.els);

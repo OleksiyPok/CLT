@@ -7,7 +7,7 @@
 Це компактний односторінковий додаток, призначений для вивчення чисел та розвитку навички сприйняття часу на слух кількома мовами
 
  
-![Appearance of the application](screenshots/app.png)
+![Appearance of the application](img/app.png)
 
 ---
 
