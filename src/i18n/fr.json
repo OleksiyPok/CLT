@@ -25,5 +25,11 @@
   "resetBtnTitle": "Réinitialiser la séquence",
   "speakBtnTitle": "Jouer cette heure",
   "startPauseBtnTitle": "Démarrer ou mettre en pause la séquence",
-  "uiLangSelectTitle": "Choisir la langue de l’interface"
+  "uiLangSelectTitle": "Choisir la langue de l’interface",
+  "labelThema": "Thème",
+  "labelThemaMode": "Mode",
+  "themaModeContrast": "Contraste",
+  "themaModeNormal": "Normal",
+  "themaModeEvening": "Soir",
+  "themaModeNight": "Nuit"
 }

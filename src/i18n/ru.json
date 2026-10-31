@@ -25,5 +25,11 @@
   "resetBtnTitle": "Сбросить последовательность",
   "speakBtnTitle": "Воспроизвести это время",
   "startPauseBtnTitle": "Запустить или приостановить последовательность",
-  "uiLangSelectTitle": "Выберите язык интерфейса"
+  "uiLangSelectTitle": "Выберите язык интерфейса",
+  "labelThema": "Тема",
+  "labelThemaMode": "Режим",
+  "themaModeContrast": "Контраст",
+  "themaModeNormal": "Обычный",
+  "themaModeEvening": "Вечерний",
+  "themaModeNight": "Ночной"
 }

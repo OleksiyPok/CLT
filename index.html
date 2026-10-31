@@ -6,12 +6,35 @@
     <title>Clock Listening Trainer</title>
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/icon_CLT_16x16.png" />
 
-    <link rel="stylesheet" href="./src/css/style.css" />
-    <link rel="stylesheet" href="./src/css/themes.css" />
+    <script src="./src/js/theme-boot.js"></script>
+
+    <link rel="stylesheet" href="./src/css/main.css" />
     <script type="module" src="./src/js/main.js"></script>
   </head>
   <!-- CLT -->
   <body>
+    <!-- Line icons. Colour comes from CSS (currentColor). -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <symbol id="i-mode-contrast" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" />
+      </symbol>
+
+      <symbol id="i-mode-normal" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </symbol>
+
+      <symbol id="i-mode-evening" viewBox="0 0 24 24">
+        <path d="M8 17a4 4 0 0 1 8 0" />
+        <path d="M2 17h20M7 20.5h10M12 7v2M4.9 9.9l1.4 1.4M17.7 11.3l1.4-1.4" />
+      </symbol>
+
+      <symbol id="i-mode-night" viewBox="0 0 24 24">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+      </symbol>
+    </svg>
+
     <div id="scroll-container" class="scroll-container">
       <div class="layout">
         <div class="titles-container" id="titlesContainer">
@@ -41,6 +64,9 @@
               <option value="uk">Українська</option>
             </select>
           </div>
+          <button type="button" class="mode-app-btn" id="themaModeBtn" title="Mode" aria-label="Mode">
+            <span class="mode-icon" id="themaModeIcon"></span>
+          </button>
         </div>
 
         <div class="section-row">
@@ -120,6 +146,21 @@
                 <div class="voice-group">
                   <label for="voiceSelect" class="label-voice" id="labelVoice" data-i18n="labelVoice">Voice</label>
                   <select class="voice-select" id="voiceSelect" title="Voice"></select>
+                </div>
+              </div>
+              <div class="thema-wrapper">
+                <div class="thema-group" id="themaGroup">
+                  <label for="themaSelect" id="labelThema" class="label-thema" data-i18n="labelThema">Theme</label>
+                  <select id="themaSelect" class="thema-select"></select>
+                </div>
+                <div class="thema-group" id="themaModeGroup">
+                  <label for="themaModeSelect" id="labelThemaMode" class="label-thema" data-i18n="labelThemaMode">Mode</label>
+                  <select id="themaModeSelect" class="thema-select" title="Select theme mode">
+                    <option value="contrast">Contrast</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="evening">Evening</option>
+                    <option value="night">Night</option>
+                  </select>
                 </div>
               </div>
             </div>

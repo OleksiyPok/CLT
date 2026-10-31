@@ -1,5 +1,6 @@
 // The page: fields, buttons, selects, texts and the time rows
 import { EventTypes } from "../core/event-types.js";
+import { createUiTheme } from "./ui-theme.js";
 
 export function createUI({ bus, store, config, langLoader, utils, timePhrase }) {
   let alertTexts = {};
@@ -22,6 +23,17 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     clockContainerEls: document.querySelectorAll(".clock-container"),
     developerBlockEl: document.getElementById("developer"),
   };
+  const theme = createUiTheme({
+    elements: {
+      themaSelect: document.getElementById("themaSelect"),
+      themaModeSelect: document.getElementById("themaModeSelect"),
+      themaModeBtn: document.getElementById("themaModeBtn"),
+      themaModeIcon: document.getElementById("themaModeIcon"),
+      uiLangSelect: els.uiLangSelectEl,
+    },
+    langLoader,
+  });
+  theme.renderThemeSelectOptions();
   let cachedVoices = [];
   let cachedLanguages = [];
 
@@ -76,6 +88,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     if (f.isSequenceMode && !f.isPaused) setBtnText(els.startPauseBtnEl, btnStates.stop || "Stop");
     else if (f.isSequenceMode && f.isPaused) setBtnText(els.startPauseBtnEl, btnStates.cont || "Continue");
     else setBtnText(els.startPauseBtnEl, btnStates.start || "Start");
+    theme.updateLabels(texts);
     bus.emit(EventTypes.UI_TEXTS_UPDATE, { lang });
   }
   function applySettingsToUI(s, { preferBlankForInvalid = true, raw = {} } = {}) {
@@ -89,6 +102,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
     setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
     setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
+    theme.applyThemeFromSettings({ thema: raw.thema ?? s.thema });
     const effectiveLang = els.uiLangSelectEl?.value || s.uiLang || store.getDefaultActive().uiLang;
     translateUI(effectiveLang);
   }
@@ -98,6 +112,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       speed: els.speedSelectEl?.value,
       delay: els.delaySelectEl?.value,
     };
+    const themaFromUI = theme.getThemaFromSelects();
     const current = store.getSettings ? store.getSettings() : {};
     const defaults = store.getDefaultActive ? store.getDefaultActive() : {};
     const allowedOpt = (sel, val) => sel && Array.from(sel.options).some((opt) => String(opt.value) === String(val));
@@ -109,6 +124,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
 
       delay: !isNaN(parseInt(base.delay, 10)) && allowedOpt(els.delaySelectEl, base.delay) ? base.delay : current.delay || defaults.delay,
 
+      thema: themaFromUI || current.thema || defaults.thema,
       languageCode: current.languageCode ?? defaults.languageCode,
       voiceName: current.voiceName ?? defaults.voiceName,
     };
@@ -254,6 +270,16 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     els.uiLangSelectEl?.addEventListener("change", (e) => {
       bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
+    });
+    const onThemaChange = () => {
+      theme.applyThemeFromSelects();
+      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
+    };
+    document.getElementById("themaSelect")?.addEventListener("change", onThemaChange);
+    document.getElementById("themaModeSelect")?.addEventListener("change", onThemaChange);
+    document.getElementById("themaModeBtn")?.addEventListener("click", () => {
+      theme.nextThemaMode();
+      onThemaChange();
     });
     els.speedSelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
     els.delaySelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));

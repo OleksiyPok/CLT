@@ -1,5 +1,6 @@
 // Settings: current values, defaults and saving to localStorage
 import { STORAGE_KEY } from "./config.js";
+import { THEME_VALUES, resolveThemaKey } from "./theme-registry.js";
 import { EventTypes } from "./event-types.js";
 
 export function createStore({ bus, config, utils }) {
@@ -52,6 +53,7 @@ export function createStore({ bus, config, utils }) {
     const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els || {};
     const out = {};
     out.uiLang = stored?.uiLang && config.UI_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang;
+    out.thema = THEME_VALUES.includes(resolveThemaKey(stored?.thema)) ? resolveThemaKey(stored.thema) : defaults?.thema;
     out.delay = (() => {
       const v = stored?.delay;
       const n = parseInt(v, 10);

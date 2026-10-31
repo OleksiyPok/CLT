@@ -25,5 +25,11 @@
   "resetBtnTitle": "Sıralamayı sıfırla",
   "speakBtnTitle": "Bu zamanı çal",
   "startPauseBtnTitle": "Sıralamayı başlat veya duraklat",
-  "uiLangSelectTitle": "Arayüz dili seçin"
+  "uiLangSelectTitle": "Arayüz dili seçin",
+  "labelThema": "Tema",
+  "labelThemaMode": "Mod",
+  "themaModeContrast": "Kontrast",
+  "themaModeNormal": "Normal",
+  "themaModeEvening": "Akşam",
+  "themaModeNight": "Gece"
 }

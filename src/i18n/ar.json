@@ -25,5 +25,11 @@
   "resetBtnTitle": "إعادة تسلسل",
   "speakBtnTitle": "تشغيل هذا الوقت",
   "startPauseBtnTitle": "بدء أو إيقاف التسلسل مؤقتًا",
-  "uiLangSelectTitle": "اختر لغة الواجهة"
+  "uiLangSelectTitle": "اختر لغة الواجهة",
+  "labelThema": "السمة",
+  "labelThemaMode": "الوضع",
+  "themaModeContrast": "تباين",
+  "themaModeNormal": "عادي",
+  "themaModeEvening": "مسائي",
+  "themaModeNight": "ليلي"
 }

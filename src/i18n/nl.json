@@ -25,5 +25,11 @@
   "resetBtnTitle": "Reset de reeks",
   "speakBtnTitle": "Speel deze tijd af",
   "startPauseBtnTitle": "Start of pauzeer de reeks",
-  "uiLangSelectTitle": "Kies interface taal"
+  "uiLangSelectTitle": "Kies interface taal",
+  "labelThema": "Thema",
+  "labelThemaMode": "Modus",
+  "themaModeContrast": "Contrast",
+  "themaModeNormal": "Normaal",
+  "themaModeEvening": "Avond",
+  "themaModeNight": "Nacht"
 }

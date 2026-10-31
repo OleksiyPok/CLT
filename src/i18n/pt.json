@@ -25,5 +25,11 @@
   "resetBtnTitle": "Redefinir sequência",
   "speakBtnTitle": "Tocar esta hora",
   "startPauseBtnTitle": "Iniciar ou pausar sequência",
-  "uiLangSelectTitle": "Selecione o idioma da interface"
+  "uiLangSelectTitle": "Selecione o idioma da interface",
+  "labelThema": "Tema",
+  "labelThemaMode": "Modo",
+  "themaModeContrast": "Contraste",
+  "themaModeNormal": "Normal",
+  "themaModeEvening": "Noite",
+  "themaModeNight": "Noturno"
 }

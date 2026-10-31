@@ -25,5 +25,11 @@
   "resetBtnTitle": "Zresetuj sekwencję",
   "speakBtnTitle": "Odtwórz ten czas",
   "startPauseBtnTitle": "Uruchom lub zatrzymaj sekwencję",
-  "uiLangSelectTitle": "Wybierz język interfejsu"
+  "uiLangSelectTitle": "Wybierz język interfejsu",
+  "labelThema": "Motyw",
+  "labelThemaMode": "Tryb",
+  "themaModeContrast": "Kontrast",
+  "themaModeNormal": "Normalny",
+  "themaModeEvening": "Wieczór",
+  "themaModeNight": "Noc"
 }

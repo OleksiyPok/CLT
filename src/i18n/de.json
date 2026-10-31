@@ -25,5 +25,11 @@
   "resetBtnTitle": "Sequenz zurücksetzen",
   "speakBtnTitle": "Aktuelle Zeit abspielen",
   "startPauseBtnTitle": "Sequenz starten oder pausieren",
-  "uiLangSelectTitle": "Oberflächensprache auswählen"
+  "uiLangSelectTitle": "Oberflächensprache auswählen",
+  "labelThema": "Thema",
+  "labelThemaMode": "Modus",
+  "themaModeContrast": "Kontrast",
+  "themaModeNormal": "Normal",
+  "themaModeEvening": "Abend",
+  "themaModeNight": "Nacht"
 }

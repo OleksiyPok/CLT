@@ -25,5 +25,11 @@
   "resetBtnTitle": "Reset sequence",
   "speakBtnTitle": "Play this time",
   "startPauseBtnTitle": "Start or pause sequence",
-  "uiLangSelectTitle": "Select interface language"
+  "uiLangSelectTitle": "Select interface language",
+  "labelThema": "Theme",
+  "labelThemaMode": "Mode",
+  "themaModeContrast": "Contrast",
+  "themaModeNormal": "Normal",
+  "themaModeEvening": "Evening",
+  "themaModeNight": "Night"
 }

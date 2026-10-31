@@ -13,54 +13,6 @@
   --bp-lg: 768px; /* tablets portrait */
   --bp-xl: 1024px; /* tablets landscape / laptops */
   --bp-2xl: 1280px; /* desktops */
-
-  /*:root.theme-yellowblue-normal */
-  --text-color: #1a1a1a;
-  --text-muted: #555555;
-  --text-placeholder: #888888;
-  --text-inverted: #ffffff;
-  --background-color: #fffdf5;
-  --surface-color: #fff9e6;
-  --surface-alt-color: #fff2cc;
-  --surface-hover: #ffe699;
-  --surface-selected: #ffd966;
-  --border-color: #e6c200;
-  --border-strong: #b39700;
-  --border-focus: #2f80ff;
-  --primary: #006bb3;
-  --primary-hover: #005fa3;
-  --primary-active: #004b87;
-  --primary-bg: #cce0ff;
-  --primary-bg-hover: #b3d1ff;
-  --primary-border: #99c2ff;
-  --primary-text: #ffffff;
-  --success: #007a42;
-  --success-hover: #006837;
-  --success-active: #005c31;
-  --success-bg: #e0fff0;
-  --success-border: #99e6c0;
-  --success-text: #ffffff;
-  --warning: #cc7a00;
-  --warning-hover: #b36b00;
-  --warning-active: #995c00;
-  --warning-bg: #fff2e0;
-  --warning-border: #ffd1a3;
-  --warning-text: #000000;
-  --danger: #b30000;
-  --danger-hover: #990000;
-  --danger-active: #800000;
-  --danger-bg: #ffd9d9;
-  --danger-border: #ffb3b3;
-  --danger-text: #ffffff;
-  --selection-bg: #b3daff;
-  --selection-text: #000000;
-  --overlay-clear: rgba(0, 0, 0, 0);
-  --overlay-bg: rgba(0, 0, 0, 0.4);
-  --tooltip-bg: var(--text-color);
-  --tooltip-text: var(--text-inverted);
-  --shadow-light: rgba(0, 0, 0, 0.1);
-  --shadow-medium: rgba(0, 0, 0, 0.2);
-  --shadow-strong: rgba(0, 0, 0, 0.4);
 }
 
 *,
@@ -238,6 +190,41 @@ button:disabled {
   gap: 12px;
   border-top: 1px solid var(--border-color);
 }
+.mode-app-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  font-size: 26px;
+  background: var(--background-color);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.mode-app-btn:active {
+  background: var(--surface-hover);
+}
+/* Hover highlight only for a real mouse: on touch screens it would stay after a tap */
+@media (hover: hover) {
+  .mode-app-btn:hover {
+    background: var(--surface-hover);
+  }
+}
+/* Theme-mode icon (SVG sprite in index.html) */
+.mode-icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .reset-settings-btn {
   display: flex;
   justify-content: center;
@@ -286,7 +273,8 @@ button:disabled {
   width: 100%;
 }
 .speed-delay-wrapper,
-.language-voice-wrapper {
+.language-voice-wrapper,
+.thema-wrapper {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -308,7 +296,8 @@ button:disabled {
   gap: 12px;
 }
 .language-group,
-.voice-group {
+.voice-group,
+.thema-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -318,7 +307,8 @@ button:disabled {
   width: 90px;
 }
 .language-group select,
-.voice-group select {
+.voice-group select,
+.thema-group select {
   width: 100%;
   text-align: left;
 }
