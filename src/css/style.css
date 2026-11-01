@@ -193,6 +193,7 @@ button:disabled {
   gap: 12px;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
 }
 .reset-settings-group {
   display: flex;
@@ -447,6 +448,12 @@ button:disabled {
 .author-link {
   text-decoration: none;
   color: inherit;
+}
+
+/* The button of the spoken time stays clearly visible although the other buttons are disabled */
+.speak-btn.speaking,
+.speak-btn.speaking:disabled {
+  opacity: 1;
 }
 
 /* Settings window: groups one under another */

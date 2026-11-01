@@ -143,6 +143,7 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
   bus.on(EventTypes.PLAYBACK_PAUSE, () => pause());
   bus.on(EventTypes.PLAYBACK_CONTINUE, () => resume());
   bus.on(EventTypes.PLAYBACK_STOP, () => stop());
+  bus.on(EventTypes.UI_SPEAK_CANCEL, () => speaker.cancel());
   bus.on(EventTypes.UI_SPEAK_SINGLE, (payload) => handleSinglePlay(payload));
   bus.on(EventTypes.SPEECH_END, (p) => {
     const cur = store.getCurrentSpeakButton();

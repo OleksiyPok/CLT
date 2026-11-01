@@ -91,7 +91,11 @@ export function createUiHelp({ elements, langLoader }) {
       const lang = select.value === APP_LANGUAGE ? interfaceLanguage() : select.value;
       const html = await getPage(lang);
       if (current !== request) return; // a newer choice has been made
-      if (html) page.innerHTML = html;
+      if (html) {
+        page.innerHTML = html;
+        // A picture that is not added yet is not shown
+        page.querySelectorAll("img").forEach((img) => img.addEventListener("error", () => (img.hidden = true)));
+      }
       else page.textContent = langLoader.getTexts(elements.uiLangSelect?.value || "en").helpUnavailable || "";
     }
 

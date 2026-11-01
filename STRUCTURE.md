@@ -9,6 +9,8 @@ config/
 docs/
   readme/                  README.<lang>.md и img/ (картинки для README)
   help/                    help.<lang>.html (справка, 10 языков)
+    img/                   картинки справки (добавляются вручную; нет файла - картинка не показывается):
+                           top-row.png, time-rows.png, control-buttons.png, settings.png, settings-window.png
 assets/
   icons/                   icon_CLT_<ширина>x<высота>.png
 src/

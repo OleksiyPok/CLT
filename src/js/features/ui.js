@@ -98,10 +98,15 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       if (rnd) rnd.disabled = true;
     }
   }
+  // The play button turns into a stop button (square) while its time is spoken
   function updateButtonIcon(btn, state) {
     if (!btn) return;
-    if (state === "speaking") btn.textContent = STOP_ICON;
-    else btn.textContent = PLAY_ICON;
+    const speaking = state === "speaking";
+    btn.textContent = speaking ? STOP_ICON : PLAY_ICON;
+    btn.classList.toggle("speaking", speaking);
+    const texts = langLoader.getTexts(els.uiLangSelectEl?.value || "en");
+    const title = speaking ? texts.btnStop : texts.speakBtnTitle;
+    if (title) btn.title = title;
   }
   function setBtnText(el, text) {
     if (!el) return;
@@ -298,7 +303,11 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       if (speakBtn && input)
         speakBtn.addEventListener("click", () => {
           const { isSpeaking } = store.playbackFlags();
-          if (isSpeaking) return;
+          if (isSpeaking) {
+            // The button of the spoken time is a stop button
+            if (store.getCurrentSpeakButton() === speakBtn) bus.emit(EventTypes.UI_SPEAK_CANCEL);
+            return;
+          }
           const raw = input.value?.trim();
           if (!raw) return;
           const timeStr = utils.parseTimeInput(raw);
@@ -404,11 +413,13 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       updateStartPauseBtnTo("start");
     });
     bus.on(EventTypes.UPDATE_CONTROLS, updateControlsAvailability);
-    bus.on(EventTypes.SPEECH_START, () => {
+    bus.on(EventTypes.SPEECH_START, ({ button } = {}) => {
+      updateButtonIcon(button, "speaking");
       store.setPlaybackFlags({ isSpeaking: true });
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     bus.on(EventTypes.SPEECH_END, () => {
+      els.speakBtnEls.forEach((b) => updateButtonIcon(b));
       store.setPlaybackFlags({ isSpeaking: false });
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });

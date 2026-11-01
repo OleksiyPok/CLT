@@ -34,6 +34,7 @@ export const EventTypes = Object.freeze({
 
   UPDATE_CONTROLS: "ui:updateControls",
 
+  UI_SPEAK_CANCEL: "ui:speak:cancel",
   UI_HELP_MODAL_OPEN: "ui:helpModal:open",
   UI_HELP_MODAL_CLOSE: "ui:helpModal:close",
   UI_SETTINGS_MODAL_OPEN: "ui:settingsModal:open",
