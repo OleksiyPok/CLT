@@ -8,17 +8,22 @@ config/
   config.json              ЕДИНСТВЕННОЕ место настроек по умолчанию
 docs/
   readme/                  README.<lang>.md и img/ (картинки для README)
-  help/                    help.<lang>.html (справка, 10 языков)
-    img/                   картинки справки (добавляются вручную; нет файла - картинка не показывается):
-                           top-row.png, time-rows.png, control-buttons.png, settings.png, settings-window.png
+  help/                    help.<lang>.html (справка, 13 языков, формат как у DT)
+    img/                   скриншоты справки (добавляются вручную; нет файла - серая заглушка с именем файла):
+                           main-overview.png, playing.png, settings-window.png
 assets/
   icons/                   icon_CLT_<ширина>x<высота>.png
 src/
-  i18n/                    <lang>.json (тексты интерфейса)
-  vocabs/                  <lang>.json (слова для времени: часы и все минуты 0-59)
+  i18n/                    <lang>.json (тексты интерфейса, 13 языков)
+  vocabs/                  <lang>.json (слова для времени: часы и все минуты 0-59; 10 языков, без cs, es, it)
   css/
     main.css               список подключения файлов (порядок важен: themes.css последним)
-    style.css, modals.css, help.css, icons.css, themes.css  (themes.css общий с DT и NLT)
+    base.css               переменные, цвета по умолчанию, базовые элементы (как у DT)
+    main-screen.css        верхняя строка: справка, настройки, режим (как у DT)
+    clock.css              строки со временем, кнопки, блок настроек главной страницы
+    settings-window.css    окно настроек: плоские панели (как у DT), сброс
+    developer.css, modals.css, responsive.css (576 / 640 / 992 px), help.css (как у DT)
+    themes.css             общий с DT
   js/
     theme-boot.js          обычный скрипт: тема до первой отрисовки
     main.js                точка входа: создаёт модули и связывает их
@@ -33,7 +38,7 @@ src/
 - Настройки пользователя: localStorage, ключ `CLT-settings`.
 - Версия приложения: `APP_VERSION` в `src/js/core/config.js`; меняется при каждом изменении.
 - JS: ES-модули, без глобальных переменных. Модули общаются через event-bus.
-- Языки интерфейса и словарей: `UI_LANGS` в `core/config.js`.
+- Языки интерфейса: `UI_LANGS`; языки со словарём времени: `TIME_LANGS` (оба в `core/config.js`). Язык озвучки выбирается только из `TIME_LANGS`.
 - Ключ localStorage: `STORAGE_KEY` в `core/config.js`.
 - Число строк со временем: `rows` в `config/config.json` (1-15); строки создаёт `ui.buildRows`.
 - Высота кнопок под строками времени постоянна (30px); блок с кнопками чуть выше кнопок.
@@ -49,4 +54,4 @@ src/
 2. Код на ES-модули (core/ и features/), движок фраз времени отдельным модулем. (готово, версия 1.4.2)
 3. Темы (палитры × 4 режима), `theme-registry`, `theme-boot.js`, `main.css`, выбор палитры и режима. (готово, версия 1.4.3)
 4. Верхняя строка, окно справки, окно настроек (настройки пока и на главной странице), SVG-иконки. (готово, версия 1.4.4)
-5. Языки интерфейса (13), справка, README.
+5. Языки интерфейса (13), справка, README. (готово, версия 1.4.6; стили приведены к DT 2.5.10)

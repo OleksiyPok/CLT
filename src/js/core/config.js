@@ -1,7 +1,7 @@
 // Constants and the default settings (config/config.json).
 
 // Shown on the main screen (change it with every change of the app)
-export const APP_VERSION = "1.4.5";
+export const APP_VERSION = "1.4.6";
 
 // Key of the saved settings in localStorage
 export const STORAGE_KEY = "CLT-settings";
@@ -10,7 +10,7 @@ export const STORAGE_KEY = "CLT-settings";
 export const HELP_DIR = "docs/help/";
 
 // Languages of the help pages (docs/help/help.<lang>.html); a missing page is replaced by the English one
-export const HELP_LANGS = ["ar", "de", "en", "fr", "nl", "pl", "pt", "ru", "tr", "uk"];
+export const HELP_LANGS = ["ar", "cs", "de", "en", "es", "fr", "it", "nl", "pl", "pt", "ru", "tr", "uk"];
 
 // Language chosen in the help window
 export const HELP_LANGUAGE_KEY = "CLT-help-language";
@@ -23,8 +23,10 @@ export function createConfig() {
     UI_TEXTS_DIR: "src/i18n",
     TIME_DICTS_DIR: "src/vocabs",
   };
-  // Languages of the interface and of the time vocabularies
-  const UI_LANGS = Object.freeze(["ar", "de", "en", "fr", "nl", "pl", "pt", "ru", "tr", "uk"]);
+  // Languages of the interface (src/i18n)
+  const UI_LANGS = Object.freeze(["ar", "cs", "de", "en", "es", "fr", "it", "nl", "pl", "pt", "ru", "tr", "uk"]);
+  // Languages that have a vocabulary of the time words (src/vocabs); only for them the app can say the time
+  const TIME_LANGS = Object.freeze(["ar", "de", "en", "fr", "nl", "pl", "pt", "ru", "tr", "uk"]);
 
   async function load() {
     const res = await fetch(PATHS.CONFIG, { cache: "no-store" });
@@ -34,5 +36,5 @@ export function createConfig() {
     return { ...common, ...(isMobile ? mobile || {} : {}) };
   }
 
-  return { PATHS, UI_LANGS, load };
+  return { PATHS, UI_LANGS, TIME_LANGS, load };
 }

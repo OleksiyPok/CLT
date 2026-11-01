@@ -21,7 +21,7 @@ const TimeDictLoader = createTimeDictLoader({ config: Config, utils: Utils });
 const TimePhrase = createTimePhrase({ dictLoader: TimeDictLoader });
 const Store = createStore({ bus: bus, config: Config, utils: Utils });
 const WakeLock = createWakeLock({ bus: bus });
-const Voices = createVoices({ bus: bus, utils: Utils, allowedLangs: Config.UI_LANGS });
+const Voices = createVoices({ bus: bus, utils: Utils, allowedLangs: Config.TIME_LANGS });
 const Speaker = createSpeaker({
   bus: bus,
   voicesProvider: () => Voices.getVoices(),

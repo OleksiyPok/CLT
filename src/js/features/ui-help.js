@@ -4,6 +4,15 @@ import { HELP_DIR, HELP_LANGS, HELP_LANGUAGE_KEY } from "../core/config.js";
 const APP_LANGUAGE = "app"; // "the language of the interface"
 const DEFAULT_LANGUAGE = "en";
 
+// A screenshot that is not added yet: the figure shows a grey placeholder with the file name (see help.css)
+function markMissingImages(page) {
+  page.querySelectorAll(".help-shot img").forEach((img) => {
+    const markMissing = () => img.closest(".help-shot")?.classList.add("missing");
+    img.addEventListener("error", markMissing);
+    if (img.complete && img.naturalWidth === 0) markMissing();
+  });
+}
+
 export function createUiHelp({ elements, langLoader }) {
   const pageCache = {};
 
@@ -93,8 +102,7 @@ export function createUiHelp({ elements, langLoader }) {
       if (current !== request) return; // a newer choice has been made
       if (html) {
         page.innerHTML = html;
-        // A picture that is not added yet is not shown
-        page.querySelectorAll("img").forEach((img) => img.addEventListener("error", () => (img.hidden = true)));
+        markMissingImages(page);
       }
       else page.textContent = langLoader.getTexts(elements.uiLangSelect?.value || "en").helpUnavailable || "";
     }

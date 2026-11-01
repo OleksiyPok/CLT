@@ -1,6 +1,10 @@
 /* Order matters: later files override earlier ones. themes.css goes last. */
-@import url("style.css");
+@import url("base.css");
+@import url("main-screen.css");
+@import url("clock.css");
+@import url("settings-window.css");
+@import url("developer.css");
 @import url("modals.css");
+@import url("responsive.css");
 @import url("help.css");
-@import url("icons.css");
 @import url("themes.css");
