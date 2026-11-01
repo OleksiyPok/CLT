@@ -1,0 +1,197 @@
+:root {
+  /* Maximum width of the page content (raised in the media queries) */
+  --max-content-width: 425px;
+  /* One vertical gap: line -> 1/2/3, 1/2/3 -> block, block -> block */
+  --block-gap: 12px;
+  /* Gap between rows inside a block */
+  --inner-gap: 8px;
+  /* One height for selects and icon buttons */
+  --control-h: 30px;
+  /* Colours are NOT defined here: all of them (and the default palette) are in themes.css */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  padding: 12px;
+  overflow-x: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+.scroll-container {
+  height: calc(var(--vh, 1vh) * 100);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  width: 100%;
+}
+h2,
+h5,
+h6 {
+  width: 100%;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+h2 {
+  margin: 0;
+  font-size: 22px;
+  text-shadow: 1px 1px 2px var(--shadow-light);
+}
+h5 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-style: italic;
+  text-align: right;
+}
+input {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 120px;
+  box-shadow: none;
+  padding: 4px 8px;
+  font-size: 0.95em;
+  text-align: center;
+  color: var(--text-color);
+  outline: none;
+}
+select {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 120px;
+  box-shadow: none;
+  padding: 4px 8px;
+  font-size: 0.95em;
+  text-align: center;
+  color: var(--text-color);
+}
+select:hover {
+  border-color: var(--border-strong);
+}
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+label {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+label.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+button {
+  width: 100%;
+  max-width: 120px;
+  padding: 4px 4px;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: var(--text-color);
+  background: var(--primary-bg);
+  border: 2px solid var(--primary-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: var(--primary-bg-hover);
+  border-color: var(--primary-hover);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.version {
+  display: block;
+  margin-top: 0;
+  font-size: 12px;
+  font-style: italic;
+}
+.titles-container {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: 100%;
+}
+.title-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  margin-right: 8px;
+  /* --logo-filter comes from the theme (unchanged / muted / grey) */
+  filter: drop-shadow(1px 1px 2px var(--shadow-light)) var(--logo-filter, brightness(1));
+}
+
+/* Own checkbox in every theme: the native one is always bright white and ignores the theme.
+   Empty: theme background, strong border. Checked: accent fill with a light tick. */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-content: center;
+  margin: 0;
+  padding: 0;
+  background: var(--background-color);
+  border: 2px solid var(--border-strong);
+  border-radius: 4px;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  transform: scale(0);
+  background: var(--primary-text);
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transition: transform 0.1s ease-in-out;
+}
+input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: var(--primary-active);
+}
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.is-hidden {
+  display: none !important;
+}

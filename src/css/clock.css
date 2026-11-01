@@ -1,0 +1,118 @@
+/* ---------- The exercise: rows with the times, buttons, settings block of the main page ---------- */
+.author-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.section-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--block-gap);
+}
+.section-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-around;
+  gap: var(--block-gap);
+  width: 100%;
+  padding: 10px;
+  background: var(--surface-color);
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  box-shadow: 0 4px 12px var(--shadow-light);
+}
+.setting-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-gap);
+  width: 100%;
+}
+
+/* Rows with the times */
+.clock-container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  margin-left: 0;
+}
+.section-block-exercises input {
+  max-width: 120px;
+  height: 40px;
+  font: 1.8em sans-serif;
+  font-weight: 600;
+}
+.section-block-exercises input.highlight {
+  color: var(--primary-active);
+  border: 3px solid var(--border-color);
+}
+.section-block-exercises button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 15%;
+}
+/* The button of the spoken time stays clearly visible although the other buttons are disabled */
+.speak-btn.speaking,
+.speak-btn.speaking:disabled {
+  opacity: 1;
+}
+
+/* Rnd / Start / Reset: the buttons have a constant height, the block is a little higher than the buttons */
+.section-block-buttons {
+  flex-direction: row;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.section-block-buttons button {
+  height: var(--control-h);
+}
+
+/* Settings block of the main page */
+.speed-delay-wrapper,
+.language-voice-wrapper,
+.thema-wrapper,
+.interface-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+.speed-group,
+.delay-group {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.language-group,
+.voice-group,
+.thema-group,
+.interface-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.speed-group select,
+.delay-group select {
+  width: 90px;
+}
+.language-group select,
+.voice-group select,
+.thema-group select,
+.interface-group select {
+  width: 100%;
+  max-width: none;
+  text-align: left;
+}

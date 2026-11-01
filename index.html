@@ -1,78 +1,91 @@
 <!DOCTYPE html>
-<html lang="en" class="theme-yellowblue-normal">
+<html lang="en" class="theme-warmorange-normal">
   <head>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport" />
     <meta charset="utf-8" />
     <title>Clock Listening Trainer</title>
-    <link rel="icon" type="image/png" sizes="x16" href="icons/icon_CLT_16x16.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/icon_CLT_16x16.png" />
 
-    <link rel="stylesheet" href="./assets/css/style.css" />
-    <link rel="stylesheet" href="./assets/css/themes.css" />
-    <!-- <script src="./assets/locales/ui_CLT_texts.js" defer></script> -->
-    <script src="./app/dutchVocab.js" defer></script>
-    <script src="./app/main.js" defer></script>
+    <script src="./src/js/theme-boot.js"></script>
+
+    <link rel="stylesheet" href="./src/css/main.css" />
+    <script type="module" src="./src/js/main.js"></script>
   </head>
   <!-- CLT -->
   <body>
+    <!-- Line icons. Colour comes from CSS (currentColor). -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <symbol id="i-info" viewBox="0 0 24 24">
+        <circle cx="12" cy="6.5" r="1.6" fill="currentColor" stroke="none" />
+        <path d="M12 10.5v8" />
+      </symbol>
+
+      <symbol id="i-mode-contrast" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" />
+      </symbol>
+
+      <symbol id="i-mode-normal" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </symbol>
+
+      <symbol id="i-mode-evening" viewBox="0 0 24 24">
+        <path d="M8 17a4 4 0 0 1 8 0" />
+        <path d="M2 17h20M7 20.5h10M12 7v2M4.9 9.9l1.4 1.4M17.7 11.3l1.4-1.4" />
+      </symbol>
+
+      <symbol id="i-mode-night" viewBox="0 0 24 24">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+      </symbol>
+
+      <symbol id="i-reset" viewBox="0 0 24 24">
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+        <path d="M21 3v5h-5" />
+      </symbol>
+
+      <symbol id="i-gear" viewBox="0 0 24 24">
+        <path d="M10.31 5.21L10.68 2.59L13.32 2.59L13.69 5.21L17.04 7.14L19.49 6.15L20.81 8.44L18.73 10.07L18.73 13.93L20.81 15.56L19.49 17.85L17.04 16.86L13.69 18.79L13.32 21.41L10.68 21.41L10.31 18.79L6.96 16.86L4.51 17.85L3.19 15.56L5.27 13.93L5.27 10.07L3.19 8.44L4.51 6.15L6.96 7.14L10.31 5.21Z" />
+        <circle cx="12" cy="12" r="2.8" />
+      </symbol>
+    </svg>
+
     <div id="scroll-container" class="scroll-container">
       <div class="layout">
         <div class="titles-container" id="titlesContainer">
-          <img class="title-icon" id="titleIcon" src="icons/icon_CLT_64x64.png" alt="Icon" />
+          <img class="title-icon" id="titleIcon" src="./assets/icons/icon_CLT_64x64.png" alt="Icon" />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> 1.3.14</h6>
+            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> <span id="appVersion"></span></h6>
           </div>
         </div>
         <h5>
-          <a href="mailto:Oleksii.Pokormiakho.job@gmail.com" style="text-decoration: none; color: inherit"> Oleksii Pokormiakho </a>
+          <a class="author-link" href="mailto:Oleksii.Pokormiakho.job@gmail.com"> Oleksii Pokormiakho </a>
         </h5>
+
         <div class="setting-row" id="settingRow">
-          <button class="reset-settings-btn" id="resetSettingsBtn" data-i18n-title="resetSettingsTitle">🔄</button>
-          <div class="ui-language-wrapper" id="uiLanguageWrapper">
-            <label for="uiLangSelect" class="ui-lang-label" id="uiLangLabel" data-i18n="uiLangLabel">Interface:</label>
-            <select class="ui-lang-select" id="uiLangSelect" data-i18n-title="uiLangSelectTitle" title="Select interface language">
-              <option value="ar">العربية</option>
-              <option value="de">Deutsch</option>
-              <option selected value="en">English</option>
-              <option value="fr">Français</option>
-              <option value="nl">Nederlands</option>
-              <option value="pl">Polski</option>
-              <option value="pt">Português</option>
-              <option value="ru">Русский</option>
-              <option value="tr">Türkçe</option>
-              <option value="uk">Українська</option>
-            </select>
+          <div class="setting-buttons">
+            <button type="button" class="help-app-btn" id="helpAppBtn" title="Open application description" aria-label="Open application description">
+              <span class="framed-icon">
+                <svg aria-hidden="true"><use href="#i-info" /></svg>
+              </span>
+            </button>
+
+            <button type="button" class="settings-app-btn" id="settingsAppBtn" title="Settings" aria-label="Settings">
+              <span class="framed-icon">
+                <svg aria-hidden="true"><use href="#i-gear" /></svg>
+              </span>
+            </button>
           </div>
+
+          <button type="button" class="mode-app-btn" id="themaModeBtn" title="Mode" aria-label="Mode">
+            <span class="mode-icon" id="themaModeIcon"></span>
+          </button>
         </div>
 
         <div class="section-row">
-          <div class="section-block section-block-exercises">
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_1" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_1" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_1" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_2" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_2" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_2" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_3" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_3" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_3" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_4" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_4" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_4" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-            <div class="clock-container">
-              <button class="random-btn" id="randomBtn_5" data-i18n-title="randomBtnTitle">🎲</button>
-              <input type="text" class="time-input" id="timeInput_5" maxlength="5" value="00:00" />
-              <button class="speak-btn" id="speakBtn_5" data-i18n-title="speakBtnTitle">▶️</button>
-            </div>
-          </div>
+          <!-- The rows with the times are made by the code (the number is "rows" in config/config.json) -->
+          <div class="section-block section-block-exercises" id="clockRows"></div>
 
           <div class="setting-button-wrapper">
             <div class="section-block section-block-buttons">
@@ -124,12 +137,124 @@
                   <select class="voice-select" id="voiceSelect" title="Voice"></select>
                 </div>
               </div>
+              <div class="interface-wrapper">
+                <div class="interface-group" id="uiLanguageWrapper">
+                  <label for="uiLangSelect" class="label-interface" id="uiLangLabel" data-i18n="uiLangLabel">Interface:</label>
+                  <select class="interface-select" id="uiLangSelect" data-i18n-title="uiLangSelectTitle" title="Select interface language">
+                    <option value="ar">العربية</option>
+                    <option value="cs">Čeština</option>
+                    <option value="de">Deutsch</option>
+                    <option value="en" selected>English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="it">Italiano</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="pl">Polski</option>
+                    <option value="pt">Português</option>
+                    <option value="ru">Русский</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="uk">Українська</option>
+                  </select>
+                </div>
+              </div>
+              <div class="thema-wrapper">
+                <div class="thema-group" id="themaGroup">
+                  <label for="themaSelect" id="labelThema" class="label-thema" data-i18n="labelThema">Theme</label>
+                  <select id="themaSelect" class="thema-select"></select>
+                </div>
+                <div class="thema-group" id="themaModeGroup">
+                  <label for="themaModeSelect" id="labelThemaMode" class="label-thema" data-i18n="labelThemaMode">Mode</label>
+                  <select id="themaModeSelect" class="thema-select" title="Select theme mode">
+                    <option value="contrast">Contrast</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="evening">Evening</option>
+                    <option value="night">Night</option>
+                  </select>
+                </div>
+              </div>
+              <div class="reset-settings-group" id="resetSettingsGroup">
+                <button type="button" class="reset-settings-btn" id="resetSettingsBtn" data-i18n-title="resetSettingsTitle" title="Reset to default settings">
+                  <svg class="ico" aria-hidden="true"><use href="#i-reset" /></svg>
+                </button>
+                <span class="reset-settings-text" id="resetSettingsText" data-i18n="defaultSettings">Reset defaults</span>
+              </div>
             </div>
           </div>
         </div>
         <div class="developer" id="developer">
-          <button onclick="alert(location.href);" title="Path to this page">Path</button>
-          <button onclick="localStorage.clear(); alert('localStorage cleared');" title="Clear local storage">Clear LS</button>
+          <button type="button" id="developerPathBtn" title="Path to this page">Path</button>
+          <button type="button" id="developerClearBtn" title="Clear the saved settings of this app">Clear LS</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settingsAppModal" class="app-modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="app-modal-content">
+        <div class="app-modal-header">
+          <h2 class="app-modal-title" id="settingsTitle">Application settings</h2>
+          <button type="button" id="settingsAppCloseBtn" class="app-modal-close-btn" title="Close" aria-label="Close">✕</button>
+        </div>
+
+        <div class="app-modal-body-wrap">
+          <div class="app-modal-body" id="settingsBody">
+            <div id="settingsAppContent" class="settings-app-content">
+              <div class="speed-delay-wrapper">
+                <div class="speed-group">
+                  <label for="speedSelectCopy" id="labelSpeedCopy" data-mirror-of="labelSpeed">Speed</label>
+                  <select id="speedSelectCopy" data-mirror-of="speedSelect"></select>
+                </div>
+                <div class="delay-group">
+                  <label for="delaySelectCopy" id="labelDelayCopy" data-mirror-of="labelDelay">Delay</label>
+                  <select id="delaySelectCopy" data-mirror-of="delaySelect"></select>
+                </div>
+              </div>
+              <div class="language-voice-wrapper">
+                <div class="language-group">
+                  <label for="languageCodeSelectCopy" id="labelLanguageCodeCopy" data-mirror-of="labelLanguageCode">Language</label>
+                  <select id="languageCodeSelectCopy" data-mirror-of="languageCodeSelect"></select>
+                </div>
+                <div class="voice-group">
+                  <label for="voiceSelectCopy" id="labelVoiceCopy" data-mirror-of="labelVoice">Voice</label>
+                  <select id="voiceSelectCopy" data-mirror-of="voiceSelect"></select>
+                </div>
+              </div>
+              <div class="interface-wrapper">
+                <div class="interface-group">
+                  <label for="uiLangSelectCopy" id="uiLangLabelCopy" data-mirror-of="uiLangLabel">Interface:</label>
+                  <select id="uiLangSelectCopy" data-mirror-of="uiLangSelect"></select>
+                </div>
+              </div>
+              <div class="thema-wrapper">
+                <div class="thema-group">
+                  <label for="themaSelectCopy" id="labelThemaCopy" data-mirror-of="labelThema">Theme</label>
+                  <select id="themaSelectCopy" data-mirror-of="themaSelect"></select>
+                </div>
+                <div class="thema-group">
+                  <label for="themaModeSelectCopy" id="labelThemaModeCopy" data-mirror-of="labelThemaMode">Mode</label>
+                  <select id="themaModeSelectCopy" data-mirror-of="themaModeSelect"></select>
+                </div>
+              </div>
+              <div class="reset-settings-group">
+                <button type="button" class="reset-settings-btn" id="resetSettingsBtnCopy" data-i18n-title="resetSettingsTitle" title="Reset to default settings">
+                  <svg class="ico" aria-hidden="true"><use href="#i-reset" /></svg>
+                </button>
+                <span class="reset-settings-text" id="resetSettingsTextCopy" data-mirror-of="resetSettingsText">Reset defaults</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="helpAppModal" class="app-modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <div class="app-modal-content">
+        <div class="app-modal-header">
+          <h2 class="app-modal-title" id="helpTitle">Information</h2>
+          <button type="button" id="helpAppCloseBtn" class="app-modal-close-btn" title="Close" aria-label="Close">✕</button>
+        </div>
+
+        <div class="app-modal-body" id="helpBody">
+          <div id="helpAppContent"></div>
         </div>
       </div>
     </div>

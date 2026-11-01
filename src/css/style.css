@@ -1,0 +1,464 @@
+/* style.css */
+:root {
+  --content-max-xs: 425px; /* small containers */
+  --content-max-sm: 540px; /* small containers */
+  --content-max-md: 720px; /* medium */
+  --content-max-lg: 960px; /* large */
+  --content-max-xl: 1140px; /* extra large */
+  --content-max-2xl: 1320px; /* very large desktops */
+
+  --bp-xs: 480px; /* extra small phones */
+  --bp-sm: 576px; /* phones */
+  --bp-md: 640px; /* phablets / small tablets */
+  --bp-lg: 768px; /* tablets portrait */
+  --bp-xl: 1024px; /* tablets landscape / laptops */
+  --bp-2xl: 1280px; /* desktops */
+
+  /* Colour of the "i" and gear icons */
+  --info-icon-color: var(--text-color);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  padding: 12px;
+  overflow-x: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+.scroll-container {
+  height: calc(var(--vh, 1vh) * 100);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: var(--content-max-xs);
+  margin: 0 auto;
+}
+h2,
+h5,
+h6 {
+  width: 100%;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+h2 {
+  margin: 0;
+  font-size: 22px;
+  text-shadow: 1px 1px 2px var(--shadow-light);
+}
+h5 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-style: italic;
+  text-align: right;
+}
+input {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 120px;
+  box-shadow: none;
+  padding: 4px 8px;
+  font-size: 0.95em;
+  text-align: center;
+  color: var(--text-color);
+  outline: none;
+}
+select {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 120px;
+  box-shadow: none;
+  padding: 4px 8px;
+  font-size: 0.95em;
+  text-align: center;
+  color: var(--text-color);
+  /* outline: none; */
+}
+select:hover {
+  border-color: var(--border-color);
+}
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+label {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+label.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+textarea {
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text-color);
+  min-height: 90px;
+  overflow-y: auto;
+  padding: 8px;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+textarea::placeholder {
+  color: var(--text-color);
+}
+textarea:focus {
+  border-color: var(--border-color);
+  outline: none;
+}
+button {
+  width: 100%;
+  max-width: 120px;
+  padding: 4px 4px;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: var(--text-color);
+  background: var(--primary-bg);
+  border: 2px solid var(--primary-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+button:hover {
+  background: var(--primary-bg-hover);
+  border-color: var(--primary-hover);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.version {
+  display: block;
+  margin-top: 0;
+  font-size: 12px;
+  font-style: italic;
+}
+.titles-container {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: 100%;
+}
+.title-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  margin-right: 8px;
+  filter: drop-shadow(1px 1px 2px var(--shadow-light));
+}
+.setting-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-left: 0;
+  /* margin-bottom: 4px; */
+  padding: 8px 0;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
+}
+.reset-settings-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+  margin-left: 0;
+  margin-bottom: 4px;
+  gap: 12px;
+  padding-top: 8px;
+  opacity: 0.75;
+  /* border-top: 1px solid var(--border-color); */
+}
+
+.help-app-btn,
+.settings-app-btn,
+.mode-app-btn,
+.reset-settings-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.help-app-btn,
+.settings-app-btn,
+.mode-app-btn {
+  font-size: 26px;
+  background: var(--background-color);
+}
+
+.help-app-btn:active,
+.settings-app-btn:active,
+.mode-app-btn:active {
+  background: var(--surface-hover);
+}
+
+/* Hover highlight only for a real mouse: on touch screens it would stay after a tap */
+@media (hover: hover) {
+  .help-app-btn:hover,
+  .settings-app-btn:hover,
+  .mode-app-btn:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.setting-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reset-settings-btn {
+  font-size: 18px;
+  background: var(--surface-color);
+}
+
+/* The reset icon: a line icon from the sprite, like the other buttons */
+.reset-settings-btn .ico {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.reset-settings-text {
+  font-weight: 600;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Theme-mode icon: same size as the framed "i" and gear icons next to it */
+.mode-icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.section-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-around;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  background: var(--surface-color);
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  box-shadow: 0 4px 12px var(--shadow-light);
+}
+.section-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+}
+.section-block-buttons {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+/* The buttons have a constant height; the block is a little higher than the buttons */
+.section-block-buttons button {
+  height: 30px;
+}
+.setting-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.speed-delay-wrapper,
+.language-voice-wrapper,
+.thema-wrapper,
+.interface-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+.speed-group,
+.delay-group {
+  align-items: baseline;
+  justify-content: space-between;
+}
+.speed-group,
+.delay-group {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+.language-group,
+.voice-group,
+.thema-group,
+.interface-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.speed-group select,
+.delay-group select {
+  width: 90px;
+}
+.language-group select,
+.voice-group select,
+.thema-group select,
+.interface-group select {
+  width: 100%;
+  text-align: left;
+}
+
+.clock-container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  margin-left: 0;
+}
+.section-block-exercises input {
+  max-width: 120px;
+  height: 40px;
+  font: 1.8em sans-serif;
+  font-weight: 600;
+}
+.section-block-exercises input.highlight {
+  color: var(--primary-active);
+  border: 3px solid var(--border-color);
+}
+.section-block-exercises button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 15%;
+}
+.developer {
+  display: flex;
+  justify-content: left;
+  width: 100%;
+  gap: 12px;
+  margin-top: 14px;
+}
+.developer button {
+  width: 80px;
+  padding: 6px 6px;
+  font-size: 0.75em;
+  background-color: var(--primary-bg);
+  border: 1px solid var(--primary-border);
+  border-radius: 8px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 6px var(--shadow-light);
+}
+.developer button:hover {
+  background-color: var(--primary-bg);
+  border-color: var(--primary-hover);
+}
+
+@media (min-width: 640px) {
+  .layout {
+    max-width: var(--content-max-md);
+    align-items: stretch;
+  }
+  .section-row {
+    flex-direction: row;
+    gap: 12px;
+  }
+  .section-block-exercises {
+    flex: 1 1 0%;
+  }
+  .setting-button-wrapper {
+    flex: 1;
+    flex-direction: column;
+  }
+  .setting-button-wrapper .section-block-settings {
+    order: 1;
+  }
+  .setting-button-wrapper .section-block-buttons {
+    order: 2;
+    margin-top: auto;
+  }
+}
+
+.author-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* The button of the spoken time stays clearly visible although the other buttons are disabled */
+.speak-btn.speaking,
+.speak-btn.speaking:disabled {
+  opacity: 1;
+}
+
+/* Settings window: groups one under another */
+#settingsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

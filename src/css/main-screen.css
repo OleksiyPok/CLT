@@ -1,0 +1,103 @@
+/* ---------- Top row: help, settings, theme mode ---------- */
+.setting-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-left: 0;
+  padding: 8px 0;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.setting-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+.help-app-btn,
+.settings-app-btn,
+.mode-app-btn,
+.reset-settings-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.help-app-btn,
+.settings-app-btn,
+.mode-app-btn {
+  font-size: 26px;
+  background: var(--background-color);
+}
+.help-app-btn:hover,
+.settings-app-btn:hover,
+.mode-app-btn:hover {
+  background: var(--background-color);
+}
+.help-app-btn:active,
+.settings-app-btn:active,
+.mode-app-btn:active {
+  background: var(--surface-hover);
+}
+/* Hover highlight only for a real mouse: on touch screens it would stay after a tap */
+@media (hover: hover) {
+  .help-app-btn:hover,
+  .settings-app-btn:hover,
+  .mode-app-btn:hover {
+    background: var(--surface-hover);
+  }
+}
+/* Theme-mode icon: same size as the framed "i" and gear icons next to it */
+.mode-icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Icon in a square frame, the same size as the "i" icon */
+.framed-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-color);
+  border: 2px solid var(--info-icon-color);
+  border-radius: 4px;
+}
+
+.framed-icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  color: var(--info-icon-color);
+  fill: none;
+  stroke: var(--info-icon-color);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Same gap under the second line as between the blocks */
+.setting-row {
+  margin-bottom: var(--block-gap);
+}

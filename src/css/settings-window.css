@@ -1,0 +1,79 @@
+/* ---------- Settings window content: flat panels with an accent bar (as in DT) ---------- */
+.settings-app-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 576px;
+  margin: 0 auto;
+  padding-top: 8px;
+}
+.settings-app-content .speed-delay-wrapper,
+.settings-app-content .language-voice-wrapper,
+.settings-app-content .thema-wrapper,
+.settings-app-content .interface-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  background: var(--surface-color);
+  border: none;
+  border-left: 5px solid var(--primary-border);
+  border-radius: 0;
+}
+.settings-app-content select {
+  width: 100%;
+  max-width: none;
+  border-radius: 0;
+  border-color: var(--border-strong);
+  box-shadow: none;
+  text-align: left;
+}
+.settings-app-content .speed-group select,
+.settings-app-content .delay-group select {
+  width: 90px;
+}
+
+.reset-settings-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding-top: 0;
+  opacity: 0.75;
+}
+/* Size of the reset button (the square) */
+.reset-settings-btn {
+  margin-left: 10px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+.reset-settings-btn:hover {
+  background: var(--surface-hover);
+}
+/* The reset icon: a line icon from the sprite, like the other buttons */
+.reset-settings-btn .ico {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.reset-settings-text {
+  font-weight: 600;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  user-select: none;
+}

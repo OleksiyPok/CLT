@@ -1,15 +1,17 @@
 🌐 Available languages:  
-[English](README/README.en.md)  |  [Deutsch](README/README.de.md)  |  [Nederlands](README/README.nl.md)  |  [Українська](README/README.uk.md)  |  [Русский](README/README.ru.md)
+[English](docs/readme/README.en.md)  |  [Deutsch](docs/readme/README.de.md)  |  [Nederlands](docs/readme/README.nl.md)  |  [Українська](docs/readme/README.uk.md)  |  [Русский](docs/readme/README.ru.md)
 
 ---
 
 # CLT Clock Listening Trainer
-This is a small, one-page application for learning numbers and time perception by ear in several languages
 
+This is a compact, one-page application designed for learning to tell the time in foreign languages.  
+The app says times aloud in the chosen language and plays a whole list of times one after another, which trains your ear for the way time is expressed in different languages.
  
-![Appearance of the application](README/screenshots/app.png)
+ 
+![Appearance of the application](docs/readme/img/app.png)
 
 ---
 
 🌐 Available languages:  
-[English](README/README.en.md)  |  [Deutsch](README/README.de.md)  |  [Nederlands](README/README.nl.md)  |  [Українська](README/README.uk.md)  |  [Русский](README/README.ru.md)
+[English](docs/readme/README.en.md)  |  [Deutsch](docs/readme/README.de.md)  |  [Nederlands](docs/readme/README.nl.md)  |  [Українська](docs/readme/README.uk.md)  |  [Русский](docs/readme/README.ru.md)
