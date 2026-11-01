@@ -196,6 +196,9 @@
         </div>
 
         <div class="app-modal-body-wrap">
+          <div class="step-badge step-badge-settings" id="stepBadgeSettings" aria-hidden="true"></div>
+          <div class="scroll-hint scroll-hint-left" id="scrollHintLeft" aria-hidden="true"><span class="hint-up"></span><span class="hint-down"></span></div>
+          <div class="scroll-hint scroll-hint-right" id="scrollHintRight" aria-hidden="true"><span class="hint-up"></span><span class="hint-down"></span></div>
           <div class="app-modal-body" id="settingsBody">
             <div id="settingsAppContent" class="settings-app-content">
               <div class="speed-delay-wrapper">
@@ -241,6 +244,7 @@
                 <span class="reset-settings-text" id="resetSettingsTextCopy" data-mirror-of="resetSettingsText">Reset defaults</span>
               </div>
             </div>
+            <div class="snap-spacer" id="settingsSnapSpacer" aria-hidden="true"></div>
           </div>
         </div>
       </div>
@@ -253,7 +257,7 @@
           <button type="button" id="helpAppCloseBtn" class="app-modal-close-btn" title="Close" aria-label="Close">✕</button>
         </div>
 
-        <div class="app-modal-body" id="helpBody">
+        <div class="app-modal-body help-body" id="helpBody">
           <div id="helpAppContent"></div>
         </div>
       </div>

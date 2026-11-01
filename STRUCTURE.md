@@ -22,13 +22,14 @@ src/
     main-screen.css        верхняя строка: справка, настройки, режим (как у DT)
     clock.css              строки со временем, кнопки, блок настроек главной страницы
     settings-window.css    окно настроек: плоские панели (как у DT), сброс
+    scroll-steps.css       ступеньки прокрутки окна настроек, стрелки, бейдж
     developer.css, modals.css, responsive.css (576 / 640 / 992 px), help.css (как у DT)
     themes.css             общий с DT
   js/
     theme-boot.js          обычный скрипт: тема до первой отрисовки
     main.js                точка входа: создаёт модули и связывает их
     core/                  основа: config, event-bus, event-types, i18n, store, theme-registry, utils
-    features/              возможности: app, ui (+ ui-theme, ui-help, ui-settings-window, ui-mirrors), speaker, voices, wake-lock, playback,
+    features/              возможности: app, ui (+ ui-theme, ui-help, ui-settings-window, ui-mirrors), developer (секретный жест, кнопки Path/Clear LS), scroll-steps (ступеньки, стрелки, бейдж), speaker, voices, wake-lock, playback,
                            time-dict (загрузка словарей), time-phrase (движок фраз времени)
 ```
 

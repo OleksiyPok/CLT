@@ -1,18 +1,8 @@
 // The application: loads the data, applies the settings and connects the modules by events.
-import { APP_VERSION, STORAGE_KEY } from "../core/config.js";
+import { APP_VERSION } from "../core/config.js";
 import { EventTypes } from "../core/event-types.js";
 
-export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, voices, wakeLock, utils }) {
-  function setupDeveloperButtons() {
-    document.getElementById("developerPathBtn")?.addEventListener("click", () => alert(location.href));
-    document.getElementById("developerClearBtn")?.addEventListener("click", () => {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {}
-      alert("Saved settings cleared");
-    });
-  }
-
+export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, voices, wakeLock, utils, developer }) {
   async function init() {
     const appCfg = await config.load();
     utils.setDebug(appCfg.developerMode);
@@ -25,7 +15,7 @@ export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, 
 
     const versionEl = document.getElementById("appVersion");
     if (versionEl) versionEl.textContent = APP_VERSION;
-    setupDeveloperButtons();
+    developer.init(appCfg);
 
     await langLoader.loadAll(config.UI_LANGS);
     const { raw, merged } = store.loadSettingsFromLocal(ui.els);

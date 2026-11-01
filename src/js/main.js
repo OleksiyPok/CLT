@@ -9,6 +9,8 @@ import { createApp } from "./features/app.js";
 import { createPlayback } from "./features/playback.js";
 import { createSpeaker } from "./features/speaker.js";
 import { createTimeDictLoader } from "./features/time-dict.js";
+import { createDeveloper } from "./features/developer.js";
+import { initSnap } from "./features/scroll-steps.js";
 import { createTimePhrase } from "./features/time-phrase.js";
 import { createUI } from "./features/ui.js";
 import { createVoices } from "./features/voices.js";
@@ -29,6 +31,7 @@ const Speaker = createSpeaker({
 });
 const UI = createUI({ bus: bus, store: Store, config: Config, langLoader: LangLoader, utils: Utils, timePhrase: TimePhrase });
 createPlayback({ bus: bus, store: Store, ui: UI, speaker: Speaker, utils: Utils, wakeLock: WakeLock, timePhrase: TimePhrase });
+const Developer = createDeveloper({ bus: bus, ui: UI });
 const App = createApp({
   bus: bus,
   config: Config,
@@ -39,6 +42,8 @@ const App = createApp({
   voices: Voices,
   wakeLock: WakeLock,
   utils: Utils,
+  developer: Developer,
 });
 
 App.init();
+initSnap();
