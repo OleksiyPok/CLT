@@ -187,19 +187,38 @@
                 </div>
               </div>
               <div class="interface-wrapper">
-                <div class="interface-group">
-                  <label for="uiLangSelectCopy" id="uiLangLabelCopy" data-mirror-of="uiLangLabel">Interface:</label>
-                  <select id="uiLangSelectCopy" data-mirror-of="uiLangSelect"></select>
+                <div class="interface-group" id="uiLanguageWrapper">
+                  <label for="uiLangSelect" class="label-interface" id="uiLangLabel" data-i18n="uiLangLabel">Interface:</label>
+                  <select class="interface-select" id="uiLangSelect" data-i18n-title="uiLangSelectTitle" title="Select interface language">
+                    <option value="ar">العربية</option>
+                    <option value="cs">Čeština</option>
+                    <option value="de">Deutsch</option>
+                    <option value="en" selected>English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="it">Italiano</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="pl">Polski</option>
+                    <option value="pt">Português</option>
+                    <option value="ru">Русский</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="uk">Українська</option>
+                  </select>
                 </div>
               </div>
               <div class="thema-wrapper">
-                <div class="thema-group">
-                  <label for="themaSelectCopy" id="labelThemaCopy" data-mirror-of="labelThema">Theme</label>
-                  <select id="themaSelectCopy" data-mirror-of="themaSelect"></select>
+                <div class="thema-group" id="themaGroup">
+                  <label for="themaSelect" id="labelThema" class="label-thema" data-i18n="labelThema">Theme</label>
+                  <select id="themaSelect" class="thema-select"></select>
                 </div>
-                <div class="thema-group">
-                  <label for="themaModeSelectCopy" id="labelThemaModeCopy" data-mirror-of="labelThemaMode">Mode</label>
-                  <select id="themaModeSelectCopy" data-mirror-of="themaModeSelect"></select>
+                <div class="thema-group" id="themaModeGroup">
+                  <label for="themaModeSelect" id="labelThemaMode" class="label-thema" data-i18n="labelThemaMode">Mode</label>
+                  <select id="themaModeSelect" class="thema-select" title="Select theme mode">
+                    <option value="contrast">Contrast</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="evening">Evening</option>
+                    <option value="night">Night</option>
+                  </select>
                 </div>
               </div>
               <div class="reset-settings-group">
