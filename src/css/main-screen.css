@@ -1,4 +1,9 @@
 /* ---------- Top row: help, settings, theme mode ---------- */
+.author-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .setting-row {
   display: flex;
   flex-direction: row;

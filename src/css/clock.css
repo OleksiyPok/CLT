@@ -1,9 +1,4 @@
 /* ---------- The exercise: rows with the times, buttons, settings block of the main page ---------- */
-.author-link {
-  text-decoration: none;
-  color: inherit;
-}
-
 .section-row {
   display: flex;
   flex-direction: column;

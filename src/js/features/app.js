@@ -13,8 +13,8 @@ export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, 
     store.setDefaultActive(appCfg);
     ui.setDeveloperVisibility(appCfg);
 
-    const versionEl = document.getElementById("appVersion");
-    if (versionEl) versionEl.textContent = APP_VERSION;
+    const versionEl = document.getElementById("version");
+    if (versionEl) versionEl.textContent = `version: ${APP_VERSION}`;
     developer.init(appCfg);
 
     await langLoader.loadAll(config.UI_LANGS);

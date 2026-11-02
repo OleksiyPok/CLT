@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" class="theme-warmorange-normal">
   <head>
-    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport" />
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Clock Listening Trainer</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/icon_CLT_16x16.png" />
-
-    <script src="./src/js/theme-boot.js"></script>
-
-    <link rel="stylesheet" href="./src/css/main.css" />
-    <script type="module" src="./src/js/main.js"></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon_CLT_16x16.png" />
+    <script src="src/js/theme-boot.js"></script>
+    <script type="module" src="src/js/main.js"></script>
+    <link rel="stylesheet" href="src/css/main.css" />
   </head>
   <!-- CLT -->
   <body>
@@ -50,20 +48,20 @@
       </symbol>
     </svg>
 
-    <div id="scroll-container" class="scroll-container">
+    <div class="scroll-container" id="scrollContainer">
       <div class="layout">
         <div class="titles-container" id="titlesContainer">
-          <img class="title-icon" id="titleIcon" src="./assets/icons/icon_CLT_64x64.png" alt="Icon" />
+          <img class="title-icon" id="titleIcon" src="assets/icons/icon_CLT_64x64.png" alt="Icon" />
           <div class="title-text" id="titleText">
             <h2>Clock Listening Trainer<br /></h2>
-            <h6 class="version" id="version"><span data-i18n="versionText">version:</span> <span id="appVersion"></span></h6>
+            <h6 id="version" class="version"></h6>
           </div>
         </div>
         <h5>
           <a class="author-link" href="mailto:Oleksii.Pokormiakho.job@gmail.com"> Oleksii Pokormiakho </a>
         </h5>
 
-        <div class="setting-row" id="settingRow">
+        <div class="setting-row" id="settingsRow">
           <div class="setting-buttons">
             <button type="button" class="help-app-btn" id="helpAppBtn" title="Open application description" aria-label="Open application description">
               <span class="framed-icon">
