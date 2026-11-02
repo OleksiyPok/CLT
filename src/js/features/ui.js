@@ -103,11 +103,6 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
   function disableSpeakButtons(disable) {
     els.speakBtnEls.forEach((b) => b && (b.disabled = disable));
   }
-  function toggleControls(enabled) {
-    if (els.speedSelectEl) els.speedSelectEl.disabled = !enabled;
-    if (els.intervalSelectEl) els.intervalSelectEl.disabled = !enabled;
-    document.querySelectorAll('label[for="speedSelect"],label[for="intervalSelect"]').forEach((l) => l.classList.toggle("disabled", !enabled));
-  }
   function setActiveInput(index) {
     els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
     els.randomBtnEls.forEach((btn) => btn && (btn.disabled = false));
@@ -254,8 +249,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       enableControls = false;
     }
 
-    if (els.speedSelectEl) els.speedSelectEl.disabled = !enableControls;
-    if (els.intervalSelectEl) els.intervalSelectEl.disabled = !enableControls;
+    // Speed and interval are read when the next phrase is spoken, so they can be changed while playing.
     // The number of the rows can not be changed while the sequence is running or paused
     const rowsLocked = flags.isSequenceMode || flags.isSpeaking;
     if (els.rowsSelectEl) els.rowsSelectEl.disabled = rowsLocked;
@@ -263,7 +257,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     if (els.languageCodeSelectEl) els.languageCodeSelectEl.disabled = !enableControls;
     if (els.voiceSelectEl) els.voiceSelectEl.disabled = !enableControls;
 
-    document.querySelectorAll('label[for="speedSelect"],label[for="intervalSelect"],label[for="languageCodeSelect"],label[for="voiceSelect"]').forEach((l) => l.classList.toggle("disabled", !enableControls));
+    document.querySelectorAll('label[for="languageCodeSelect"],label[for="voiceSelect"]').forEach((l) => l.classList.toggle("disabled", !enableControls));
 
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
@@ -500,7 +494,6 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     els,
     buildRows,
     disableSpeakButtons,
-    toggleControls,
     setActiveInput,
     updateButtonIcon,
     setBtnText,

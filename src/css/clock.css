@@ -77,7 +77,6 @@
 /* Settings block of the main page */
 .speed-delay-wrapper,
 .language-voice-wrapper,
-.thema-wrapper,
 .interface-wrapper {
   display: flex;
   flex-direction: column;

@@ -11,7 +11,6 @@
 .settings-app-content .speed-delay-wrapper,
 .settings-app-content .language-voice-wrapper,
 .settings-app-content .rows-wrapper,
-.settings-app-content .thema-wrapper,
 .settings-app-content .interface-wrapper {
   display: flex;
   flex-direction: column;

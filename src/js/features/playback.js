@@ -77,7 +77,6 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     ui.updateStartPauseBtnTo("start");
-    ui.toggleControls(true);
     ui.setActiveInput(-1);
     ui.updateButtonIcon();
     ui.els.speakBtnEls.forEach((b) => (b.disabled = false));
@@ -111,7 +110,6 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     bus.emit(EventTypes.UPDATE_CONTROLS);
     if (speaker && typeof speaker.cancel === "function") speaker.cancel();
     ui.updateStartPauseBtnTo("cont");
-    ui.toggleControls(true);
   }
   function resume() {
     store.setPlaybackFlags({ isPaused: false });
