@@ -1,9 +1,9 @@
 // The page: fields, buttons, selects, texts and the time rows
 import { EventTypes } from "../core/event-types.js";
-import { createUiHelp } from "./ui-help.js";
+import { createHelp } from "./help.js";
 import { createUiMirrors } from "./ui-mirrors.js";
-import { createUiSettingsWindow } from "./ui-settings-window.js";
-import { createUiTheme } from "./ui-theme.js";
+import { createModals } from "./modals.js";
+import { createTheme } from "./theme.js";
 
 // Number of the rows with the times: "rows" in config/config.json, in these limits
 const MIN_ROWS = 1;
@@ -31,7 +31,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     clockContainerEls: [],
     developerBlockEl: document.getElementById("developer"),
   };
-  // Elements of the windows (names are used by ui-help.js and ui-settings-window.js)
+  // Elements of the windows (names are used by help.js and modals.js)
   const windows = {
     uiLangSelect: els.uiLangSelectEl,
     helpAppBtn: document.getElementById("helpAppBtn"),
@@ -43,8 +43,8 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     settingsAppCloseBtn: document.getElementById("settingsAppCloseBtn"),
   };
   const mirrors = createUiMirrors();
-  const help = createUiHelp({ elements: windows, langLoader });
-  const settingsWindow = createUiSettingsWindow({ elements: windows, mirrors });
+  const help = createHelp({ elements: windows, langLoader });
+  const settingsWindow = createModals({ elements: windows, mirrors });
 
   // Makes the rows (random button, time field, play button) and refreshes the lists of the elements
   function buildRows(count) {
@@ -66,7 +66,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     els.timeInputEls = container.querySelectorAll(".time-input");
     els.clockContainerEls = container.querySelectorAll(".clock-container");
   }
-  const theme = createUiTheme({
+  const theme = createTheme({
     elements: {
       themaSelect: document.getElementById("themaSelect"),
       themaModeSelect: document.getElementById("themaModeSelect"),
