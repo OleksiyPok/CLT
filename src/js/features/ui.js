@@ -2,7 +2,7 @@
 import { EventTypes } from "../core/event-types.js";
 import { createHelp } from "./help.js";
 import { createUiMirrors } from "./ui-mirrors.js";
-import { createModals } from "./modals.js";
+import { createModalHistory, createModals } from "./modals.js";
 import { createTheme } from "./theme.js";
 
 // Number of the rows with the times: "rows" in config/config.json, in these limits
@@ -45,6 +45,13 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
   const mirrors = createUiMirrors();
   const help = createHelp({ elements: windows, langLoader });
   const settingsWindow = createModals({ elements: windows, mirrors });
+  const modalHistory = createModalHistory({
+    isAnyOpen: () => help.isAppHelpModalOpen() || settingsWindow.isSettingsModalOpen(),
+    closeAll: () => {
+      help.closeHelpModal();
+      settingsWindow.closeSettingsModal();
+    },
+  });
 
   // Makes the rows (random button, time field, play button) and refreshes the lists of the elements
   function buildRows(count) {
@@ -359,10 +366,20 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     bus.on(EventTypes.UI_HELP_MODAL_OPEN, () => {
       help.loadHelpContent();
       help.openHelpModal();
+      modalHistory.opened();
     });
-    bus.on(EventTypes.UI_HELP_MODAL_CLOSE, help.closeHelpModal);
-    bus.on(EventTypes.UI_SETTINGS_MODAL_OPEN, settingsWindow.openSettingsModal);
-    bus.on(EventTypes.UI_SETTINGS_MODAL_CLOSE, settingsWindow.closeSettingsModal);
+    bus.on(EventTypes.UI_HELP_MODAL_CLOSE, () => {
+      help.closeHelpModal();
+      modalHistory.closed();
+    });
+    bus.on(EventTypes.UI_SETTINGS_MODAL_OPEN, () => {
+      settingsWindow.openSettingsModal();
+      modalHistory.opened();
+    });
+    bus.on(EventTypes.UI_SETTINGS_MODAL_CLOSE, () => {
+      settingsWindow.closeSettingsModal();
+      modalHistory.closed();
+    });
     els.uiLangSelectEl?.addEventListener("change", (e) => {
       bus.emit(EventTypes.UI_TRANSLATE, { lang: e.target.value });
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
