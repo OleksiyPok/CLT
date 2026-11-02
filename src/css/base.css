@@ -165,6 +165,8 @@ input[type="checkbox"] {
   -webkit-appearance: none;
   display: inline-grid;
   place-content: center;
+  width: 20px;
+  height: 20px;
   margin: 0;
   padding: 0;
   background: var(--background-color);
