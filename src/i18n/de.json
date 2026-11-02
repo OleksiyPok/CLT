@@ -13,6 +13,7 @@
   "resetBtn": "Zurück",
   "startPauseBtn": "Start",
   "labelDelay": "Verzögerung (ms)",
+  "labelRows": "Zeilen",
   "labelSpeed": "Tempo",
   "labelLanguageCode": "Sprache",
   "labelVoice": "Stimme",

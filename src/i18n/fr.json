@@ -13,6 +13,7 @@
   "resetBtn": "Réinit.",
   "startPauseBtn": "Démarrer",
   "labelDelay": "Délai (ms)",
+  "labelRows": "Lignes",
   "labelSpeed": "Vitesse",
   "labelLanguageCode": "Langue",
   "labelVoice": "Voix",

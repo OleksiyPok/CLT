@@ -48,10 +48,8 @@ export function createDeveloper({ bus, ui }) {
   function init(appCfg) {
     savedMode = Boolean(appCfg?.developerMode);
     setupButtons();
-    // The text on the main page and its copy in the settings window
-    ["resetSettingsText", "resetSettingsTextCopy"].forEach((id) =>
-      document.getElementById(id)?.addEventListener("click", onClick)
-    );
+    // The text in the settings window
+    document.getElementById("resetSettingsText")?.addEventListener("click", onClick);
   }
 
   return { init };

@@ -17,6 +17,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
   const els = {
     delaySelectEl: document.getElementById("delaySelect"),
     speedSelectEl: document.getElementById("speedSelect"),
+    rowsSelectEl: document.getElementById("rowsSelect"),
     startPauseBtnEl: document.getElementById("startPauseBtn"),
     resetBtnEl: document.getElementById("resetBtn"),
     resetSettingsBtnEl: document.getElementById("resetSettingsBtn"),
@@ -72,6 +73,18 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     els.speakBtnEls = container.querySelectorAll(".speak-btn");
     els.timeInputEls = container.querySelectorAll(".time-input");
     els.clockContainerEls = container.querySelectorAll(".clock-container");
+  }
+  // The number of the rows: the select of the settings window (1..15). The values of the rows stay, new rows get random times.
+  let rowsBound = false;
+  function setRows(count) {
+    const n = Math.min(MAX_ROWS, Math.max(MIN_ROWS, parseInt(count, 10) || MIN_ROWS));
+    if (els.timeInputEls.length === n) return;
+    const old = Array.from(els.timeInputEls, (inp) => inp.value);
+    buildRows(n);
+    els.timeInputEls.forEach((inp, i) => (inp.value = old[i] ?? utils.generateRandomTimeString()));
+    if (rowsBound) bindRowHandlers();
+    translateUI(els.uiLangSelectEl?.value || "en");
+    bus.emit(EventTypes.UPDATE_CONTROLS);
   }
   const theme = createTheme({
     elements: {
@@ -174,6 +187,8 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
     setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
     setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
+    setOrBlank(els.rowsSelectEl, raw.rows ?? s.rows, s.rows);
+    setRows(els.rowsSelectEl?.value || s.rows);
     theme.applyThemeFromSettings({ thema: raw.thema ?? s.thema });
     const effectiveLang = els.uiLangSelectEl?.value || s.uiLang || store.getDefaultActive().uiLang;
     translateUI(effectiveLang);
@@ -183,6 +198,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       uiLang: els.uiLangSelectEl?.value,
       speed: els.speedSelectEl?.value,
       delay: els.delaySelectEl?.value,
+      rows: els.rowsSelectEl?.value,
     };
     const themaFromUI = theme.getThemaFromSelects();
     const current = store.getSettings ? store.getSettings() : {};
@@ -195,6 +211,8 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       speed: !isNaN(parseFloat(base.speed)) && allowedOpt(els.speedSelectEl, base.speed) ? base.speed : current.speed || defaults.speed,
 
       delay: !isNaN(parseInt(base.delay, 10)) && allowedOpt(els.delaySelectEl, base.delay) ? base.delay : current.delay || defaults.delay,
+
+      rows: !isNaN(parseInt(base.rows, 10)) && allowedOpt(els.rowsSelectEl, base.rows) ? parseInt(base.rows, 10) : current.rows || defaults.rows,
 
       thema: themaFromUI || current.thema || defaults.thema,
       languageCode: current.languageCode ?? defaults.languageCode,
@@ -238,6 +256,10 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
 
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enableControls;
     if (els.delaySelectEl) els.delaySelectEl.disabled = !enableControls;
+    // The number of the rows can not be changed while the sequence is running or paused
+    const rowsLocked = flags.isSequenceMode || flags.isSpeaking;
+    if (els.rowsSelectEl) els.rowsSelectEl.disabled = rowsLocked;
+    document.querySelector('label[for="rowsSelect"]')?.classList.toggle("disabled", rowsLocked);
     if (els.languageCodeSelectEl) els.languageCodeSelectEl.disabled = !enableControls;
     if (els.voiceSelectEl) els.voiceSelectEl.disabled = !enableControls;
 
@@ -297,7 +319,8 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     populateVoiceSelectForLanguage(cachedVoices, selectedLang);
   }
 
-  function bindHandlers() {
+  // The handlers of the rows (they are bound again when the number of the rows changes)
+  function bindRowHandlers() {
     els.clockContainerEls.forEach((group) => {
       const rnd = group.querySelector(".random-btn");
       const input = group.querySelector(".time-input");
@@ -334,6 +357,11 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
           });
         });
     });
+  }
+
+  function bindHandlers() {
+    bindRowHandlers();
+    rowsBound = true;
     els.fillRandomBtnEl?.addEventListener("click", () => {
       els.timeInputEls.forEach((inp, idx) => {
         const flags = store.playbackFlags();
@@ -343,10 +371,6 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       bus.emit(EventTypes.UPDATE_CONTROLS);
     });
     els.resetSettingsBtnEl?.addEventListener("click", () => bus.emit(EventTypes.SETTINGS_RESET));
-    document.getElementById("resetSettingsBtnCopy")?.addEventListener("click", () => {
-      bus.emit(EventTypes.SETTINGS_RESET);
-      mirrors.sync();
-    });
     mirrors.attach();
     windows.helpAppBtn?.addEventListener("click", () => bus.emit(EventTypes.UI_HELP_MODAL_OPEN));
     windows.helpAppCloseBtn?.addEventListener("click", () => bus.emit(EventTypes.UI_HELP_MODAL_CLOSE));
@@ -396,6 +420,10 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     });
     els.speedSelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
     els.delaySelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
+    els.rowsSelectEl?.addEventListener("change", () => {
+      setRows(els.rowsSelectEl.value);
+      bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });
+    });
     els.languageCodeSelectEl?.addEventListener("change", (e) => {
       const newLang = e.target.value;
       populateVoiceSelectForLanguage(cachedVoices, newLang);

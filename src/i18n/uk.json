@@ -13,6 +13,7 @@
   "resetBtn": "Скинути",
   "startPauseBtn": "Старт",
   "labelDelay": "Затримка (мс)",
+  "labelRows": "Рядки",
   "labelSpeed": "Швидкість",
   "labelLanguageCode": "Мова",
   "labelVoice": "Голос",

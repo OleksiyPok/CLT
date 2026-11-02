@@ -13,6 +13,7 @@
   "resetBtn": "Reimposta",
   "startPauseBtn": "Avvia",
   "labelDelay": "Ritardo (ms)",
+  "labelRows": "Righe",
   "labelSpeed": "Velocità",
   "labelLanguageCode": "Lingua",
   "labelVoice": "Voce",

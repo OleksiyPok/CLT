@@ -13,6 +13,7 @@
   "resetBtn": "Сброс",
   "startPauseBtn": "Старт",
   "labelDelay": "Пауза (мс)",
+  "labelRows": "Строки",
   "labelSpeed": "Темп",
   "labelLanguageCode": "Язык",
   "labelVoice": "Голос",

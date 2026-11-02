@@ -135,12 +135,6 @@
                   <select class="voice-select" id="voiceSelect" title="Voice"></select>
                 </div>
               </div>
-              <div class="reset-settings-group" id="resetSettingsGroup">
-                <button type="button" class="reset-settings-btn" id="resetSettingsBtn" data-i18n-title="resetSettingsTitle" title="Reset to default settings">
-                  <svg class="ico" aria-hidden="true"><use href="#i-reset" /></svg>
-                </button>
-                <span class="reset-settings-text" id="resetSettingsText" data-i18n="defaultSettings">Reset defaults</span>
-              </div>
             </div>
           </div>
         </div>
@@ -184,6 +178,28 @@
                   <select id="voiceSelectCopy" data-mirror-of="voiceSelect"></select>
                 </div>
               </div>
+              <div class="rows-wrapper">
+                <div class="rows-group">
+                  <label for="rowsSelect" id="labelRows" class="label-rows" data-i18n="labelRows">Rows</label>
+                  <select id="rowsSelect" class="rows-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                  </select>
+                </div>
+              </div>
               <div class="interface-wrapper">
                 <div class="interface-group" id="uiLanguageWrapper">
                   <label for="uiLangSelect" class="label-interface" id="uiLangLabel" data-i18n="uiLangLabel">Interface:</label>
@@ -219,11 +235,11 @@
                   </select>
                 </div>
               </div>
-              <div class="reset-settings-group">
-                <button type="button" class="reset-settings-btn" id="resetSettingsBtnCopy" data-i18n-title="resetSettingsTitle" title="Reset to default settings">
+              <div class="reset-settings-group" id="resetSettingsGroup">
+                <button type="button" class="reset-settings-btn" id="resetSettingsBtn" data-i18n-title="resetSettingsTitle" title="Reset to default settings">
                   <svg class="ico" aria-hidden="true"><use href="#i-reset" /></svg>
                 </button>
-                <span class="reset-settings-text" id="resetSettingsTextCopy" data-mirror-of="resetSettingsText">Reset defaults</span>
+                <span class="reset-settings-text" id="resetSettingsText" data-i18n="defaultSettings">Reset defaults</span>
               </div>
             </div>
             <div class="snap-spacer" id="settingsSnapSpacer" aria-hidden="true"></div>

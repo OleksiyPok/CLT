@@ -13,6 +13,7 @@
   "resetBtn": "Reset",
   "startPauseBtn": "Start",
   "labelDelay": "Vertraging (ms)",
+  "labelRows": "Rijen",
   "labelSpeed": "Tempo",
   "labelLanguageCode": "Taal",
   "labelVoice": "Stem",

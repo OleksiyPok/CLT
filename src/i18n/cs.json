@@ -13,6 +13,7 @@
   "resetBtn": "Reset",
   "startPauseBtn": "Start",
   "labelDelay": "Prodleva (ms)",
+  "labelRows": "Počet řádků",
   "labelSpeed": "Rychlost",
   "labelLanguageCode": "Jazyk",
   "labelVoice": "Hlas",

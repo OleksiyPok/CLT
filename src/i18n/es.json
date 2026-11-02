@@ -13,6 +13,7 @@
   "resetBtn": "Reiniciar",
   "startPauseBtn": "Iniciar",
   "labelDelay": "Retraso (ms)",
+  "labelRows": "Filas",
   "labelSpeed": "Velocidad",
   "labelLanguageCode": "Idioma",
   "labelVoice": "Voz",

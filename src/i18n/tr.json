@@ -13,6 +13,7 @@
   "resetBtn": "Sıfırla",
   "startPauseBtn": "Başla",
   "labelDelay": "Gecikme (ms)",
+  "labelRows": "Satır sayısı",
   "labelSpeed": "Hız",
   "labelLanguageCode": "Dil",
   "labelVoice": "Ses",

@@ -10,6 +10,7 @@
 }
 .settings-app-content .speed-delay-wrapper,
 .settings-app-content .language-voice-wrapper,
+.settings-app-content .rows-wrapper,
 .settings-app-content .thema-wrapper,
 .settings-app-content .interface-wrapper {
   display: flex;
@@ -31,8 +32,17 @@
   text-align: left;
 }
 .settings-app-content .speed-group select,
-.settings-app-content .delay-group select {
+.settings-app-content .delay-group select,
+.settings-app-content .rows-group select {
   width: 90px;
+}
+
+.rows-group {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .reset-settings-group {

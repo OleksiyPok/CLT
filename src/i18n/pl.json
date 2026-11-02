@@ -13,6 +13,7 @@
   "resetBtn": "Reset",
   "startPauseBtn": "Start",
   "labelDelay": "Opóźnienie (ms)",
+  "labelRows": "Wiersze",
   "labelSpeed": "Prędkość",
   "labelLanguageCode": "Jezyk",
   "labelVoice": "Głos",

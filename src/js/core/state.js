@@ -50,7 +50,7 @@ export function createState({ bus, config, utils }) {
     return false;
   }
   function mergeWithDefaults(stored, defaults, els) {
-    const { uiLangSelectEl, delaySelectEl, speedSelectEl } = els || {};
+    const { uiLangSelectEl, delaySelectEl, speedSelectEl, rowsSelectEl } = els || {};
     const out = {};
     out.uiLang = stored?.uiLang && config.UI_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang;
     out.thema = THEME_VALUES.includes(resolveThemaKey(stored?.thema)) ? resolveThemaKey(stored.thema) : defaults?.thema;
@@ -65,6 +65,11 @@ export function createState({ bus, config, utils }) {
       const n = parseFloat(v);
       if (!isNaN(n) && allowed(speedSelectEl, String(v))) return String(v);
       return defaults?.speed;
+    })();
+    out.rows = (() => {
+      const n = parseInt(stored?.rows, 10);
+      if (!isNaN(n) && allowed(rowsSelectEl, String(n))) return n;
+      return defaults?.rows;
     })();
     out.languageCode = stored?.languageCode ?? defaults?.languageCode;
     out.voiceName = stored?.voiceName ?? defaults?.voiceName;

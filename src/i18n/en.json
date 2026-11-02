@@ -13,6 +13,7 @@
   "resetBtn": "Reset",
   "startPauseBtn": "Start",
   "labelDelay": "Delay (ms)",
+  "labelRows": "Rows",
   "labelSpeed": "Speed",
   "labelLanguageCode": "Language",
   "labelVoice": "Voice",
