@@ -2,7 +2,7 @@
   "uiLang": "en",
   "thema": "theme-warmorange-normal",
   "rows": 5,
-  "delay": "2000",
+  "intervalMs": "2000",
   "speed": "1.0",
   "languageCode": "nl-NL",
   "voiceName": "Google Nederlands",

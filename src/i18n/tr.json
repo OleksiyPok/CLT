@@ -12,7 +12,7 @@
   "fillRandomBtn": "🎲 Rnd",
   "resetBtn": "Sıfırla",
   "startPauseBtn": "Başla",
-  "labelDelay": "Gecikme (ms)",
+  "labelInterval": "Aralık (ms)",
   "labelRows": "Satır sayısı",
   "labelSpeed": "Hız",
   "labelLanguageCode": "Dil",

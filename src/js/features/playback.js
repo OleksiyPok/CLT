@@ -59,8 +59,8 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
   }
   function scheduleNext(index) {
     if (store.playbackFlags().isPaused) return;
-    const delayMs = parseInt(ui.els.delaySelectEl?.value || store.getDefaultActive().delay, 10);
-    currentTimeout = setTimeout(() => next(index), delayMs);
+    const intervalMs = parseInt(ui.els.intervalSelectEl?.value || store.getDefaultActive().intervalMs, 10);
+    currentTimeout = setTimeout(() => next(index), intervalMs);
   }
   function next(index) {
     const nextIndex = index + 1;

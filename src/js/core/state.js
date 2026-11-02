@@ -50,15 +50,16 @@ export function createState({ bus, config, utils }) {
     return false;
   }
   function mergeWithDefaults(stored, defaults, els) {
-    const { uiLangSelectEl, delaySelectEl, speedSelectEl, rowsSelectEl } = els || {};
+    const { uiLangSelectEl, intervalSelectEl, speedSelectEl, rowsSelectEl } = els || {};
     const out = {};
     out.uiLang = stored?.uiLang && config.UI_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang;
     out.thema = THEME_VALUES.includes(resolveThemaKey(stored?.thema)) ? resolveThemaKey(stored.thema) : defaults?.thema;
-    out.delay = (() => {
-      const v = stored?.delay;
+    out.intervalMs = (() => {
+      // "delay" is the old name of this setting (saved by the earlier versions)
+      const v = stored?.intervalMs ?? stored?.delay;
       const n = parseInt(v, 10);
-      if (!isNaN(n) && allowed(delaySelectEl, String(n))) return String(n);
-      return defaults?.delay;
+      if (!isNaN(n) && allowed(intervalSelectEl, String(n))) return String(n);
+      return defaults?.intervalMs;
     })();
     out.speed = (() => {
       const v = stored?.speed;

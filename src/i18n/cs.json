@@ -12,7 +12,7 @@
   "fillRandomBtn": "🎲 Rnd",
   "resetBtn": "Reset",
   "startPauseBtn": "Start",
-  "labelDelay": "Prodleva (ms)",
+  "labelInterval": "Interval (ms)",
   "labelRows": "Počet řádků",
   "labelSpeed": "Rychlost",
   "labelLanguageCode": "Jazyk",

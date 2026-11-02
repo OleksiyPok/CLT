@@ -12,7 +12,7 @@
   "fillRandomBtn": "🎲 Rnd",
   "resetBtn": "Zurück",
   "startPauseBtn": "Start",
-  "labelDelay": "Verzögerung (ms)",
+  "labelInterval": "Intervall (ms)",
   "labelRows": "Zeilen",
   "labelSpeed": "Tempo",
   "labelLanguageCode": "Sprache",

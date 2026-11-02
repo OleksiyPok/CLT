@@ -89,7 +89,7 @@
   border-radius: 10px;
 }
 .speed-group,
-.delay-group {
+.interval-group {
   display: flex;
   flex-direction: row;
   align-items: baseline;
@@ -105,7 +105,7 @@
   gap: 4px;
 }
 .speed-group select,
-.delay-group select {
+.interval-group select {
   width: 90px;
 }
 .language-group select,

@@ -32,7 +32,7 @@
   text-align: left;
 }
 .settings-app-content .speed-group select,
-.settings-app-content .delay-group select,
+.settings-app-content .interval-group select,
 .settings-app-content .rows-group select {
   width: 90px;
 }

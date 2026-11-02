@@ -12,7 +12,7 @@
   "fillRandomBtn": "🎲 Rnd",
   "resetBtn": "Сброс",
   "startPauseBtn": "Старт",
-  "labelDelay": "Пауза (мс)",
+  "labelInterval": "Интервал (мс)",
   "labelRows": "Строки",
   "labelSpeed": "Темп",
   "labelLanguageCode": "Язык",

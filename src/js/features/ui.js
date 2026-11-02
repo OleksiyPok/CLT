@@ -15,7 +15,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
   const PLAY_ICON = "▶️";
   const STOP_ICON = "⏹️";
   const els = {
-    delaySelectEl: document.getElementById("delaySelect"),
+    intervalSelectEl: document.getElementById("intervalSelect"),
     speedSelectEl: document.getElementById("speedSelect"),
     rowsSelectEl: document.getElementById("rowsSelect"),
     startPauseBtnEl: document.getElementById("startPauseBtn"),
@@ -105,8 +105,8 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
   }
   function toggleControls(enabled) {
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enabled;
-    if (els.delaySelectEl) els.delaySelectEl.disabled = !enabled;
-    document.querySelectorAll('label[for="speedSelect"],label[for="delaySelect"]').forEach((l) => l.classList.toggle("disabled", !enabled));
+    if (els.intervalSelectEl) els.intervalSelectEl.disabled = !enabled;
+    document.querySelectorAll('label[for="speedSelect"],label[for="intervalSelect"]').forEach((l) => l.classList.toggle("disabled", !enabled));
   }
   function setActiveInput(index) {
     els.timeInputEls.forEach((inp) => inp?.classList.remove("highlight"));
@@ -186,7 +186,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     };
     setOrBlank(els.uiLangSelectEl, raw.uiLang ?? s.uiLang, s.uiLang);
     setOrBlank(els.speedSelectEl, raw.speed ?? s.speed, s.speed);
-    setOrBlank(els.delaySelectEl, raw.delay ?? s.delay, s.delay);
+    setOrBlank(els.intervalSelectEl, raw.intervalMs ?? raw.delay ?? s.intervalMs, s.intervalMs);
     setOrBlank(els.rowsSelectEl, raw.rows ?? s.rows, s.rows);
     setRows(els.rowsSelectEl?.value || s.rows);
     theme.applyThemeFromSettings({ thema: raw.thema ?? s.thema });
@@ -197,7 +197,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     const base = {
       uiLang: els.uiLangSelectEl?.value,
       speed: els.speedSelectEl?.value,
-      delay: els.delaySelectEl?.value,
+      intervalMs: els.intervalSelectEl?.value,
       rows: els.rowsSelectEl?.value,
     };
     const themaFromUI = theme.getThemaFromSelects();
@@ -210,7 +210,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
 
       speed: !isNaN(parseFloat(base.speed)) && allowedOpt(els.speedSelectEl, base.speed) ? base.speed : current.speed || defaults.speed,
 
-      delay: !isNaN(parseInt(base.delay, 10)) && allowedOpt(els.delaySelectEl, base.delay) ? base.delay : current.delay || defaults.delay,
+      intervalMs: !isNaN(parseInt(base.intervalMs, 10)) && allowedOpt(els.intervalSelectEl, base.intervalMs) ? base.intervalMs : current.intervalMs || defaults.intervalMs,
 
       rows: !isNaN(parseInt(base.rows, 10)) && allowedOpt(els.rowsSelectEl, base.rows) ? parseInt(base.rows, 10) : current.rows || defaults.rows,
 
@@ -255,7 +255,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     }
 
     if (els.speedSelectEl) els.speedSelectEl.disabled = !enableControls;
-    if (els.delaySelectEl) els.delaySelectEl.disabled = !enableControls;
+    if (els.intervalSelectEl) els.intervalSelectEl.disabled = !enableControls;
     // The number of the rows can not be changed while the sequence is running or paused
     const rowsLocked = flags.isSequenceMode || flags.isSpeaking;
     if (els.rowsSelectEl) els.rowsSelectEl.disabled = rowsLocked;
@@ -263,7 +263,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     if (els.languageCodeSelectEl) els.languageCodeSelectEl.disabled = !enableControls;
     if (els.voiceSelectEl) els.voiceSelectEl.disabled = !enableControls;
 
-    document.querySelectorAll('label[for="speedSelect"],label[for="delaySelect"],label[for="languageCodeSelect"],label[for="voiceSelect"]').forEach((l) => l.classList.toggle("disabled", !enableControls));
+    document.querySelectorAll('label[for="speedSelect"],label[for="intervalSelect"],label[for="languageCodeSelect"],label[for="voiceSelect"]').forEach((l) => l.classList.toggle("disabled", !enableControls));
 
     if (els.resetBtnEl) els.resetBtnEl.disabled = !flags.isPaused;
   }
@@ -419,7 +419,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       onThemaChange();
     });
     els.speedSelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
-    els.delaySelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
+    els.intervalSelectEl?.addEventListener("change", () => bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true }));
     els.rowsSelectEl?.addEventListener("change", () => {
       setRows(els.rowsSelectEl.value);
       bus.emit(EventTypes.SETTINGS_APPLY_TO_UI, { saveFromUI: true });

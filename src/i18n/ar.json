@@ -12,7 +12,7 @@
   "fillRandomBtn": "🎲 عشوائي",
   "resetBtn": "إعادة ضبط",
   "startPauseBtn": "ابدأ",
-  "labelDelay": "التأخير (مللي ثانية)",
+  "labelInterval": "الفاصل (مللي ثانية)",
   "labelRows": "عدد الصفوف",
   "labelSpeed": "السرعة",
   "labelLanguageCode": "اللغة",

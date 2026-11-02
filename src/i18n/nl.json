@@ -12,7 +12,7 @@
   "fillRandomBtn": "🎲 Rnd",
   "resetBtn": "Reset",
   "startPauseBtn": "Start",
-  "labelDelay": "Vertraging (ms)",
+  "labelInterval": "Interval (ms)",
   "labelRows": "Rijen",
   "labelSpeed": "Tempo",
   "labelLanguageCode": "Taal",
