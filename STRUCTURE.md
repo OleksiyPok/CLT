@@ -23,6 +23,7 @@ src/
     clock.css              строки со временем, кнопки, блок настроек главной страницы
     settings-window.css    окно настроек: плоские панели (как у DT), сброс
     scroll-steps.css       ступеньки прокрутки окна настроек, стрелки, бейдж
+    icons.css              рамка иконок (как у DT и NLT)
     developer.css, modals.css, responsive.css (576 / 640 / 992 px), help.css (как у DT)
     themes.css             общий с DT
   js/
