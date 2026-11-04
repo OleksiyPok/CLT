@@ -33,7 +33,7 @@ export function createVoices({ bus, utils, allowedLangs = [] } = {}) {
     }
     utils.log(
       "Available Langs: ",
-      voices.map((v) => v.lang)
+      voices.map((v) => v.lang),
     );
     computeAvailableLanguages();
     utils.log("Filtered Langs: ", availableLanguages);

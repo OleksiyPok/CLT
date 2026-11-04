@@ -23,7 +23,7 @@ export function createUiRows(ctx, labels) {
 <input type="text" class="time-input" id="timeInput_${i + 1}" maxlength="5" value="00:00" />
 <button type="button" class="speak-btn" id="speakBtn_${i + 1}" data-i18n-title="speakBtnTitle">▶️</button>`;
         return row;
-      })
+      }),
     );
     elements.randomBtns = container.querySelectorAll(".random-btn");
     elements.speakBtns = container.querySelectorAll(".speak-btn");

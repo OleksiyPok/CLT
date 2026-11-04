@@ -25,7 +25,7 @@ export function createLangLoader({ config, utils }) {
       langs.map(async (code) => {
         const d = await loadLang(code);
         if (d) texts[code] = d;
-      })
+      }),
     );
     if (!texts.en) texts.en = FALLBACK_EN;
     return texts;

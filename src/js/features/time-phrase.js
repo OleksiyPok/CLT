@@ -6,7 +6,9 @@ const { getBaseLang, chooseForm, log } = Utils;
 export function createTimePhrase({ dictLoader }) {
   // Empty dictionary words leave double spaces: collapse them
   function getTimePhrase(...args) {
-    return buildTimePhrase(...args).replace(/\s+/g, " ").trim();
+    return buildTimePhrase(...args)
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   function buildTimePhrase(langCode, { h, mm }, { use24h = false, useMilitary = false } = {}) {

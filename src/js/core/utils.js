@@ -16,7 +16,6 @@ function normalizeLangCode(code) {
   return String(code).trim().toLowerCase().replace("_", "-");
 }
 
-
 function parseTimeInput(input) {
   if (!input || typeof input !== "string") return null;
   const m = input.trim().match(/^(\d{1,2}):(\d{2})$/);

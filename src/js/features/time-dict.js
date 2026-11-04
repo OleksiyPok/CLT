@@ -25,7 +25,7 @@ export function createTimeDictLoader({ config, utils }) {
       allowed.map(async (code) => {
         const d = await loadDict(code);
         if (d) dicts[code.toLowerCase()] = d;
-      })
+      }),
     );
     return dicts;
   }

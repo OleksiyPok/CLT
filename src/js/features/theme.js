@@ -19,7 +19,7 @@ export function createTheme({ elements, langLoader }) {
         option.value = palette;
         option.textContent = label;
         return option;
-      })
+      }),
     );
   }
 
