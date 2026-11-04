@@ -50,26 +50,26 @@ export function createState({ bus, config, utils }) {
     return false;
   }
   function mergeWithDefaults(stored, defaults, els) {
-    const { uiLangSelectEl, intervalSelectEl, speedSelectEl, rowsSelectEl } = els || {};
+    const { uiLangSelect, intervalSelect, speedSelect, rowsSelect } = els || {};
     const out = {};
-    out.uiLang = stored?.uiLang && config.UI_LANGS.includes(stored.uiLang) && allowed(uiLangSelectEl, stored.uiLang) ? stored.uiLang : defaults?.uiLang;
+    out.uiLang = stored?.uiLang && config.UI_LANGS.includes(stored.uiLang) && allowed(uiLangSelect, stored.uiLang) ? stored.uiLang : defaults?.uiLang;
     out.thema = THEME_VALUES.includes(resolveThemaKey(stored?.thema)) ? resolveThemaKey(stored.thema) : defaults?.thema;
     out.intervalMs = (() => {
       // "delay" is the old name of this setting (saved by the earlier versions)
       const v = stored?.intervalMs ?? stored?.delay;
       const n = parseInt(v, 10);
-      if (!isNaN(n) && allowed(intervalSelectEl, String(n))) return String(n);
+      if (!isNaN(n) && allowed(intervalSelect, String(n))) return String(n);
       return defaults?.intervalMs;
     })();
     out.speed = (() => {
       const v = stored?.speed;
       const n = parseFloat(v);
-      if (!isNaN(n) && allowed(speedSelectEl, String(v))) return String(v);
+      if (!isNaN(n) && allowed(speedSelect, String(v))) return String(v);
       return defaults?.speed;
     })();
     out.rows = (() => {
       const n = parseInt(stored?.rows, 10);
-      if (!isNaN(n) && allowed(rowsSelectEl, String(n))) return n;
+      if (!isNaN(n) && allowed(rowsSelect, String(n))) return n;
       return defaults?.rows;
     })();
     out.languageCode = stored?.languageCode ?? defaults?.languageCode;

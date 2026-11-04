@@ -26,10 +26,10 @@ export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, 
     developer.init(appCfg);
 
     await langLoader.loadAll(config.UI_LANGS);
-    const { raw, merged } = store.loadSettingsFromLocal(ui.els);
+    const { raw, merged } = store.loadSettingsFromLocal(ui.elements);
     store.setSettings(merged);
     ui.applySettingsToUI(merged, { raw });
-    store.saveSettings(merged, ui.els);
+    store.saveSettings(merged, ui.elements);
 
     await voices.load();
 
@@ -53,17 +53,17 @@ export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, 
     bus.on(EventTypes.SETTINGS_APPLY_TO_UI, ({ saveFromUI }) => {
       const s = ui.readSettingsFromUI();
       store.setSettings(s);
-      if (saveFromUI) store.saveSettings(s, ui.els);
+      if (saveFromUI) store.saveSettings(s, ui.elements);
     });
 
     bus.on(EventTypes.UI_TRANSLATE, ({ lang }) => {
-      ui.translateUI(lang);
+      ui.updateUILabels(lang);
     });
 
     bus.on(EventTypes.SETTINGS_RESET, () => {
       const defaults = store.getDefaultActive();
       store.setSettings(defaults);
-      store.saveSettings(defaults, ui.els);
+      store.saveSettings(defaults, ui.elements);
       ui.applySettingsToUI(defaults, { raw: defaults });
     });
 

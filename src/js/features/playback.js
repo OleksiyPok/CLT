@@ -13,7 +13,7 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     store.setPlaybackFlags({ isSpeaking: true });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     ui.updateButtonIcon(btn, "speaking");
-    const rate = parseFloat(ui.els.speedSelectEl?.value || store.getDefaultActive().speed);
+    const rate = parseFloat(ui.elements.speedSelect?.value || store.getDefaultActive().speed);
     store.setCurrentSpeakButton(btn);
     speaker.speak({
       text: phrase,
@@ -32,7 +32,7 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     });
   }
   function playAt(index = 0) {
-    const inputs = ui.els.timeInputEls;
+    const inputs = ui.elements.timeInputs;
     if (!inputs || index >= inputs.length) return finish();
     store.setPlaybackFlags({
       sequenceIndex: index,
@@ -41,10 +41,10 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     ui.setActiveInput(index);
-    ui.els.speakBtnEls.forEach((b) => {
+    ui.elements.speakBtns.forEach((b) => {
       if (b) b.disabled = true;
     });
-    ui.els.randomBtnEls.forEach((b, idx) => {
+    ui.elements.randomBtns.forEach((b, idx) => {
       if (b) b.disabled = idx === index;
     });
     const inp = inputs[index];
@@ -59,12 +59,12 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
   }
   function scheduleNext(index) {
     if (store.playbackFlags().isPaused) return;
-    const intervalMs = parseInt(ui.els.intervalSelectEl?.value || store.getDefaultActive().intervalMs, 10);
+    const intervalMs = parseInt(ui.elements.intervalSelect?.value || store.getDefaultActive().intervalMs, 10);
     currentTimeout = setTimeout(() => next(index), intervalMs);
   }
   function next(index) {
     const nextIndex = index + 1;
-    if (nextIndex >= ui.els.timeInputEls.length) return finish();
+    if (nextIndex >= ui.elements.timeInputs.length) return finish();
     playAt(nextIndex);
   }
   function finish() {
@@ -76,11 +76,11 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
       sequenceIndex: 0,
     });
     bus.emit(EventTypes.UPDATE_CONTROLS);
-    ui.updateStartPauseBtnTo("start");
+    ui.updateStartPauseButton("start");
     ui.setActiveInput(-1);
     ui.updateButtonIcon();
-    ui.els.speakBtnEls.forEach((b) => (b.disabled = false));
-    ui.els.randomBtnEls.forEach((b) => (b.disabled = false));
+    ui.elements.speakBtns.forEach((b) => (b.disabled = false));
+    ui.elements.randomBtns.forEach((b) => (b.disabled = false));
     bus.emit(EventTypes.PLAYBACK_FINISH);
   }
   function stop() {
@@ -109,12 +109,12 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     store.setPlaybackFlags({ isPaused: true, isSpeaking: false });
     bus.emit(EventTypes.UPDATE_CONTROLS);
     if (speaker && typeof speaker.cancel === "function") speaker.cancel();
-    ui.updateStartPauseBtnTo("cont");
+    ui.updateStartPauseButton("cont");
   }
   function resume() {
     store.setPlaybackFlags({ isPaused: false });
     bus.emit(EventTypes.UPDATE_CONTROLS);
-    ui.updateStartPauseBtnTo("stop");
+    ui.updateStartPauseButton("stop");
     const idx = store.playbackFlags().sequenceIndex;
     if (typeof idx === "number") playAt(idx);
   }

@@ -30,7 +30,7 @@ src/
     theme-boot.js          обычный скрипт: тема до первой отрисовки
     main.js                точка входа: создаёт модули и связывает их
     core/                  основа: config, event-bus, event-types, i18n, state, theme-registry, utils
-    features/              возможности: app, ui (+ theme, help, modals (окна), ui-mirrors), developer (секретный жест, кнопки Path/Clear LS), scroll-steps (ступеньки, стрелки, бейдж), speaker, voices, wake-lock, playback,
+    features/              возможности: app, ui (+ ui-elements (элементы страницы и общее состояние), ui-labels (тексты, доступность кнопок), ui-selects (списки настроек, языки и голоса), ui-rows (строки со временем; у NLT: ui-numbers), ui-mirrors (копии блоков на главной и в окне настроек), theme, help, modals (окна)), developer (секретный жест, кнопки Path/Clear LS), scroll-steps (ступеньки, стрелки, бейдж), speaker, voices, wake-lock, playback,
                            time-dict (загрузка словарей), time-phrase (движок фраз времени)
 ```
 
@@ -42,7 +42,7 @@ src/
 - JS: ES-модули, без глобальных переменных. Модули общаются через event-bus.
 - Языки интерфейса: `UI_LANGS`; языки со словарём времени: `TIME_LANGS` (оба в `core/config.js`). Язык озвучки выбирается только из `TIME_LANGS`.
 - Ключ localStorage: `STORAGE_KEY` в `core/config.js`.
-- Число строк со временем: `rows` в `config/config.json` (1-15); строки создаёт `ui.buildRows`.
+- Число строк со временем: `rows` в `config/config.json` (1-15); строки создаёт `ui.buildRows` (ui-rows.js).
 - Высота кнопок под строками времени постоянна (30px); блок с кнопками чуть выше кнопок.
 - Окно настроек: копии настроек главной страницы (`data-mirror-of="<id оригинала>"`); логика только у оригиналов.
 - Тема: `thema` (например `theme-warmorange-normal`) в `config/config.json`. Тема по умолчанию в `theme-boot.js` и `core/theme-registry.js` (`DEFAULT_THEME`) должна совпадать с ней.
