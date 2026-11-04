@@ -1,5 +1,5 @@
 🌐 Доступные языки:  
-[English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
+[العربية](README.ar.md) | [Čeština](README.cs.md) | [Deutsch](README.de.md) | [English](README.en.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Nederlands](README.nl.md) | [Polski](README.pl.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md)
 
 ---
 
@@ -8,10 +8,9 @@
 Это компактное одностраничное приложение для изучения времени на иностранных языках.  
 Приложение произносит время на выбранном языке и проигрывает целый список времён подряд. Так тренируется слух на то, как время выражается в разных языках.
 
- 
-![Appearance of the application](img/app.png)
+![Внешний вид приложения](img/app.png)
 
 ---
 
 🌐 Доступные языки:  
-[English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
+[العربية](README.ar.md) | [Čeština](README.cs.md) | [Deutsch](README.de.md) | [English](README.en.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Nederlands](README.nl.md) | [Polski](README.pl.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md)

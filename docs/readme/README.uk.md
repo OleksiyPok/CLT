@@ -1,5 +1,5 @@
 🌐 Доступні мови:  
-[English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
+[العربية](README.ar.md) | [Čeština](README.cs.md) | [Deutsch](README.de.md) | [English](README.en.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Nederlands](README.nl.md) | [Polski](README.pl.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md)
 
 ---
 
@@ -8,10 +8,9 @@
 Це компактний односторінковий застосунок для вивчення часу іноземними мовами.  
 Застосунок вимовляє час обраною мовою і відтворює цілий список часів поспіль. Так тренується слух на те, як час виражається в різних мовах.
 
- 
-![Appearance of the application](img/app.png)
+![Зовнішній вигляд застосунку](img/app.png)
 
 ---
 
 🌐 Доступні мови:  
-[English](README.en.md)  |  [Deutsch](README.de.md)  |  [Nederlands](README.nl.md)  |  [Українська](README.uk.md)  |  [Русский](README.ru.md)
+[العربية](README.ar.md) | [Čeština](README.cs.md) | [Deutsch](README.de.md) | [English](README.en.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Nederlands](README.nl.md) | [Polski](README.pl.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md)

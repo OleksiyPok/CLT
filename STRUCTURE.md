@@ -7,7 +7,7 @@ STRUCTURE.md
 config/
   config.json              ЕДИНСТВЕННОЕ место настроек по умолчанию
 docs/
-  readme/                  README.<lang>.md и img/ (картинки для README)
+  readme/                  README.<lang>.md (13 языков) и img/ (картинки для README)
   help/                    help.<lang>.html (справка, 13 языков, формат как у DT)
     img/                   скриншоты справки (добавляются вручную; нет файла - серая заглушка с именем файла):
                            main-overview.png, playing.png, settings-window.png
