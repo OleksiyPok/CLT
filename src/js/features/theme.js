@@ -42,7 +42,7 @@ export function createTheme({ elements, langLoader }) {
     const mode = elements.themaModeSelect?.value;
     if (!button || !icon || !mode) return;
     const texts = langLoader.getTexts(elements.uiLangSelect?.value || "en");
-    const title = `${texts.labelThemaMode || "Mode"}: ${texts["themaMode" + mode[0].toUpperCase() + mode.slice(1)] || ""}`;
+    const title = `${texts.themaModeLabel || "Mode"}: ${texts["themaMode" + mode[0].toUpperCase() + mode.slice(1)] || ""}`;
     icon.innerHTML = `<svg aria-hidden="true"><use href="#i-mode-${mode}" /></svg>`;
     button.title = title;
     button.setAttribute("aria-label", title);

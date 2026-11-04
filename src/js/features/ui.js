@@ -120,7 +120,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     btn.textContent = speaking ? STOP_ICON : PLAY_ICON;
     btn.classList.toggle("speaking", speaking);
     const texts = langLoader.getTexts(els.uiLangSelectEl?.value || "en");
-    const title = speaking ? texts.btnStop : texts.speakBtnTitle;
+    const title = speaking ? texts.stopBtnLabel : texts.speakBtnTitle;
     if (title) btn.title = title;
   }
   function setBtnText(el, text) {
@@ -139,13 +139,13 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       if (key && texts[key]) el.title = texts[key];
     });
     alertTexts = {
-      invalidFormat: texts.alertInvalidFormat || "Enter time in HH:MM format",
-      invalidPhrase: texts.alertInvalidPhrase || "Invalid time or unable to generate Dutch phrase.",
+      invalidFormat: texts.invalidTimeFormat || "Enter time in HH:MM format",
+      invalidPhrase: texts.invalidTimePhrase || "Invalid time or unable to generate Dutch phrase.",
     };
     btnStates = {
-      start: texts.btnStart || "Start",
-      stop: texts.btnStop || "Stop",
-      cont: texts.btnContinue || "Continue",
+      start: texts.startBtnLabel || "Start",
+      stop: texts.stopBtnLabel || "Stop",
+      cont: texts.continueBtnLabel || "Continue",
     };
     const f = store.playbackFlags();
     if (f.isSequenceMode && !f.isPaused) setBtnText(els.startPauseBtnEl, btnStates.stop || "Stop");
@@ -157,12 +157,12 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       if (el && text) el.textContent = text;
     };
     setText("settingsTitle", texts.settingsTitle);
-    setText("helpTitle", texts.helpTitle);
+    setText("helpTitle", texts.helpBtnTitle);
     [
-      [windows.helpAppBtn, texts.helpTitle],
+      [windows.helpAppBtn, texts.helpBtnTitle],
       [windows.settingsAppBtn, texts.settingsTitle],
-      [windows.settingsAppCloseBtn, texts.closeBtn],
-      [windows.helpAppCloseBtn, texts.closeBtn],
+      [windows.settingsAppCloseBtn, texts.closeBtnTitle],
+      [windows.helpAppCloseBtn, texts.closeBtnTitle],
     ].forEach(([el, text]) => {
       if (!el || !text) return;
       el.title = text;

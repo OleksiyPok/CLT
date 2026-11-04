@@ -87,15 +87,15 @@
 
           <div class="setting-button-wrapper">
             <div class="section-block section-block-buttons">
-              <button class="fill-random-btn" id="fillRandomBtn" data-i18n="fillRandomBtn" data-i18n-title="fillRandomBtnTitle">RND</button>
-              <button class="start-pause-btn" id="startPauseBtn" data-i18n="btnStart" data-i18n-title="startPauseBtnTitle">Start</button>
-              <button disabled class="reset-btn" id="resetBtn" data-i18n="resetBtn" data-i18n-title="resetBtnTitle">Reset</button>
+              <button class="fill-random-btn" id="fillRandomBtn" data-i18n="fillRandomBtnLabel" data-i18n-title="fillRandomBtnTitle">RND</button>
+              <button class="start-pause-btn" id="startPauseBtn" data-i18n="startBtnLabel" data-i18n-title="startPauseBtnTitle">Start</button>
+              <button disabled class="reset-btn" id="resetBtn" data-i18n="resetBtnLabel" data-i18n-title="resetBtnTitle">Reset</button>
             </div>
 
             <div class="section-block section-block-settings">
               <div class="speed-delay-wrapper">
                 <div class="speed-group">
-                  <label for="speedSelect" id="labelSpeed" data-i18n="labelSpeed">Speed</label>
+                  <label for="speedSelect" id="labelSpeed" data-i18n="speedLabel">Speed</label>
                   <select id="speedSelect" class="speed-select">
                     <option value="0.6">0.6</option>
                     <option value="0.8">0.8</option>
@@ -108,7 +108,7 @@
                   </select>
                 </div>
                 <div class="interval-group">
-                  <label for="intervalSelect" class="label-interval" id="labelInterval" data-i18n="labelInterval">Interval (ms)</label>
+                  <label for="intervalSelect" class="label-interval" id="labelInterval" data-i18n="intervalLabel">Interval (ms)</label>
                   <select id="intervalSelect" class="interval-select">
                     <option value="1000" selected>1000</option>
                     <option value="1500">1500</option>
@@ -127,11 +127,11 @@
               </div>
               <div class="language-voice-wrapper">
                 <div class="language-group">
-                  <label for="languageCodeSelect" class="label-language-code" id="labelLanguageCode" data-i18n="labelLanguageCode">Language</label>
+                  <label for="languageCodeSelect" class="label-language-code" id="labelLanguageCode" data-i18n="languageLabel">Language</label>
                   <select class="language-code-select" id="languageCodeSelect" title="Language"></select>
                 </div>
                 <div class="voice-group">
-                  <label for="voiceSelect" class="label-voice" id="labelVoice" data-i18n="labelVoice">Voice</label>
+                  <label for="voiceSelect" class="label-voice" id="labelVoice" data-i18n="voiceLabel">Voice</label>
                   <select class="voice-select" id="voiceSelect" title="Voice"></select>
                 </div>
               </div>
@@ -170,7 +170,7 @@
               </div>
               <div class="rows-wrapper">
                 <div class="rows-group">
-                  <label for="rowsSelect" id="labelRows" class="label-rows" data-i18n="labelRows">Rows</label>
+                  <label for="rowsSelect" id="labelRows" class="label-rows" data-i18n="rowsLabel">Rows</label>
                   <select id="rowsSelect" class="rows-select">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -202,8 +202,8 @@
               </div>
               <div class="interface-wrapper">
                 <div class="interface-group" id="uiLanguageWrapper">
-                  <label for="uiLangSelect" class="label-interface" id="uiLangLabel" data-i18n="uiLangLabel">Interface:</label>
-                  <select class="interface-select" id="uiLangSelect" data-i18n-title="uiLangSelectTitle" title="Select interface language">
+                  <label for="uiLangSelect" class="label-interface" id="uiLangLabel" data-i18n="interfaceLabel">Interface:</label>
+                  <select class="interface-select" id="uiLangSelect" data-i18n-title="interfaceSelectTitle" title="Select interface language">
                     <option value="ar">العربية</option>
                     <option value="cs">Čeština</option>
                     <option value="de">Deutsch</option>
@@ -220,11 +220,11 @@
                   </select>
                 </div>
                 <div class="thema-group" id="themaGroup">
-                  <label for="themaSelect" id="labelThema" class="label-thema" data-i18n="labelThema">Theme</label>
+                  <label for="themaSelect" id="labelThema" class="label-thema" data-i18n="themaLabel">Theme</label>
                   <select id="themaSelect" class="thema-select"></select>
                 </div>
                 <div class="thema-group" id="themaModeGroup">
-                  <label for="themaModeSelect" id="labelThemaMode" class="label-thema" data-i18n="labelThemaMode">Mode</label>
+                  <label for="themaModeSelect" id="labelThemaMode" class="label-thema" data-i18n="themaModeLabel">Mode</label>
                   <select id="themaModeSelect" class="thema-select" title="Select theme mode">
                     <option value="contrast">Contrast</option>
                     <option value="normal" selected>Normal</option>
@@ -237,7 +237,7 @@
                 <button type="button" class="reset-settings-btn" id="resetSettingsBtn" data-i18n-title="resetSettingsTitle" title="Reset to default settings">
                   <svg class="ico" aria-hidden="true"><use href="#i-reset" /></svg>
                 </button>
-                <span class="reset-settings-text" id="resetSettingsText" data-i18n="defaultSettings">Reset defaults</span>
+                <span class="reset-settings-text" id="resetSettingsText" data-i18n="resetSettingsLabel">Reset defaults</span>
               </div>
             </div>
             <div class="snap-spacer" id="settingsSnapSpacer" aria-hidden="true"></div>

@@ -14,7 +14,7 @@ docs/
 assets/
   icons/                   icon_CLT_<ширина>x<высота>.png
 src/
-  i18n/                    <lang>.json (тексты интерфейса, 13 языков)
+  i18n/                    <lang>.json ({ "ui": {...}, "languages": {...} }, как в DT; 13 языков)
   vocabs/                  <lang>.json (слова для времени: часы и все минуты 0-59; 10 языков, без cs, es, it)
   css/
     main.css               список подключения файлов (порядок важен: themes.css последним)

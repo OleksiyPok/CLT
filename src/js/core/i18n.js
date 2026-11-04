@@ -1,18 +1,10 @@
-// Loads the texts of the interface (src/i18n/<lang>.json)
+// UI texts and language names: src/i18n/<lang>.json = { ui: {...}, languages: {...} }.
+// English is always loaded and used as the fallback.
 export function createLangLoader({ config, utils }) {
   const PATH = config.PATHS.UI_TEXTS_DIR;
   let texts = {};
 
-  const FALLBACK_EN = {
-    btnStart: "Start",
-    btnStop: "Stop",
-    btnContinue: "Continue",
-    fillRandom: "Fill random",
-    alertInvalidFormat: "Enter time in HH:MM format",
-    alertInvalidPhrase: "Invalid time or unable to generate Dutch phrase.",
-    speakBtnTitle: "Speak",
-    randomBtnTitle: "Random",
-  };
+  const FALLBACK_EN = { ui: {}, languages: {} };
 
   async function loadLang(code) {
     try {
@@ -39,7 +31,9 @@ export function createLangLoader({ config, utils }) {
     return texts;
   }
 
-  const getTexts = (lang) => texts[lang] || texts.en || FALLBACK_EN;
+  // Texts of the language; a text missing in it is taken from English.
+  const getTexts = (lang) => ({ ...(texts.en || FALLBACK_EN).ui, ...texts[lang]?.ui });
+  const getLanguageNames = (lang) => ({ ...(texts.en || FALLBACK_EN).languages, ...texts[lang]?.languages });
 
-  return { loadLang, loadAll, getTexts };
+  return { loadLang, loadAll, getTexts, getLanguageNames };
 }
