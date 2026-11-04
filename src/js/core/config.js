@@ -1,7 +1,7 @@
 // Constants and the default settings (config/config.json).
 
 // Shown on the main screen (change it with every change of the app)
-export const APP_VERSION = "2.1.6";
+export const APP_VERSION = "2.1.7";
 
 // Key of the saved settings in localStorage
 export const STORAGE_KEY = "CLT-settings";
