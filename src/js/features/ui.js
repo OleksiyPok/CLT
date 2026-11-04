@@ -377,6 +377,12 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       if (e.target === windows.settingsAppModal) bus.emit(EventTypes.UI_SETTINGS_MODAL_CLOSE);
     });
     document.addEventListener("keydown", (e) => {
+      // F1 opens the help (instead of the browser's own help)
+      if (e.key === "F1") {
+        e.preventDefault();
+        if (!help.isAppHelpModalOpen() && !settingsWindow.isSettingsModalOpen()) bus.emit(EventTypes.UI_HELP_MODAL_OPEN);
+        return;
+      }
       if (e.key !== "Escape") return;
       if (help.isAppHelpModalOpen()) bus.emit(EventTypes.UI_HELP_MODAL_CLOSE);
       else if (settingsWindow.isSettingsModalOpen()) bus.emit(EventTypes.UI_SETTINGS_MODAL_CLOSE);

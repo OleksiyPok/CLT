@@ -3,6 +3,14 @@ import { APP_VERSION } from "../core/config.js";
 import { EventTypes } from "../core/event-types.js";
 
 export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, voices, wakeLock, utils, developer }) {
+  // F1 opens the help window (and not the help of the browser)
+  function handleKeyControls(event) {
+    if (event.key === "F1" || event.code === "F1" || event.keyCode === 112) {
+      event.preventDefault();
+      bus.emit(EventTypes.UI_HELP_MODAL_OPEN);
+    }
+  }
+
   async function init() {
     const appCfg = await config.load();
     utils.setDebug(appCfg.developerMode);
@@ -61,6 +69,7 @@ export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, 
 
     window.addEventListener("pagehide", () => bus.emit(EventTypes.APP_CLOSED));
     window.addEventListener("beforeunload", () => bus.emit(EventTypes.APP_CLOSED));
+    document.addEventListener("keydown", handleKeyControls);
 
     bus.emit(EventTypes.APP_INIT);
   }

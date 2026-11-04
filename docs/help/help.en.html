@@ -1,65 +1,129 @@
-<!-- CLT help (en). Screenshots: docs/help/img/NAME.png (NAME is in data-shot); a missing file shows a grey placeholder. -->
+<!--
+  CLT HELP — English version (also the fallback for languages without their own file).
+  The structure is the same in DT, NLT and CLT: help-about, help-main, help-use, help-settings, help-notes.
+  Screenshots: docs/help/img/NAME.png (NAME is in data-shot); a missing file shows a grey placeholder.
+-->
 
 <div class="help-content" lang="en" dir="ltr">
 
   <section class="help-section" id="help-about">
     <h2>Program Purpose</h2>
-    <p>The program is designed for learning to tell the time in foreign languages and for training listening comprehension.</p>
-    <p>The application shows times in the HH:MM format, says them aloud in the selected language with the selected voice, and plays a whole list of times one after another with a pause between them.</p>
-    <p>Use it to train your ear for the way times are said in different languages: for example, «quarter to four», «Viertel vor vier» or «без четверти четыре».</p>
+    <p>
+      Clock Listening Trainer is designed for learning to tell the time in foreign languages and for
+      training listening comprehension.
+    </p>
+    <p>
+      The program shows times in the HH:MM format, says them aloud in the selected language with the
+      selected voice, and plays a whole list of times one after another with a pause between them.
+    </p>
+    <p>
+      Use it to train your ear for the way times are said in different languages: for example,
+      «quarter to four», «Viertel vor vier» or «без четверти четыре».
+    </p>
+    <p>
+      The interface is available in 13 languages: العربية, Čeština, Deutsch, English, Español, Français,
+      Italiano, Nederlands, Polski, Português, Русский, Türkçe, Українська.
+    </p>
   </section>
 
   <section class="help-section" id="help-main">
     <h2>Main screen</h2>
+
     <figure class="help-shot" data-shot="main-overview">
-      <img src="docs/help/img/main-overview.png" alt="Main screen" loading="lazy" />
+      <img src="docs/help/img/main-overview.png" alt="Main screen of the program with numbered elements" loading="lazy" />
       <figcaption>Main screen</figcaption>
     </figure>
+
     <ol class="help-legend">
-      <li value="1"><span class="help-framed"><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg></span> <b>Help (this window)</b></li>
-      <li value="2"><span class="help-framed"><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span> <b>Settings window</b>: the same settings as at the bottom of the main page</li>
-      <li value="3"><svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Colour mode of the interface</b>: contrast, normal, evening, night</li>
-      <li value="4"><b>Time fields</b>: a random time button 🎲, the time (H:MM or HH:MM, from 0:00 to 23:59) and the play button ▶️ for this time</li>
-      <li value="5"><b>Rnd</b>: fills all fields with random times (minutes in steps of 5)</li>
-      <li value="6"><b>Start / Stop / Continue</b>: plays the times one after another; the field being played is highlighted</li>
-      <li value="7"><b>Reset</b>: returns the exercise to the beginning (available when it is paused)</li>
-      <li value="8"><b>Settings</b>: speed, delay, language and voice, interface, theme and mode (the same settings are in the settings window)</li>
+      <li value="1"><span class="help-framed"><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg></span> <b>Information</b>: opens this window.</li>
+      <li value="2"><span class="help-framed"><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span> <b>Settings</b>: opens the settings window (see "Settings").</li>
+      <li value="3"><svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Mode</b>: colour mode of the interface: Contrast, Normal, Evening or Night. Each press switches to the next mode.</li>
+      <li value="4"><b>Time fields</b>: a random time button 🎲, the time (H:MM or HH:MM, from 0:00 to 23:59) and the play button ▶️ for this time.</li>
+      <li value="5"><b>Rnd</b>: fills all fields with random times (minutes in steps of 5).</li>
+      <li value="6"><b>Start / Stop / Continue</b>: plays the times one after another; the field being played is highlighted.</li>
+      <li value="7"><b>Reset</b>: returns the exercise to the beginning (available when it is paused).</li>
+      <li value="8"><b>Playback controls</b>: Speed, Interval, Language and Voice. They are the same controls as in the settings window and are described in "Settings".</li>
     </ol>
   </section>
 
-  <section class="help-section" id="help-practise">
-    <h2>How to practise</h2>
+  <section class="help-section" id="help-use">
+    <h2>How to use</h2>
     <ol class="help-steps">
       <li>Choose the language and the voice in the settings.</li>
-      <li>Press 🎲 to get a random time in a field, type a time yourself (for example 14:25) or press Rnd to fill all fields.</li>
-      <li>Press ▶️ to listen to one time, or Start to listen to all the times one after another.</li>
+      <li>Press 🎲 to get a random time in a field, type a time yourself (for example 14:25) or press <b>Rnd</b> to fill all fields.</li>
+      <li>Press ▶️ to listen to one time, or <b>Start</b> to listen to all the times one after another.</li>
       <li>Write down what you hear and compare it with the time in the field.</li>
     </ol>
+
     <figure class="help-shot" data-shot="playing">
-      <img src="docs/help/img/playing.png" alt="Playing the list" loading="lazy" />
-      <figcaption>Playing the list</figcaption>
+      <img src="docs/help/img/playing.png" alt="The list is playing: the current field is highlighted" loading="lazy" />
+      <figcaption>The list is playing</figcaption>
     </figure>
   </section>
 
   <section class="help-section" id="help-settings">
     <h2>Settings</h2>
-    <figure class="help-shot" data-shot="settings-window">
-      <img src="docs/help/img/settings-window.png" alt="Settings window" loading="lazy" />
-      <figcaption>Settings window</figcaption>
+    <p>
+      The settings window is opened with the <span class="help-framed"><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span> button.
+      It consists of blocks; scrolling takes you from block to block, and a fraction in the corner shows the
+      number of the current block over the total number of blocks. The playback controls of the main screen
+      are the same controls and always show the same values. A change is applied at once, even during playback.
+    </p>
+
+    <h3>Speed and interval</h3>
+    <figure class="help-shot" data-shot="settings-playback">
+      <img src="docs/help/img/settings-playback.png" alt="Settings: speed and interval" loading="lazy" />
+      <figcaption>Speed and interval</figcaption>
     </figure>
     <ol class="help-legend">
-      <li value="1"><b>Speed</b>: the speed of the speech</li>
-      <li value="2"><b>Interval (ms)</b>: the pause between the times when the list is played</li>
-      <li value="3"><b>Language and Voice</b>: the language of the speech and the voice of your device (the list depends on your device and browser)</li>
-      <li value="4"><b>Interface</b>: the language of the application</li>
-      <li value="5"><b>Theme and Mode</b>: the colours of the application</li>
-      <li value="6"><b>Reset defaults</b>: returns all settings to the initial values</li>
+      <li value="1"><b>Speed</b>: the speed of the speech, from 0.6 (slow) to 2.0 (fast).</li>
+      <li value="2"><b>Interval (ms)</b>: the pause between the end of one time and the beginning of the next when the list is played, in milliseconds.</li>
+    </ol>
+
+    <h3>Rows</h3>
+    <figure class="help-shot" data-shot="settings-rows">
+      <img src="docs/help/img/settings-rows.png" alt="Settings: number of rows" loading="lazy" />
+      <figcaption>Rows</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Rows</b>: how many time fields there are on the main screen, from 1 to 15.</li>
+    </ol>
+
+    <h3>Language and voice</h3>
+    <figure class="help-shot" data-shot="settings-speech">
+      <img src="docs/help/img/settings-speech.png" alt="Settings: language and voice" loading="lazy" />
+      <figcaption>Language and voice</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Language</b>: the language of the speech.</li>
+      <li value="2"><b>Voice</b>: the voice of your device. The list depends on your device and browser.</li>
+    </ol>
+
+    <h3>Interface, theme and mode</h3>
+    <figure class="help-shot" data-shot="settings-appearance">
+      <img src="docs/help/img/settings-appearance.png" alt="Settings: interface language, theme and mode" loading="lazy" />
+      <figcaption>Interface, theme and mode</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Interface</b>: the language of the program labels.</li>
+      <li value="2"><b>Theme</b>: the colour palette of the program.</li>
+      <li value="3"><b>Mode</b>: Contrast (brighter and sharper), Normal, Evening or Night. Night mode is dark and dim, so you can look at the screen calmly in the dark. It works in sync with the Mode button on the main screen.</li>
+    </ol>
+
+    <h3>Reset defaults</h3>
+    <figure class="help-shot" data-shot="settings-reset">
+      <img src="docs/help/img/settings-reset.png" alt="Settings: reset to default values" loading="lazy" />
+      <figcaption>Reset defaults</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Reset defaults</b> (<svg class="help-ico" aria-hidden="true"><use href="#i-reset" /></svg>): returns all settings to their original values.</li>
     </ol>
   </section>
 
   <section class="help-section" id="help-notes">
     <h2>Notes</h2>
-    <p class="help-note">The settings are saved in your browser.</p>
+    <p class="help-note">All settings are saved in your browser and are kept after you close the program.</p>
+    <p class="help-note">The help and settings windows are closed with the ✕ button or the <kbd>Esc</kbd> key; on a phone, also with the Back button. The <kbd>F1</kbd> key opens this window.</p>
     <p class="help-note">If the language has no voices on your device, install a voice in the system settings.</p>
     <p class="help-note">This help can be shown in any language: select it in the field above.</p>
   </section>
