@@ -3,17 +3,30 @@ import { APP_VERSION } from "../core/config.js";
 import { EventTypes } from "../core/event-types.js";
 
 export function createApp({ bus, config, langLoader, timeDictLoader, store, ui, voices, wakeLock, utils, developer }) {
-  // F1 opens the help window (and not the help of the browser), Esc closes the open window
+  // F1 opens the help window (and not the help of the browser); Esc closes the open window, without a window it stops the exercise;
+  // Space starts, pauses and continues the exercise
   function handleKeyControls(event) {
+    const tag = document.activeElement?.tagName || "";
+    const isTyping = ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(tag);
+    const anyWindowOpen = ui.isAppHelpModalOpen() || ui.isSettingsModalOpen();
+
     if (event.key === "F1" || event.code === "F1" || event.keyCode === 112) {
       event.preventDefault();
-      if (!ui.isAppHelpModalOpen() && !ui.isSettingsModalOpen()) bus.emit(EventTypes.UI_HELP_MODAL_OPEN);
+      if (!anyWindowOpen) bus.emit(EventTypes.UI_HELP_MODAL_OPEN);
       return;
     }
 
     if (event.key === "Escape" || event.code === "Escape" || event.keyCode === 27) {
+      event.preventDefault();
       if (ui.isAppHelpModalOpen()) bus.emit(EventTypes.UI_HELP_MODAL_CLOSE);
       else if (ui.isSettingsModalOpen()) bus.emit(EventTypes.UI_SETTINGS_MODAL_CLOSE);
+      else bus.emit(EventTypes.PLAYBACK_STOP);
+      return;
+    }
+
+    if ((event.key === " " || event.code === "Space" || event.keyCode === 32) && !isTyping && !anyWindowOpen) {
+      event.preventDefault();
+      ui.elements.startPauseBtn?.click();
     }
   }
 
