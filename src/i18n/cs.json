@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "Rozhraní:",
+    "interfaceLabel": "Rozhraní",
     "languageLabel": "Jazyk",
     "voiceLabel": "Hlas",
     "rowsLabel": "Počet řádků",
@@ -13,6 +13,7 @@
     "themaModeEvening": "Večer",
     "themaModeNight": "Noc",
     "startBtnLabel": "Start",
+    "pauseBtnLabel": "Pauza",
     "stopBtnLabel": "Stop",
     "continueBtnLabel": "Pokračovat",
     "resetBtnLabel": "Reset",

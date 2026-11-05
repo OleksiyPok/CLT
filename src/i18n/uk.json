@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "Інтерфейс:",
+    "interfaceLabel": "Інтерфейс",
     "languageLabel": "Мова",
     "voiceLabel": "Голос",
     "rowsLabel": "Рядки",
@@ -12,9 +12,10 @@
     "themaModeNormal": "Нормальний",
     "themaModeEvening": "Вечірній",
     "themaModeNight": "Нічний",
-    "startBtnLabel": "Старт",
+    "startBtnLabel": "Почати",
+    "pauseBtnLabel": "Пауза",
     "stopBtnLabel": "Стоп",
-    "continueBtnLabel": "Далі",
+    "continueBtnLabel": "Продовжити",
     "resetBtnLabel": "Скинути",
     "fillRandomBtnLabel": "🎲 Rnd",
     "resetSettingsLabel": "Стандартні налаштування",

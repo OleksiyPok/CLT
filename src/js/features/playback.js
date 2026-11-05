@@ -113,7 +113,7 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
   function resume() {
     store.setPlaybackFlags({ isPaused: false });
     bus.emit(EventTypes.UPDATE_CONTROLS);
-    ui.updateStartPauseButton("stop");
+    ui.updateStartPauseButton("pause");
     const idx = store.playbackFlags().sequenceIndex;
     if (typeof idx === "number") playAt(idx);
   }

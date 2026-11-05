@@ -152,11 +152,11 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     E.startPauseBtn?.addEventListener("click", () => {
       const f = store.playbackFlags();
       if (!f.isSequenceMode) {
-        updateStartPauseButton("stop");
+        updateStartPauseButton("pause");
         bus.emit(EventTypes.PLAYBACK_START, { index: f.sequenceIndex || 0 });
       } else if (f.isPaused) {
         bus.emit(EventTypes.PLAYBACK_CONTINUE);
-        updateStartPauseButton("stop");
+        updateStartPauseButton("pause");
       } else {
         bus.emit(EventTypes.PLAYBACK_PAUSE);
       }

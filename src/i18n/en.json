@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "Interface:",
+    "interfaceLabel": "Interface",
     "languageLabel": "Language",
     "voiceLabel": "Voice",
     "rowsLabel": "Rows",
@@ -13,6 +13,7 @@
     "themaModeEvening": "Evening",
     "themaModeNight": "Night",
     "startBtnLabel": "Start",
+    "pauseBtnLabel": "Pause",
     "stopBtnLabel": "Stop",
     "continueBtnLabel": "Continue",
     "resetBtnLabel": "Reset",

@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "الواجهة:",
+    "interfaceLabel": "الواجهة",
     "languageLabel": "اللغة",
     "voiceLabel": "الصوت",
     "rowsLabel": "عدد الصفوف",
@@ -13,6 +13,7 @@
     "themaModeEvening": "مسائي",
     "themaModeNight": "ليلي",
     "startBtnLabel": "ابدأ",
+    "pauseBtnLabel": "إيقاف مؤقت",
     "stopBtnLabel": "إيقاف",
     "continueBtnLabel": "متابعة",
     "resetBtnLabel": "إعادة ضبط",

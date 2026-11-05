@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "Arayüz:",
+    "interfaceLabel": "Arayüz",
     "languageLabel": "Dil",
     "voiceLabel": "Ses",
     "rowsLabel": "Satır sayısı",
@@ -12,9 +12,10 @@
     "themaModeNormal": "Normal",
     "themaModeEvening": "Akşam",
     "themaModeNight": "Gece",
-    "startBtnLabel": "Başla",
+    "startBtnLabel": "Başlat",
+    "pauseBtnLabel": "Duraklat",
     "stopBtnLabel": "Dur",
-    "continueBtnLabel": "Devam",
+    "continueBtnLabel": "Devam et",
     "resetBtnLabel": "Sıfırla",
     "fillRandomBtnLabel": "🎲 Rnd",
     "resetSettingsLabel": "Varsayılan ayarlar",

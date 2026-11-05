@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "Interface :",
+    "interfaceLabel": "Interface",
     "languageLabel": "Langue",
     "voiceLabel": "Voix",
     "rowsLabel": "Lignes",
@@ -13,9 +13,10 @@
     "themaModeEvening": "Soir",
     "themaModeNight": "Nuit",
     "startBtnLabel": "Démarrer",
+    "pauseBtnLabel": "Pause",
     "stopBtnLabel": "Arrêter",
     "continueBtnLabel": "Continuer",
-    "resetBtnLabel": "Réinit.",
+    "resetBtnLabel": "Réinitialiser",
     "fillRandomBtnLabel": "🎲 Rnd",
     "resetSettingsLabel": "Paramètres par défaut",
     "settingsTitle": "Paramètres",

@@ -1,6 +1,6 @@
 {
   "ui": {
-    "interfaceLabel": "Interfaz:",
+    "interfaceLabel": "Interfaz",
     "languageLabel": "Idioma",
     "voiceLabel": "Voz",
     "rowsLabel": "Filas",
@@ -13,11 +13,12 @@
     "themaModeEvening": "Tarde",
     "themaModeNight": "Noche",
     "startBtnLabel": "Iniciar",
+    "pauseBtnLabel": "Pausa",
     "stopBtnLabel": "Detener",
     "continueBtnLabel": "Continuar",
-    "resetBtnLabel": "Reiniciar",
+    "resetBtnLabel": "Restablecer",
     "fillRandomBtnLabel": "🎲 Rnd",
-    "resetSettingsLabel": "Configuración predeterminada",
+    "resetSettingsLabel": "Ajustes predeterminados",
     "settingsTitle": "Ajustes",
     "helpBtnTitle": "Información",
     "closeBtnTitle": "Cerrar",

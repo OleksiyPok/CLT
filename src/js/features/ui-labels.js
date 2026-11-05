@@ -30,11 +30,11 @@ export function createUiLabels(ctx) {
     };
     view.btnLabels = {
       start: texts.startBtnLabel || "Start",
-      stop: texts.stopBtnLabel || "Stop",
+      pause: texts.pauseBtnLabel || "Pause",
       cont: texts.continueBtnLabel || "Continue",
     };
     const f = store.playbackFlags();
-    if (f.isSequenceMode && !f.isPaused) setBtnText(elements.startPauseBtn, view.btnLabels.stop);
+    if (f.isSequenceMode && !f.isPaused) setBtnText(elements.startPauseBtn, view.btnLabels.pause);
     else if (f.isSequenceMode && f.isPaused) setBtnText(elements.startPauseBtn, view.btnLabels.cont);
     else setBtnText(elements.startPauseBtn, view.btnLabels.start);
     const setText = (el, text) => {
@@ -67,10 +67,10 @@ export function createUiLabels(ctx) {
     if (title) btn.title = title;
   }
 
-  // The caption of the Start / Stop / Continue button: "start" | "stop" | "cont"
+  // The caption of the Start / Pause / Continue button: "start" | "pause" | "cont"
   function updateStartPauseButton(state) {
     if (state === "start") setBtnText(elements.startPauseBtn, view.btnLabels.start);
-    else if (state === "stop") setBtnText(elements.startPauseBtn, view.btnLabels.stop);
+    else if (state === "pause") setBtnText(elements.startPauseBtn, view.btnLabels.pause);
     else if (state === "cont") setBtnText(elements.startPauseBtn, view.btnLabels.cont);
   }
 

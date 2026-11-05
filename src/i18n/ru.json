@@ -1,10 +1,10 @@
 {
   "ui": {
-    "interfaceLabel": "Интерфейс:",
+    "interfaceLabel": "Интерфейс",
     "languageLabel": "Язык",
     "voiceLabel": "Голос",
     "rowsLabel": "Строки",
-    "speedLabel": "Темп",
+    "speedLabel": "Скорость",
     "intervalLabel": "Интервал (мс)",
     "themaLabel": "Тема",
     "themaModeLabel": "Режим",
@@ -13,8 +13,9 @@
     "themaModeEvening": "Вечерний",
     "themaModeNight": "Ночной",
     "startBtnLabel": "Старт",
+    "pauseBtnLabel": "Пауза",
     "stopBtnLabel": "Стоп",
-    "continueBtnLabel": "Дальше",
+    "continueBtnLabel": "Продолжить",
     "resetBtnLabel": "Сброс",
     "fillRandomBtnLabel": "🎲 Rnd",
     "resetSettingsLabel": "Настройки по умолчанию",
