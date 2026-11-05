@@ -18,8 +18,6 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     speaker.speak({
       text: phrase,
       rate,
-      lang: store.getSettings().languageCode,
-      voiceName: store.getSettings().voiceName,
       button: btn,
     });
     const off = bus.on(EventTypes.SPEECH_END, () => {
@@ -127,8 +125,6 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
     speaker
       .speakAsync(String(phrase), {
         rate,
-        languageCode: store.getSettings().languageCode,
-        voiceName: store.getSettings().voiceName,
         button,
         interrupt,
       })
