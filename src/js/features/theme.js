@@ -63,6 +63,14 @@ export function createTheme({ elements, langLoader }) {
     updateModeButton();
   }
 
+  // A valid full theme name for any saved value
+  function resolveCanonicalThema(raw) {
+    const resolved = resolveThemaKey(raw);
+    if (THEME_VALUES.includes(resolved)) return resolved;
+    const parsed = parseThema(resolved);
+    return (parsed && composeThema(parsed.palette, parsed.mode)) || DEFAULT_THEME;
+  }
+
   // Puts the saved theme on <html> and into the selects
   function applyThemeFromSettings(settings) {
     const chosen = applyThemeClass(document.documentElement, settings?.thema, DEFAULT_THEME);
@@ -81,5 +89,5 @@ export function createTheme({ elements, langLoader }) {
     updateModeButton();
   }
 
-  return { renderThemeSelectOptions, updateLabels, updateModeButton, nextThemaMode, applyThemeFromSettings, applyThemeFromSelects, getThemaFromSelects };
+  return { renderThemeSelectOptions, updateLabels, updateModeButton, nextThemaMode, resolveCanonicalThema, syncSelectsFromThema, applyThemeFromSettings, applyThemeFromSelects, getThemaFromSelects };
 }

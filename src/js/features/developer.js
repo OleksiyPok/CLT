@@ -41,7 +41,7 @@ export function createDeveloper({ bus, ui }) {
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch (e) {}
-      alert("Saved settings cleared");
+      alert(`${STORAGE_KEY} cleared`);
     });
   }
 

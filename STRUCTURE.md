@@ -36,6 +36,8 @@ src/
 
 ## Правила
 
+- Файлы `core/theme-registry.js`, `features/theme.js`, `features/modals.js`, `features/developer.js` и `css/themes.css` одинаковы в NLT и CLT (при изменении правятся в обоих проектах).
+
 - Настройки по умолчанию: только `config/config.json`. В коде значений по умолчанию нет. Блок `mobile` переопределяет значения на телефонах и планшетах.
 - Настройки пользователя: localStorage, ключ `CLT-settings`.
 - Версия приложения: `APP_VERSION` в `src/js/core/config.js`; меняется при каждом изменении.
