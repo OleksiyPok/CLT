@@ -19,6 +19,7 @@ export function createPlayback({ bus, store, ui, speaker, utils, wakeLock, timeP
       text: phrase,
       rate,
       lang: store.getSettings().languageCode,
+      voiceName: store.getSettings().voiceName,
       button: btn,
     });
     const off = bus.on(EventTypes.SPEECH_END, () => {

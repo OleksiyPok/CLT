@@ -44,7 +44,9 @@ export function createSpeaker({ bus, voicesProvider, settingsProvider } = {}) {
   async function speakAsync(text, opts = {}) {
     Utils.log(text, opts);
     if (!text) return;
-    const settings = { ...(getSettings() || {}), ...opts };
+    // An option that is not given (undefined) does not replace the saved setting
+    const given = Object.fromEntries(Object.entries(opts).filter(([, value]) => value !== undefined));
+    const settings = { ...(getSettings() || {}), ...given };
     if (opts.interrupt !== false && "speechSynthesis" in window) {
       try {
         speechSynthesis.cancel();
