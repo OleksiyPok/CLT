@@ -1,0 +1,126 @@
+<div class="help-content" lang="ru" dir="ltr">
+  <section class="help-section" id="help-about">
+    <h2>Назначение программы</h2>
+    <p>Clock Listening Trainer помогает учиться называть время на иностранных языках и тренировать восприятие речи на слух.</p>
+    <p>Программа показывает время в формате ЧЧ:ММ, произносит его вслух на выбранном языке выбранным голосом и воспроизводит целый список времён один за другим с паузой между ними.</p>
+    <p>Используйте её, чтобы приучить слух к тому, как время произносится в разных языках: например, «quarter to four», «Viertel vor vier» или «без четверти четыре».</p>
+    <p>Интерфейс доступен на 13 языках: العربية, Čeština, Deutsch, English, Español, Français, Italiano, Nederlands, Polski, Português, Русский, Türkçe, Українська.</p>
+  </section>
+
+  <section class="help-section" id="help-main">
+    <h2>Главный экран</h2>
+
+    <figure class="help-shot" data-shot="main-overview">
+      <img src="docs/help/img/main-overview.png" alt="Главный экран программы с пронумерованными элементами" loading="lazy" />
+      <figcaption>Главный экран</figcaption>
+    </figure>
+
+    <ol class="help-legend">
+      <li value="1">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg
+        ></span>
+        <b>Информация</b>: открывает это окно.
+      </li>
+      <li value="2">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg
+        ></span>
+        <b>Настройки</b>: открывает окно настроек (см. «Настройки»).
+      </li>
+      <li value="3">
+        <svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Режим</b>: цветовой режим интерфейса: Контраст, Обычный, Вечерний или Ночной. Каждое нажатие включает следующий режим.
+      </li>
+      <li value="4"><b>Поля времени</b>: кнопка случайного времени 🎲, время (Ч:ММ или ЧЧ:ММ, от 0:00 до 23:59) и кнопка воспроизведения ▶️ для этого времени.</li>
+      <li value="5"><b>Rnd</b>: заполняет все поля случайным временем (минуты с шагом 5).</li>
+      <li value="6"><b>Старт / Стоп / Дальше</b>: воспроизводит времена одно за другим; поле, которое звучит, подсвечивается.</li>
+      <li value="7"><b>Сброс</b>: возвращает упражнение в начало (доступен, когда упражнение остановлено).</li>
+      <li value="8"><b>Управление воспроизведением</b>: Темп, Интервал, Язык и Голос. Это те же элементы, что и в окне настроек; они описаны в разделе «Настройки».</li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-use">
+    <h2>Как пользоваться</h2>
+    <ol class="help-steps">
+      <li>Выберите язык и голос в настройках.</li>
+      <li>Нажмите 🎲, чтобы получить случайное время в поле, введите время сами (например, 14:25) или нажмите <b>Rnd</b>, чтобы заполнить все поля.</li>
+      <li>Нажмите ▶️, чтобы прослушать одно время, или <b>Старт</b>, чтобы прослушать все времена одно за другим.</li>
+      <li>Записывайте то, что слышите, и сверяйтесь со временем в поле.</li>
+    </ol>
+
+    <figure class="help-shot" data-shot="playing">
+      <img src="docs/help/img/playing.png" alt="Список воспроизводится: текущее поле подсвечено" loading="lazy" />
+      <figcaption>Список воспроизводится</figcaption>
+    </figure>
+  </section>
+
+  <section class="help-section" id="help-settings">
+    <h2>Настройки</h2>
+    <p>
+      Окно настроек открывается кнопкой
+      <span class="help-framed"
+        ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg
+      ></span
+      >. Оно состоит из блоков; прокрутка переводит от блока к блоку, а дробь в углу показывает номер текущего блока и общее число блоков. Элементы управления воспроизведением на главном экране — те же самые и всегда показывают одинаковые значения. Изменение применяется сразу, даже во время воспроизведения.
+    </p>
+
+    <h3>Темп и интервал</h3>
+    <figure class="help-shot" data-shot="settings-playback">
+      <img src="docs/help/img/settings-playback.png" alt="Настройки: темп и интервал" loading="lazy" />
+      <figcaption>Темп и интервал</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Темп</b>: скорость речи от 0,6 (медленно) до 2,0 (быстро).</li>
+      <li value="2"><b>Интервал (мс)</b>: пауза между концом одного времени и началом следующего при воспроизведении списка, в миллисекундах.</li>
+    </ol>
+
+    <h3>Строки</h3>
+    <figure class="help-shot" data-shot="settings-rows">
+      <img src="docs/help/img/settings-rows.png" alt="Настройки: количество строк" loading="lazy" />
+      <figcaption>Строки</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Строки</b>: сколько полей времени на главном экране, от 1 до 15.</li>
+    </ol>
+
+    <h3>Язык и голос</h3>
+    <figure class="help-shot" data-shot="settings-speech">
+      <img src="docs/help/img/settings-speech.png" alt="Настройки: язык и голос" loading="lazy" />
+      <figcaption>Язык и голос</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Язык</b>: язык речи.</li>
+      <li value="2"><b>Голос</b>: голос вашего устройства. Список зависит от устройства и браузера.</li>
+    </ol>
+
+    <h3>Интерфейс, тема и режим</h3>
+    <figure class="help-shot" data-shot="settings-appearance">
+      <img src="docs/help/img/settings-appearance.png" alt="Настройки: язык интерфейса, тема и режим" loading="lazy" />
+      <figcaption>Интерфейс, тема и режим</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Интерфейс</b>: язык надписей программы.</li>
+      <li value="2"><b>Тема</b>: цветовая палитра программы.</li>
+      <li value="3"><b>Режим</b>: Контраст (ярче и чётче), Обычный, Вечерний или Ночной. Ночной режим тёмный и приглушённый, чтобы спокойно смотреть на экран в темноте. Он работает синхронно с кнопкой «Режим» на главном экране.</li>
+    </ol>
+
+    <h3>Настройки по умолчанию</h3>
+    <figure class="help-shot" data-shot="settings-reset">
+      <img src="docs/help/img/settings-reset.png" alt="Настройки: сброс к значениям по умолчанию" loading="lazy" />
+      <figcaption>Настройки по умолчанию</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1">
+        <b>Настройки по умолчанию</b> (<svg class="help-ico" aria-hidden="true"><use href="#i-reset" /></svg>): возвращает все настройки к исходным значениям.
+      </li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-notes">
+    <h2>Примечания</h2>
+    <p class="help-note">Все настройки сохраняются в вашем браузере и остаются после закрытия программы.</p>
+    <p class="help-note">Окна справки и настроек закрываются кнопкой ✕ или клавишей <kbd>Esc</kbd>; на телефоне также кнопкой «Назад». Клавиша <kbd>F1</kbd> открывает это окно.</p>
+    <p class="help-note">Если для языка на вашем устройстве нет голосов, установите голос в системных настройках.</p>
+    <p class="help-note">Эту справку можно показать на любом языке: выберите его в поле выше.</p>
+  </section>
+</div>
