@@ -1,0 +1,125 @@
+<div class="help-content" lang="cs" dir="ltr">
+  <section class="help-section" id="help-about">
+    <h2>Účel programu</h2>
+    <p>Clock Listening Trainer slouží k učení, jak se v cizích jazycích říká čas, a k nácviku porozumění mluvené řeči.</p>
+    <p>Program ukazuje časy ve formátu HH:MM, říká je nahlas ve zvoleném jazyce zvoleným hlasem a přehrává celý seznam časů jeden za druhým s pauzou mezi nimi.</p>
+    <p>Používejte ho k tréninku sluchu na to, jak se čas říká v různých jazycích: například „quarter to four“, „Viertel vor vier“ nebo „без четверти четыре“.</p>
+    <p>Rozhraní je dostupné ve 13 jazycích: العربية, Čeština, Deutsch, English, Español, Français, Italiano, Nederlands, Polski, Português, Русский, Türkçe, Українська.</p>
+  </section>
+
+  <section class="help-section" id="help-main">
+    <h2>Hlavní obrazovka</h2>
+
+    <figure class="help-shot" data-shot="main-overview">
+      <img src="docs/help/img/main-overview.png" alt="Hlavní obrazovka programu s očíslovanými prvky" loading="lazy" />
+      <figcaption>Hlavní obrazovka</figcaption>
+    </figure>
+
+    <ol class="help-legend">
+      <li value="1">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg
+        ></span>
+        <b>Informace</b>: otevře toto okno.
+      </li>
+      <li value="2">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg
+        ></span>
+        <b>Nastavení</b>: otevře okno nastavení (viz „Nastavení“).
+      </li>
+      <li value="3">
+        <svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Režim</b>: barevný režim rozhraní: Kontrast, Normální, Večer nebo Noc. Každé stisknutí přepne na další režim.
+      </li>
+      <li value="4"><b>Pole času</b>: tlačítko náhodného času 🎲, čas (H:MM nebo HH:MM, od 0:00 do 23:59) a tlačítko přehrání ▶️ pro tento čas.</li>
+      <li value="5"><b>Rnd</b>: vyplní všechna pole náhodnými časy (minuty po pěti).</li>
+      <li value="6"><b>Start / Pauza / Pokračovat</b>: přehrává časy jeden za druhým; pole, které právě zní, je zvýrazněno.</li>
+      <li value="7"><b>Reset</b>: vrátí cvičení na začátek (dostupné, když je pozastavené).</li>
+      <li value="8"><b>Ovládání přehrávání</b>: Rychlost, Interval, Jazyk a Hlas. Jsou to stejné prvky jako v okně nastavení a jsou popsány v části „Nastavení“.</li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-use">
+    <h2>Jak program používat</h2>
+    <ol class="help-steps">
+      <li>V nastavení zvolte jazyk a hlas.</li>
+      <li>Stiskněte 🎲 pro náhodný čas v poli, zadejte čas sami (například 14:25) nebo stiskněte <b>Rnd</b> a vyplňte všechna pole.</li>
+      <li>Stiskněte ▶️ pro poslech jednoho času nebo <b>Start</b> pro poslech všech časů jednoho za druhým.</li>
+      <li>Zapište si, co slyšíte, a porovnejte to s časem v poli.</li>
+    </ol>
+
+    <figure class="help-shot" data-shot="playing">
+      <img src="docs/help/img/playing.png" alt="Seznam se přehrává: aktuální pole je zvýrazněno" loading="lazy" />
+      <figcaption>Seznam se přehrává</figcaption>
+    </figure>
+  </section>
+
+  <section class="help-section" id="help-settings">
+    <h2>Nastavení</h2>
+    <p>
+      Okno nastavení otevřete tlačítkem
+      <span class="help-framed"
+        ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span
+      >. Skládá se z bloků; posouváním přecházíte z bloku do bloku a zlomek v rohu ukazuje číslo aktuálního bloku a celkový počet bloků. Ovládací prvky přehrávání na hlavní obrazovce jsou stejné prvky a vždy ukazují stejné hodnoty. Změna se použije okamžitě, i během přehrávání.
+    </p>
+
+    <h3>Rychlost a interval</h3>
+    <figure class="help-shot" data-shot="settings-playback">
+      <img src="docs/help/img/settings-playback.png" alt="Nastavení: rychlost a interval" loading="lazy" />
+      <figcaption>Rychlost a interval</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Rychlost</b>: rychlost řeči od 0,6 (pomalu) do 2,0 (rychle).</li>
+      <li value="2"><b>Interval (ms)</b>: pauza mezi koncem jednoho času a začátkem dalšího při přehrávání seznamu v milisekundách.</li>
+    </ol>
+
+    <h3>Řádky</h3>
+    <figure class="help-shot" data-shot="settings-rows">
+      <img src="docs/help/img/settings-rows.png" alt="Nastavení: počet řádků" loading="lazy" />
+      <figcaption>Řádky</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Počet řádků</b>: kolik polí času je na hlavní obrazovce, od 1 do 15.</li>
+    </ol>
+
+    <h3>Jazyk a hlas</h3>
+    <figure class="help-shot" data-shot="settings-speech">
+      <img src="docs/help/img/settings-speech.png" alt="Nastavení: jazyk a hlas" loading="lazy" />
+      <figcaption>Jazyk a hlas</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Jazyk</b>: jazyk řeči.</li>
+      <li value="2"><b>Hlas</b>: hlas vašeho zařízení. Seznam závisí na zařízení a prohlížeči.</li>
+    </ol>
+
+    <h3>Rozhraní, téma a režim</h3>
+    <figure class="help-shot" data-shot="settings-appearance">
+      <img src="docs/help/img/settings-appearance.png" alt="Nastavení: jazyk rozhraní, téma a režim" loading="lazy" />
+      <figcaption>Rozhraní, téma a režim</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Rozhraní</b>: jazyk popisků programu.</li>
+      <li value="2"><b>Téma</b>: barevná paleta programu.</li>
+      <li value="3"><b>Režim</b>: Kontrast (jasnější a ostřejší), Normální, Večer nebo Noc. Noční režim je tmavý a tlumený, takže se můžete na obrazovku v klidu dívat ve tmě. Funguje synchronně s tlačítkem „Režim“ na hlavní obrazovce.</li>
+    </ol>
+
+    <h3>Výchozí nastavení</h3>
+    <figure class="help-shot" data-shot="settings-reset">
+      <img src="docs/help/img/settings-reset.png" alt="Nastavení: obnovení výchozích hodnot" loading="lazy" />
+      <figcaption>Výchozí nastavení</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1">
+        <b>Výchozí nastavení</b> (<svg class="help-ico" aria-hidden="true"><use href="#i-reset" /></svg>): vrátí všechna nastavení na původní hodnoty.
+      </li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-notes">
+    <h2>Poznámky</h2>
+    <p class="help-note">Všechna nastavení se ukládají ve vašem prohlížeči a zůstanou i po zavření programu.</p>
+    <p class="help-note">Okna nápovědy a nastavení zavřete tlačítkem ✕ nebo klávesou <kbd>Esc</kbd>; v telefonu také tlačítkem Zpět. Klávesa <kbd>F1</kbd> otevře toto okno.</p>
+    <p class="help-note">Pokud pro daný jazyk nejsou ve vašem zařízení žádné hlasy, nainstalujte hlas v nastavení systému.</p>
+    <p class="help-note">Tuto nápovědu lze zobrazit v libovolném jazyce: vyberte ho v poli nahoře.</p>
+  </section>
+</div>
