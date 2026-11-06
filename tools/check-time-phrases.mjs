@@ -20,11 +20,7 @@ let bad = 0;
 
 for (const lang of langs) {
   console.log(`\n=== ${lang} ===`);
-  const rows = [
-    [0, 0],
-    [12, 0],
-    ...Array.from({ length: 60 }, (_, mm) => [hour, mm]),
-  ];
+  const rows = [[0, 0], [12, 0], ...Array.from({ length: 60 }, (_, mm) => [hour, mm])];
   for (const [h, mm] of rows) {
     const phrase = getTimePhrase(lang, { h, mm });
     if (!phrase || /undefined|NaN/.test(phrase)) bad++;

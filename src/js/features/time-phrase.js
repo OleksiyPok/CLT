@@ -170,7 +170,11 @@ const RULES = {
       const al = (x) => `ال${x}`;
       const H = (i) => `${al(w.hour)} ${hour(i)}`; // الساعة الثالثة
       // After "إلا" the number is in the accusative: عشرون -> عشرين, اثنتا عشرة -> اثنتي عشرة
-      const acc = (x) => x.replace(/ون(?=\s|$)/g, "ين").replace("اثنتا عشرة", "اثنتي عشرة").replace("اثنتان", "اثنتين");
+      const acc = (x) =>
+        x
+          .replace(/ون(?=\s|$)/g, "ين")
+          .replace("اثنتا عشرة", "اثنتي عشرة")
+          .replace("اثنتان", "اثنتين");
       const say = (n, accusative) => {
         const [one, many] = w.minuteForms; // [دقيقة, دقائق]
         if (n === 1) return accusative ? one : `${one} واحدة`;
