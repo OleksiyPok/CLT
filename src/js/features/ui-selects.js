@@ -36,8 +36,8 @@ export function createUiSelects(ctx) {
     if (toSet) elements.languageCodeSelect.value = toSet;
   }
 
-  // The voices of the language (or all voices); the chosen voice is saved
-  function populateVoiceSelect(langCodeOrAll = elements.languageCodeSelect?.value || "") {
+  // The voices of the language (or all voices); "persist" saves the shown voice as the chosen one
+  function populateVoiceSelect(langCodeOrAll = elements.languageCodeSelect?.value || "", { persist = true } = {}) {
     if (!elements.voiceSelect) return;
     const list = view.voices;
     const s = store.getSettings();
@@ -58,6 +58,7 @@ export function createUiSelects(ctx) {
     const target = filtered.find((v) => v.name === s.voiceName) || filtered.find((v) => utils.normalizeLangCode(v.lang) === utils.normalizeLangCode(s.languageCode)) || filtered[0];
     if (target) {
       elements.voiceSelect.value = target.name;
+      if (!persist) return;
       s.voiceName = target.name;
       s.languageCode = utils.normalizeLangCode(target.lang);
       store.setSettings(s);
@@ -68,7 +69,8 @@ export function createUiSelects(ctx) {
   function renderLangVoiceUI() {
     if (!view.voices.length || !view.availableLanguages.length) return;
     populateLanguageSelect();
-    populateVoiceSelect(elements.languageCodeSelect?.value || "");
+    // The voices come in parts: a saved voice is not replaced by another one while it is missing from the list
+    populateVoiceSelect(elements.languageCodeSelect?.value || "", { persist: !store.getSettings().voiceName });
   }
 
   return { setSelectsFromSettings, populateLanguageSelect, populateVoiceSelect, renderLangVoiceUI };
