@@ -21,7 +21,7 @@ export function createUiRows(ctx, labels) {
         row.className = "clock-container";
         row.innerHTML = `<button type="button" class="random-btn" id="randomBtn_${i + 1}" data-i18n-title="randomBtnTitle">🎲</button>
 <input type="text" class="time-input" id="timeInput_${i + 1}" maxlength="5" value="00:00" />
-<button type="button" class="speak-btn" id="speakBtn_${i + 1}" data-i18n-title="speakBtnTitle">▶️</button>`;
+<button type="button" class="speak-btn" id="speakBtn_${i + 1}" data-i18n-title="speakBtnTitle"><svg class="ico" aria-hidden="true"><use href="#i-play" /></svg></button>`;
         return row;
       }),
     );

@@ -1,8 +1,8 @@
 // Texts of the page (by the selected interface language) and enabled / disabled controls.
 import { EventTypes } from "../core/event-types.js";
 
-const PLAY_ICON = "▶️";
-const STOP_ICON = "⏹️";
+const PLAY_ICON = '<svg class="ico" aria-hidden="true"><use href="#i-play" /></svg>';
+const STOP_ICON = '<svg class="ico" aria-hidden="true"><use href="#i-stop" /></svg>';
 
 export function createUiLabels(ctx) {
   const { bus, store, langLoader, elements, view } = ctx;
@@ -60,7 +60,7 @@ export function createUiLabels(ctx) {
   function updateButtonIcon(btn, state) {
     if (!btn) return;
     const speaking = state === "speaking";
-    btn.textContent = speaking ? STOP_ICON : PLAY_ICON;
+    btn.innerHTML = speaking ? STOP_ICON : PLAY_ICON;
     btn.classList.toggle("speaking", speaking);
     const texts = langLoader.getTexts(elements.uiLangSelect?.value || "en");
     const title = speaking ? texts.stopBtnLabel : texts.speakBtnTitle;

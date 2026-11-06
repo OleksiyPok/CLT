@@ -56,6 +56,17 @@
   align-items: center;
   width: 15%;
 }
+/* Play / stop icons: line icons from the sprite, coloured by the theme */
+.speak-btn .ico {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 /* The button of the spoken time stays clearly visible although the other buttons are disabled */
 .speak-btn.speaking,
 .speak-btn.speaking:disabled {
