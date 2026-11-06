@@ -1,0 +1,125 @@
+<div class="help-content" lang="fr" dir="ltr">
+  <section class="help-section" id="help-about">
+    <h2>Objet du programme</h2>
+    <p>Clock Listening Trainer sert à apprendre à dire l’heure dans les langues étrangères et à entraîner la compréhension orale.</p>
+    <p>Le programme affiche des heures au format HH:MM, les prononce à voix haute dans la langue choisie avec la voix choisie et lit toute une liste d’heures l’une après l’autre, avec une pause entre elles.</p>
+    <p>Utilisez-le pour entraîner votre oreille à la façon dont on dit l’heure dans différentes langues : par exemple « quarter to four », « Viertel vor vier » ou « без четверти четыре ».</p>
+    <p>L’interface est disponible en 13 langues : العربية, Čeština, Deutsch, English, Español, Français, Italiano, Nederlands, Polski, Português, Русский, Türkçe, Українська.</p>
+  </section>
+
+  <section class="help-section" id="help-main">
+    <h2>Écran principal</h2>
+
+    <figure class="help-shot" data-shot="main-overview">
+      <img src="docs/help/img/main-overview.png" alt="Écran principal du programme avec les éléments numérotés" loading="lazy" />
+      <figcaption>Écran principal</figcaption>
+    </figure>
+
+    <ol class="help-legend">
+      <li value="1">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg
+        ></span>
+        <b>Informations</b> : ouvre cette fenêtre.
+      </li>
+      <li value="2">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg
+        ></span>
+        <b>Paramètres</b> : ouvre la fenêtre des paramètres (voir « Paramètres »).
+      </li>
+      <li value="3">
+        <svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Mode</b> : le mode de couleurs de l’interface : Contraste, Normal, Soir ou Nuit. Chaque pression passe au mode suivant.
+      </li>
+      <li value="4"><b>Champs d’heure</b> : un bouton d’heure aléatoire 🎲, l’heure (H:MM ou HH:MM, de 0:00 à 23:59) et le bouton de lecture ▶️ pour cette heure.</li>
+      <li value="5"><b>Rnd</b> : remplit tous les champs avec des heures aléatoires (minutes par pas de cinq).</li>
+      <li value="6"><b>Démarrer / Pause / Continuer</b> : lit les heures l’une après l’autre ; le champ en cours de lecture est mis en évidence.</li>
+      <li value="7"><b>Réinitialiser</b> : ramène l’exercice au début (disponible lorsqu’il est en pause).</li>
+      <li value="8"><b>Commandes de lecture</b> : Vitesse, Intervalle, Langue et Voix. Ce sont les mêmes commandes que dans la fenêtre des paramètres ; elles sont décrites dans la section « Paramètres ».</li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-use">
+    <h2>Mode d’emploi</h2>
+    <ol class="help-steps">
+      <li>Choisissez la langue et la voix dans les paramètres.</li>
+      <li>Appuyez sur 🎲 pour obtenir une heure aléatoire dans un champ, saisissez vous-même une heure (par exemple 14:25) ou appuyez sur <b>Rnd</b> pour remplir tous les champs.</li>
+      <li>Appuyez sur ▶️ pour écouter une heure, ou sur <b>Démarrer</b> pour écouter toutes les heures l’une après l’autre.</li>
+      <li>Notez ce que vous entendez et comparez-le avec l’heure du champ.</li>
+    </ol>
+
+    <figure class="help-shot" data-shot="playing">
+      <img src="docs/help/img/playing.png" alt="La liste est en cours de lecture : le champ courant est mis en évidence" loading="lazy" />
+      <figcaption>La liste est en cours de lecture</figcaption>
+    </figure>
+  </section>
+
+  <section class="help-section" id="help-settings">
+    <h2>Paramètres</h2>
+    <p>
+      La fenêtre des paramètres s’ouvre avec le bouton
+      <span class="help-framed"
+        ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span
+      >. Elle se compose de blocs ; le défilement permet de passer d’un bloc à l’autre, et une fraction dans le coin indique le numéro du bloc actuel sur le nombre total de blocs. Les commandes de lecture de l’écran principal sont les mêmes commandes et affichent toujours les mêmes valeurs. Une modification est appliquée immédiatement, même pendant la lecture.
+    </p>
+
+    <h3>Vitesse et intervalle</h3>
+    <figure class="help-shot" data-shot="settings-playback">
+      <img src="docs/help/img/settings-playback.png" alt="Paramètres : vitesse et intervalle" loading="lazy" />
+      <figcaption>Vitesse et intervalle</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Vitesse</b> : la vitesse d’élocution, de 0,6 (lent) à 2,0 (rapide).</li>
+      <li value="2"><b>Intervalle (ms)</b> : la pause entre la fin d’une heure et le début de la suivante lors de la lecture de la liste, en millisecondes.</li>
+    </ol>
+
+    <h3>Lignes</h3>
+    <figure class="help-shot" data-shot="settings-rows">
+      <img src="docs/help/img/settings-rows.png" alt="Paramètres : nombre de lignes" loading="lazy" />
+      <figcaption>Lignes</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Lignes</b> : combien de champs d’heure figurent sur l’écran principal, de 1 à 15.</li>
+    </ol>
+
+    <h3>Langue et voix</h3>
+    <figure class="help-shot" data-shot="settings-speech">
+      <img src="docs/help/img/settings-speech.png" alt="Paramètres : langue et voix" loading="lazy" />
+      <figcaption>Langue et voix</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Langue</b> : la langue de la parole.</li>
+      <li value="2"><b>Voix</b> : la voix de votre appareil. La liste dépend de l’appareil et du navigateur.</li>
+    </ol>
+
+    <h3>Interface, thème et mode</h3>
+    <figure class="help-shot" data-shot="settings-appearance">
+      <img src="docs/help/img/settings-appearance.png" alt="Paramètres : langue de l’interface, thème et mode" loading="lazy" />
+      <figcaption>Interface, thème et mode</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Interface</b> : la langue des libellés du programme.</li>
+      <li value="2"><b>Thème</b> : la palette de couleurs du programme.</li>
+      <li value="3"><b>Mode</b> : Contraste (plus lumineux et plus net), Normal, Soir ou Nuit. Le mode Nuit est sombre et atténué, pour regarder l’écran sans gêne dans l’obscurité. Il fonctionne en synchronisation avec le bouton « Mode » de l’écran principal.</li>
+    </ol>
+
+    <h3>Paramètres par défaut</h3>
+    <figure class="help-shot" data-shot="settings-reset">
+      <img src="docs/help/img/settings-reset.png" alt="Paramètres : retour aux valeurs par défaut" loading="lazy" />
+      <figcaption>Paramètres par défaut</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1">
+        <b>Paramètres par défaut</b> (<svg class="help-ico" aria-hidden="true"><use href="#i-reset" /></svg>) : remet tous les paramètres à leurs valeurs initiales.
+      </li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-notes">
+    <h2>Remarques</h2>
+    <p class="help-note">Tous les paramètres sont enregistrés dans votre navigateur et subsistent après la fermeture du programme.</p>
+    <p class="help-note">Les fenêtres d’aide et de paramètres se ferment avec le bouton ✕ ou la touche <kbd>Échap</kbd> ; sur téléphone, aussi avec le bouton Retour. La touche <kbd>F1</kbd> ouvre cette fenêtre.</p>
+    <p class="help-note">Si la langue n’a pas de voix sur votre appareil, installez une voix dans les paramètres du système.</p>
+    <p class="help-note">Cette aide peut s’afficher dans n’importe quelle langue : choisissez-la dans le champ ci-dessus.</p>
+  </section>
+</div>
