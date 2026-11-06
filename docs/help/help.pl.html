@@ -1,0 +1,125 @@
+<div class="help-content" lang="pl" dir="ltr">
+  <section class="help-section" id="help-about">
+    <h2>Przeznaczenie programu</h2>
+    <p>Clock Listening Trainer służy do nauki podawania godzin w językach obcych i do ćwiczenia rozumienia ze słuchu.</p>
+    <p>Program pokazuje godziny w formacie GG:MM, wymawia je na głos w wybranym języku wybranym głosem i odtwarza całą listę godzin jedna po drugiej z przerwą między nimi.</p>
+    <p>Użyj go, aby ćwiczyć słuch na sposób podawania godzin w różnych językach: na przykład „quarter to four”, „Viertel vor vier” lub „без четверти четыре”.</p>
+    <p>Interfejs jest dostępny w 13 językach: العربية, Čeština, Deutsch, English, Español, Français, Italiano, Nederlands, Polski, Português, Русский, Türkçe, Українська.</p>
+  </section>
+
+  <section class="help-section" id="help-main">
+    <h2>Ekran główny</h2>
+
+    <figure class="help-shot" data-shot="main-overview">
+      <img src="docs/help/img/main-overview.png" alt="Ekran główny programu z ponumerowanymi elementami" loading="lazy" />
+      <figcaption>Ekran główny</figcaption>
+    </figure>
+
+    <ol class="help-legend">
+      <li value="1">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg
+        ></span>
+        <b>Informacje</b>: otwiera to okno.
+      </li>
+      <li value="2">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg
+        ></span>
+        <b>Ustawienia</b>: otwiera okno ustawień (zob. „Ustawienia”).
+      </li>
+      <li value="3">
+        <svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Tryb</b>: tryb kolorystyczny interfejsu: Kontrast, Normalny, Wieczór lub Noc. Każde naciśnięcie przełącza na następny tryb.
+      </li>
+      <li value="4"><b>Pola godzin</b>: przycisk losowej godziny 🎲, godzina (G:MM lub GG:MM, od 0:00 do 23:59) i przycisk odtwarzania ▶️ dla tej godziny.</li>
+      <li value="5"><b>Rnd</b>: wypełnia wszystkie pola losowymi godzinami (minuty co 5).</li>
+      <li value="6"><b>Start / Pauza / Kontynuuj</b>: odtwarza godziny jedna po drugiej; odtwarzane pole jest podświetlone.</li>
+      <li value="7"><b>Resetuj</b>: przywraca ćwiczenie na początek (dostępne, gdy jest wstrzymane).</li>
+      <li value="8"><b>Sterowanie odtwarzaniem</b>: Prędkość, Interwał, Język i Głos. To te same elementy co w oknie ustawień i są opisane w rozdziale „Ustawienia”.</li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-use">
+    <h2>Jak korzystać</h2>
+    <ol class="help-steps">
+      <li>Wybierz język i głos w ustawieniach.</li>
+      <li>Naciśnij 🎲, aby uzyskać losową godzinę w polu, wpisz godzinę sam (na przykład 14:25) albo naciśnij <b>Rnd</b>, aby wypełnić wszystkie pola.</li>
+      <li>Naciśnij ▶️, aby odsłuchać jedną godzinę, albo <b>Start</b>, aby odsłuchać wszystkie godziny jedna po drugiej.</li>
+      <li>Zapisz to, co słyszysz, i porównaj z godziną w polu.</li>
+    </ol>
+
+    <figure class="help-shot" data-shot="playing">
+      <img src="docs/help/img/playing.png" alt="Lista jest odtwarzana: bieżące pole jest podświetlone" loading="lazy" />
+      <figcaption>Lista jest odtwarzana</figcaption>
+    </figure>
+  </section>
+
+  <section class="help-section" id="help-settings">
+    <h2>Ustawienia</h2>
+    <p>
+      Okno ustawień otwiera się przyciskiem
+      <span class="help-framed"
+        ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span
+      >. Składa się z bloków; przewijanie przenosi z bloku do bloku, a ułamek w rogu pokazuje numer bieżącego bloku i łączną liczbę bloków. Elementy sterowania odtwarzaniem na ekranie głównym to te same elementy i zawsze pokazują takie same wartości. Zmiana jest stosowana od razu, także w trakcie odtwarzania.
+    </p>
+
+    <h3>Prędkość i interwał</h3>
+    <figure class="help-shot" data-shot="settings-playback">
+      <img src="docs/help/img/settings-playback.png" alt="Ustawienia: prędkość i interwał" loading="lazy" />
+      <figcaption>Prędkość i interwał</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Prędkość</b>: szybkość mowy od 0,6 (wolno) do 2,0 (szybko).</li>
+      <li value="2"><b>Interwał (ms)</b>: przerwa między końcem jednej godziny a początkiem następnej podczas odtwarzania listy, w milisekundach.</li>
+    </ol>
+
+    <h3>Wiersze</h3>
+    <figure class="help-shot" data-shot="settings-rows">
+      <img src="docs/help/img/settings-rows.png" alt="Ustawienia: liczba wierszy" loading="lazy" />
+      <figcaption>Wiersze</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Wiersze</b>: ile pól godzin jest na ekranie głównym, od 1 do 15.</li>
+    </ol>
+
+    <h3>Język i głos</h3>
+    <figure class="help-shot" data-shot="settings-speech">
+      <img src="docs/help/img/settings-speech.png" alt="Ustawienia: język i głos" loading="lazy" />
+      <figcaption>Język i głos</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Język</b>: język mowy.</li>
+      <li value="2"><b>Głos</b>: głos Twojego urządzenia. Lista zależy od urządzenia i przeglądarki.</li>
+    </ol>
+
+    <h3>Interfejs, motyw i tryb</h3>
+    <figure class="help-shot" data-shot="settings-appearance">
+      <img src="docs/help/img/settings-appearance.png" alt="Ustawienia: język interfejsu, motyw i tryb" loading="lazy" />
+      <figcaption>Interfejs, motyw i tryb</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Interfejs</b>: język napisów programu.</li>
+      <li value="2"><b>Motyw</b>: paleta kolorów programu.</li>
+      <li value="3"><b>Tryb</b>: Kontrast (jaśniejszy i ostrzejszy), Normalny, Wieczór lub Noc. Tryb nocny jest ciemny i przygaszony, dzięki czemu można spokojnie patrzeć na ekran po ciemku. Działa zgodnie z przyciskiem „Tryb” na ekranie głównym.</li>
+    </ol>
+
+    <h3>Ustawienia domyślne</h3>
+    <figure class="help-shot" data-shot="settings-reset">
+      <img src="docs/help/img/settings-reset.png" alt="Ustawienia: przywracanie wartości domyślnych" loading="lazy" />
+      <figcaption>Ustawienia domyślne</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1">
+        <b>Ustawienia domyślne</b> (<svg class="help-ico" aria-hidden="true"><use href="#i-reset" /></svg>): przywracają wszystkim ustawieniom wartości początkowe.
+      </li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-notes">
+    <h2>Uwagi</h2>
+    <p class="help-note">Wszystkie ustawienia są zapisywane w przeglądarce i zostają po zamknięciu programu.</p>
+    <p class="help-note">Okna pomocy i ustawień zamyka się przyciskiem ✕ lub klawiszem <kbd>Esc</kbd>; na telefonie także przyciskiem Wstecz. Klawisz <kbd>F1</kbd> otwiera to okno.</p>
+    <p class="help-note">Jeśli dla danego języka na urządzeniu nie ma głosów, zainstaluj głos w ustawieniach systemu.</p>
+    <p class="help-note">Tę pomoc można wyświetlić w dowolnym języku: wybierz go w polu powyżej.</p>
+  </section>
+</div>

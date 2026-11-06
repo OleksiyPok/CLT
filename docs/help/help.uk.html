@@ -1,0 +1,125 @@
+<div class="help-content" lang="uk" dir="ltr">
+  <section class="help-section" id="help-about">
+    <h2>Призначення програми</h2>
+    <p>Clock Listening Trainer призначений для вивчення того, як називати час іноземними мовами, та тренування сприйняття мовлення на слух.</p>
+    <p>Програма показує час у форматі ГГ:ХХ, промовляє його вголос обраною мовою обраним голосом і відтворює цілий список часів один за одним із паузою між ними.</p>
+    <p>Використовуйте її, щоб тренувати слух на те, як називають час різними мовами: наприклад, «quarter to four», «Viertel vor vier» або «без четверти четыре».</p>
+    <p>Інтерфейс доступний 13 мовами: العربية, Čeština, Deutsch, English, Español, Français, Italiano, Nederlands, Polski, Português, Русский, Türkçe, Українська.</p>
+  </section>
+
+  <section class="help-section" id="help-main">
+    <h2>Головний екран</h2>
+
+    <figure class="help-shot" data-shot="main-overview">
+      <img src="docs/help/img/main-overview.png" alt="Головний екран програми з пронумерованими елементами" loading="lazy" />
+      <figcaption>Головний екран</figcaption>
+    </figure>
+
+    <ol class="help-legend">
+      <li value="1">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-info" /></svg
+        ></span>
+        <b>Інформація</b>: відкриває це вікно.
+      </li>
+      <li value="2">
+        <span class="help-framed"
+          ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg
+        ></span>
+        <b>Налаштування</b>: відкриває вікно налаштувань (див. «Налаштування»).
+      </li>
+      <li value="3">
+        <svg class="help-ico" aria-hidden="true"><use href="#i-mode-normal" /></svg> <b>Режим</b>: колірний режим інтерфейсу: Контраст, Нормальний, Вечірній або Нічний. Кожне натискання перемикає на наступний режим.
+      </li>
+      <li value="4"><b>Поля часу</b>: кнопка випадкового часу 🎲, час (Г:ХХ або ГГ:ХХ, від 0:00 до 23:59) і кнопка відтворення ▶️ для цього часу.</li>
+      <li value="5"><b>Rnd</b>: заповнює всі поля випадковим часом (хвилини з кроком 5).</li>
+      <li value="6"><b>Почати / Пауза / Продовжити</b>: відтворює часи один за одним; поле, яке звучить, виділяється.</li>
+      <li value="7"><b>Скинути</b>: повертає вправу на початок (доступно, коли вона на паузі).</li>
+      <li value="8"><b>Керування відтворенням</b>: Швидкість, Інтервал, Мова та Голос. Це ті самі елементи, що й у вікні налаштувань, вони описані в розділі «Налаштування».</li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-use">
+    <h2>Як користуватися</h2>
+    <ol class="help-steps">
+      <li>Оберіть мову та голос у налаштуваннях.</li>
+      <li>Натисніть 🎲, щоб отримати випадковий час у полі, введіть час самі (наприклад, 14:25) або натисніть <b>Rnd</b>, щоб заповнити всі поля.</li>
+      <li>Натисніть ▶️, щоб прослухати один час, або <b>Почати</b>, щоб прослухати всі часи один за одним.</li>
+      <li>Запишіть те, що чуєте, і порівняйте з часом у полі.</li>
+    </ol>
+
+    <figure class="help-shot" data-shot="playing">
+      <img src="docs/help/img/playing.png" alt="Список відтворюється: поточне поле виділено" loading="lazy" />
+      <figcaption>Список відтворюється</figcaption>
+    </figure>
+  </section>
+
+  <section class="help-section" id="help-settings">
+    <h2>Налаштування</h2>
+    <p>
+      Вікно налаштувань відкривається кнопкою
+      <span class="help-framed"
+        ><svg class="help-ico" aria-hidden="true"><use href="#i-gear" /></svg></span
+      >. Воно складається з блоків; прокручування переводить від блока до блока, а дріб у куті показує номер поточного блока та загальну кількість блоків. Елементи керування відтворенням на головному екрані — ті самі елементи й завжди показують однакові значення. Зміна застосовується одразу, навіть під час відтворення.
+    </p>
+
+    <h3>Швидкість та інтервал</h3>
+    <figure class="help-shot" data-shot="settings-playback">
+      <img src="docs/help/img/settings-playback.png" alt="Налаштування: швидкість та інтервал" loading="lazy" />
+      <figcaption>Швидкість та інтервал</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Швидкість</b>: швидкість мовлення від 0,6 (повільно) до 2,0 (швидко).</li>
+      <li value="2"><b>Інтервал (мс)</b>: пауза між кінцем одного часу та початком наступного під час відтворення списку, у мілісекундах.</li>
+    </ol>
+
+    <h3>Рядки</h3>
+    <figure class="help-shot" data-shot="settings-rows">
+      <img src="docs/help/img/settings-rows.png" alt="Налаштування: кількість рядків" loading="lazy" />
+      <figcaption>Рядки</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Рядки</b>: скільки полів часу на головному екрані, від 1 до 15.</li>
+    </ol>
+
+    <h3>Мова та голос</h3>
+    <figure class="help-shot" data-shot="settings-speech">
+      <img src="docs/help/img/settings-speech.png" alt="Налаштування: мова та голос" loading="lazy" />
+      <figcaption>Мова та голос</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Мова</b>: мова мовлення.</li>
+      <li value="2"><b>Голос</b>: голос вашого пристрою. Список залежить від пристрою та браузера.</li>
+    </ol>
+
+    <h3>Інтерфейс, тема та режим</h3>
+    <figure class="help-shot" data-shot="settings-appearance">
+      <img src="docs/help/img/settings-appearance.png" alt="Налаштування: мова інтерфейсу, тема та режим" loading="lazy" />
+      <figcaption>Інтерфейс, тема та режим</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1"><b>Інтерфейс</b>: мова написів програми.</li>
+      <li value="2"><b>Тема</b>: колірна палітра програми.</li>
+      <li value="3"><b>Режим</b>: Контраст (яскравіше й чіткіше), Нормальний, Вечірній або Нічний. Нічний режим темний і приглушений, тож можна спокійно дивитися на екран у темряві. Він працює синхронно з кнопкою «Режим» на головному екрані.</li>
+    </ol>
+
+    <h3>Стандартні налаштування</h3>
+    <figure class="help-shot" data-shot="settings-reset">
+      <img src="docs/help/img/settings-reset.png" alt="Налаштування: скидання до стандартних значень" loading="lazy" />
+      <figcaption>Стандартні налаштування</figcaption>
+    </figure>
+    <ol class="help-legend">
+      <li value="1">
+        <b>Стандартні налаштування</b> (<svg class="help-ico" aria-hidden="true"><use href="#i-reset" /></svg>): повертають усі налаштування до початкових значень.
+      </li>
+    </ol>
+  </section>
+
+  <section class="help-section" id="help-notes">
+    <h2>Примітки</h2>
+    <p class="help-note">Усі налаштування зберігаються у вашому браузері та залишаються після закриття програми.</p>
+    <p class="help-note">Вікна довідки та налаштувань закриваються кнопкою ✕ або клавішею <kbd>Esc</kbd>; на телефоні також кнопкою «Назад». Клавіша <kbd>F1</kbd> відкриває це вікно.</p>
+    <p class="help-note">Якщо для мови на вашому пристрої немає голосів, установіть голос у системних налаштуваннях.</p>
+    <p class="help-note">Цю довідку можна показати будь-якою мовою: оберіть її в полі вгорі.</p>
+  </section>
+</div>
