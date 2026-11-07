@@ -8,7 +8,7 @@
 Dit is een compacte applicatie op één pagina om de tijd in vreemde talen te leren zeggen.  
 De app spreekt tijden uit in de gekozen taal en speelt een hele lijst tijden achter elkaar af. Zo traint u uw gehoor voor de manier waarop de tijd in verschillende talen wordt uitgedrukt.
 
-![Uiterlijk van de applicatie](img/app.png)
+<img src="img/app.png" alt="Uiterlijk van de applicatie" width="360">
 
 ## Functies
 
@@ -22,7 +22,7 @@ De app spreekt tijden uit in de gekozen taal en speelt een hele lijst tijden ach
 
 Het instellingenvenster bevat snelheid en interval, aantal rijen, taal en stem, interfacetaal, thema en modus, en terugzetten naar de standaardwaarden.
 
-![Instellingenvenster](img/settings.png)
+<img src="img/settings.png" alt="Instellingenvenster" width="360">
 
 ## Aan de slag
 

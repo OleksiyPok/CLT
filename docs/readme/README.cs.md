@@ -8,7 +8,7 @@
 Toto je kompaktní jednostránková aplikace pro učení se říkat čas v cizích jazycích.  
 Aplikace vyslovuje časy ve zvoleném jazyce a přehrává celý seznam časů za sebou, čímž trénuje sluch na to, jak se čas vyjadřuje v různých jazycích.
 
-![Vzhled aplikace](img/app.png)
+<img src="img/app.png" alt="Vzhled aplikace" width="360">
 
 ## Funkce
 
@@ -22,7 +22,7 @@ Aplikace vyslovuje časy ve zvoleném jazyce a přehrává celý seznam časů z
 
 Okno nastavení obsahuje rychlost a interval, počet řádků, jazyk a hlas, jazyk rozhraní, motiv a režim a obnovení výchozích hodnot.
 
-![Okno nastavení](img/settings.png)
+<img src="img/settings.png" alt="Okno nastavení" width="360">
 
 ## Jak začít
 

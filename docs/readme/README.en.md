@@ -8,7 +8,7 @@
 This is a compact, one-page application designed for learning to tell the time in foreign languages.  
 The app says times aloud in the chosen language and plays a whole list of times one after another, which trains your ear for the way time is expressed in different languages.
 
-![Appearance of the application](img/app.png)
+<img src="img/app.png" alt="Appearance of the application" width="360">
 
 ## Features
 
@@ -22,7 +22,7 @@ The app says times aloud in the chosen language and plays a whole list of times 
 
 The settings window contains speed and interval, number of rows, language and voice, interface language, theme and mode, and a reset to defaults.
 
-![Settings window](img/settings.png)
+<img src="img/settings.png" alt="Settings window" width="360">
 
 ## Getting started
 

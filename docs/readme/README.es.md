@@ -8,7 +8,7 @@
 Esta es una aplicación compacta de una sola página para aprender a decir la hora en lenguas extranjeras.  
 La aplicación pronuncia las horas en el idioma elegido y reproduce una lista completa de horas una tras otra, lo que entrena el oído para la forma de expresar la hora en distintos idiomas.
 
-![Aspecto de la aplicación](img/app.png)
+<img src="img/app.png" alt="Aspecto de la aplicación" width="360">
 
 ## Características
 
@@ -22,7 +22,7 @@ La aplicación pronuncia las horas en el idioma elegido y reproduce una lista co
 
 La ventana de ajustes incluye velocidad e intervalo, número de filas, idioma y voz, idioma de la interfaz, tema y modo, y el restablecimiento de valores.
 
-![Ventana de ajustes](img/settings.png)
+<img src="img/settings.png" alt="Ventana de ajustes" width="360">
 
 ## Primeros pasos
 

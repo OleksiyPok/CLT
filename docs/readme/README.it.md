@@ -8,7 +8,7 @@
 Questa è un'applicazione compatta a pagina singola per imparare a dire l'ora nelle lingue straniere.  
 L'app pronuncia gli orari nella lingua scelta e riproduce un'intera lista di orari uno dopo l'altro, allenando l'orecchio al modo in cui l'ora si esprime nelle diverse lingue.
 
-![Aspetto dell'applicazione](img/app.png)
+<img src="img/app.png" alt="Aspetto dell'applicazione" width="360">
 
 ## Funzionalità
 
@@ -22,7 +22,7 @@ L'app pronuncia gli orari nella lingua scelta e riproduce un'intera lista di ora
 
 La finestra delle impostazioni contiene velocità e intervallo, numero di righe, lingua e voce, lingua dell’interfaccia, tema e modalità e il ripristino dei valori predefiniti.
 
-![Finestra delle impostazioni](img/settings.png)
+<img src="img/settings.png" alt="Finestra delle impostazioni" width="360">
 
 ## Per iniziare
 

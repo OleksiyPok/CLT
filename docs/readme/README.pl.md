@@ -8,7 +8,7 @@
 To kompaktowa, jednostronicowa aplikacja do nauki podawania godziny w językach obcych.  
 Aplikacja wymawia godziny w wybranym języku i odtwarza całą listę godzin jedna po drugiej, co trenuje słuch pod kątem tego, jak godzinę wyraża się w różnych językach.
 
-![Wygląd aplikacji](img/app.png)
+<img src="img/app.png" alt="Wygląd aplikacji" width="360">
 
 ## Funkcje
 
@@ -22,7 +22,7 @@ Aplikacja wymawia godziny w wybranym języku i odtwarza całą listę godzin jed
 
 Okno ustawień zawiera szybkość i odstęp, liczbę wierszy, język i głos, język interfejsu, motyw i tryb oraz przywracanie ustawień domyślnych.
 
-![Okno ustawień](img/settings.png)
+<img src="img/settings.png" alt="Okno ustawień" width="360">
 
 ## Jak zacząć
 

@@ -8,7 +8,7 @@
 Dies ist eine kompakte, einseitige Anwendung zum Erlernen der Uhrzeit in Fremdsprachen.  
 Die App spricht Uhrzeiten in der gewählten Sprache aus und spielt eine ganze Liste von Uhrzeiten nacheinander ab. So schulen Sie Ihr Gehör dafür, wie die Zeit in verschiedenen Sprachen ausgedrückt wird.
 
-![Aussehen der Anwendung](img/app.png)
+<img src="img/app.png" alt="Aussehen der Anwendung" width="360">
 
 ## Funktionen
 
@@ -22,7 +22,7 @@ Die App spricht Uhrzeiten in der gewählten Sprache aus und spielt eine ganze Li
 
 Das Einstellungsfenster enthält Geschwindigkeit und Intervall, Zeilenanzahl, Sprache und Stimme, Oberflächensprache, Thema und Modus sowie das Zurücksetzen auf Standardwerte.
 
-![Einstellungsfenster](img/settings.png)
+<img src="img/settings.png" alt="Einstellungsfenster" width="360">
 
 ## Erste Schritte
 

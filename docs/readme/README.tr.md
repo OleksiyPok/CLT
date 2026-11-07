@@ -8,7 +8,7 @@
 Bu, yabancı dillerde saati söylemeyi öğrenmek için tek sayfalık kompakt bir uygulamadır.  
 Uygulama saatleri seçilen dilde sesli söyler ve bir saat listesinin tamamını art arda oynatır; böylece saatin farklı dillerde nasıl ifade edildiğine kulağınızı alıştırır.
 
-![Uygulamanın görünümü](img/app.png)
+<img src="img/app.png" alt="Uygulamanın görünümü" width="360">
 
 ## Özellikler
 
@@ -22,7 +22,7 @@ Uygulama saatleri seçilen dilde sesli söyler ve bir saat listesinin tamamını
 
 Ayarlar penceresinde hız ve aralık, satır sayısı, dil ve ses, arayüz dili, tema ve mod ile varsayılanlara sıfırlama bulunur.
 
-![Ayarlar penceresi](img/settings.png)
+<img src="img/settings.png" alt="Ayarlar penceresi" width="360">
 
 ## Başlarken
 
