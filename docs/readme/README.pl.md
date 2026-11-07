@@ -10,6 +10,24 @@ Aplikacja wymawia godziny w wybranym języku i odtwarza całą listę godzin jed
 
 ![Wygląd aplikacji](img/app.png)
 
+## Funkcje
+
+- Pokazuje listę losowych godzin (każdy wiersz można wylosować ponownie przyciskiem z kostką) i odczytuje dowolną z nich w wybranym języku.
+- Odtwarza całą listę godzina po godzinie (Start, Pauza, Reset), co trenuje ucho na sposób wyrażania czasu.
+- Ustaw liczbę wierszy (1–15), szybkość mowy, odstęp między godzinami oraz język i głos.
+- Godziny są wymawiane naturalnie (na przykład „kwadrans po trzeciej”) w dziesięciu językach.
+- Działa na telefonach i komputerach, w 13 językach interfejsu, z 10 motywami kolorystycznymi w czterech trybach (normalny, wieczorny, nocny, kontrast).
+
+## Ustawienia
+
+Okno ustawień zawiera szybkość i odstęp, liczbę wierszy, język i głos, język interfejsu, motyw i tryb oraz przywracanie ustawień domyślnych.
+
+![Okno ustawień](img/settings.png)
+
+## Jak zacząć
+
+Otwórz aplikację w przeglądarce: https://oleksiypok.github.io/CLT/. Nie trzeba niczego instalować, a ustawienia są zapisywane w przeglądarce.
+
 ---
 
 🌐 Dostępne języki:  

@@ -10,6 +10,24 @@ La aplicación pronuncia las horas en el idioma elegido y reproduce una lista co
 
 ![Aspecto de la aplicación](img/app.png)
 
+## Características
+
+- Muestra una lista de horas aleatorias (cada fila se puede cambiar con su botón de dado) y dice cualquiera en voz alta en el idioma elegido.
+- Reproduce toda la lista una hora tras otra (Inicio, Pausa, Reiniciar), lo que entrena el oído para la forma de expresar la hora.
+- Ajusta el número de filas (1–15), la velocidad de voz, el intervalo entre horas y el idioma y la voz.
+- Las horas se pronuncian con una redacción natural (por ejemplo, «las tres y cuarto») en diez idiomas.
+- Funciona en móviles y ordenadores, en 13 idiomas de interfaz, con 10 temas de color en cuatro modos (normal, tarde, noche, contraste).
+
+## Ajustes
+
+La ventana de ajustes incluye velocidad e intervalo, número de filas, idioma y voz, idioma de la interfaz, tema y modo, y el restablecimiento de valores.
+
+![Ventana de ajustes](img/settings.png)
+
+## Primeros pasos
+
+Abre la aplicación en tu navegador: https://oleksiypok.github.io/CLT/. No hay que instalar nada y tus ajustes se guardan en el navegador.
+
 ---
 
 🌐 Idiomas disponibles:  

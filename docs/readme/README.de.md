@@ -10,6 +10,24 @@ Die App spricht Uhrzeiten in der gewählten Sprache aus und spielt eine ganze Li
 
 ![Aussehen der Anwendung](img/app.png)
 
+## Funktionen
+
+- Zeigt eine Liste zufälliger Uhrzeiten (jede Zeile lässt sich mit ihrer Würfel-Schaltfläche neu auswürfeln) und spricht jede in der gewählten Sprache aus.
+- Spielt die ganze Liste nacheinander ab (Start, Pause, Zurücksetzen) und schult so das Ohr für die Art, wie Zeit ausgedrückt wird.
+- Stelle Zeilenanzahl (1–15), Sprechgeschwindigkeit, Intervall zwischen den Zeiten sowie Sprache und Stimme ein.
+- Uhrzeiten werden in zehn Sprachen in natürlicher Formulierung gesprochen (z. B. „Viertel nach drei“).
+- Läuft auf Smartphone und Computer, in 13 Oberflächensprachen, mit 10 Farbthemen in vier Modi (normal, Abend, Nacht, Kontrast).
+
+## Einstellungen
+
+Das Einstellungsfenster enthält Geschwindigkeit und Intervall, Zeilenanzahl, Sprache und Stimme, Oberflächensprache, Thema und Modus sowie das Zurücksetzen auf Standardwerte.
+
+![Einstellungsfenster](img/settings.png)
+
+## Erste Schritte
+
+Öffne die App im Browser: https://oleksiypok.github.io/CLT/. Es muss nichts installiert werden, und deine Einstellungen werden im Browser gespeichert.
+
 ---
 
 🌐 Verfügbare Sprachen:  

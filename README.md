@@ -10,6 +10,24 @@ The app says times aloud in the chosen language and plays a whole list of times 
 
 ![Appearance of the application](docs/readme/img/app.png)
 
+## Features
+
+- Shows a list of random times (each row can be re-rolled with its dice button) and says any of them aloud in the chosen language.
+- Plays the whole list one time after another (Start, Pause, Reset), which trains your ear for how time is expressed.
+- Set the number of rows (1–15), the speech speed, the interval between times, and the language and voice.
+- Times are spoken in natural wording (for example “quarter past three”) in ten languages.
+- Works on phones and computers, in 13 interface languages, with 10 colour themes in four modes (normal, evening, night, contrast).
+
+## Settings
+
+The settings window contains speed and interval, number of rows, language and voice, interface language, theme and mode, and a reset to defaults.
+
+![Settings window](docs/readme/img/settings.png)
+
+## Getting started
+
+Open the app in your browser: https://oleksiypok.github.io/CLT/. Nothing needs to be installed, and your settings are saved in the browser.
+
 ---
 
 🌐 Available languages:  

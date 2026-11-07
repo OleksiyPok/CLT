@@ -10,6 +10,24 @@ De app spreekt tijden uit in de gekozen taal en speelt een hele lijst tijden ach
 
 ![Uiterlijk van de applicatie](img/app.png)
 
+## Functies
+
+- Toont een lijst met willekeurige tijden (elke rij kun je opnieuw laten kiezen met de dobbelsteenknop) en zegt ze hardop in de gekozen taal.
+- Speelt de hele lijst na elkaar af (Start, Pauze, Reset), wat het gehoor traint voor hoe de tijd wordt uitgedrukt.
+- Stel het aantal rijen (1–15), de spreeksnelheid, het interval tussen de tijden en de taal en stem in.
+- Tijden worden in tien talen op natuurlijke wijze uitgesproken (bijvoorbeeld “kwart over drie”).
+- Werkt op telefoons en computers, in 13 interfacetalen, met 10 kleurthema’s in vier modi (normaal, avond, nacht, contrast).
+
+## Instellingen
+
+Het instellingenvenster bevat snelheid en interval, aantal rijen, taal en stem, interfacetaal, thema en modus, en terugzetten naar de standaardwaarden.
+
+![Instellingenvenster](img/settings.png)
+
+## Aan de slag
+
+Open de app in je browser: https://oleksiypok.github.io/CLT/. Er hoeft niets geïnstalleerd te worden en je instellingen worden in de browser opgeslagen.
+
 ---
 
 🌐 Beschikbare talen:  

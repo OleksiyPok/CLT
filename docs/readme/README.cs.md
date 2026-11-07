@@ -10,6 +10,24 @@ Aplikace vyslovuje časy ve zvoleném jazyce a přehrává celý seznam časů z
 
 ![Vzhled aplikace](img/app.png)
 
+## Funkce
+
+- Zobrazí seznam náhodných časů (každý řádek lze znovu vylosovat tlačítkem s kostkou) a kterýkoli z nich řekne nahlas ve zvoleném jazyce.
+- Přehraje celý seznam jeden čas za druhým (Start, Pauza, Reset), což cvičí sluch na způsob vyjadřování času.
+- Nastavte počet řádků (1–15), rychlost řeči, interval mezi časy a jazyk a hlas.
+- Časy se vyslovují přirozeně (například „čtvrt na čtyři“) v deseti jazycích.
+- Funguje na telefonech i počítačích, ve 13 jazycích rozhraní, s 10 barevnými motivy ve čtyřech režimech (normální, večerní, noční, kontrastní).
+
+## Nastavení
+
+Okno nastavení obsahuje rychlost a interval, počet řádků, jazyk a hlas, jazyk rozhraní, motiv a režim a obnovení výchozích hodnot.
+
+![Okno nastavení](img/settings.png)
+
+## Jak začít
+
+Otevřete aplikaci v prohlížeči: https://oleksiypok.github.io/CLT/. Nic se neinstaluje a nastavení se ukládá v prohlížeči.
+
 ---
 
 🌐 Dostupné jazyky:  
