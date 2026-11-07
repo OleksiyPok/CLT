@@ -1,6 +1,7 @@
 // The page: connects the ui-*.js modules, the controls of the settings and the events of the bus.
 import { EventTypes } from "../core/event-types.js";
 import { createHelp } from "./help.js";
+import { closeLiveLists } from "./live-select.js";
 import { createUiMirrors } from "./ui-mirrors.js";
 import { createUiLabels } from "./ui-labels.js";
 import { createUiRows } from "./ui-rows.js";
@@ -32,6 +33,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
     isAnyOpen: () => help.isAppHelpModalOpen() || settingsWindow.isSettingsModalOpen(),
     closeAll: () => {
       help.closeHelpModal();
+      closeLiveLists();
       settingsWindow.closeSettingsModal();
     },
   });
@@ -111,6 +113,7 @@ export function createUI({ bus, store, config, langLoader, utils, timePhrase }) 
       modalHistory.opened();
     });
     bus.on(EventTypes.UI_SETTINGS_MODAL_CLOSE, () => {
+      closeLiveLists();
       settingsWindow.closeSettingsModal();
       modalHistory.closed();
     });
