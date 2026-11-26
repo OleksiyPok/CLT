@@ -21,13 +21,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v6 # code of main
-      - uses: actions/checkout@v6 # PWA layer from the app branch
-        with:
-          ref: app
-          path: .pwa
-      - name: Build site (web at /, installable PWA at /app/)
-        run: bash .pwa/build.sh _site
+      - uses: actions/checkout@v6
+      - name: Build site (installable PWA at /)
+        run: bash .github/pwa/build.sh _site
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
