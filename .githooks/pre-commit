@@ -1,0 +1,45 @@
+#!/bin/sh
+# Auto-versioning: APP_VERSION = "MAJOR.MINOR.PATCH" in src/js/core/config.js
+#  - version not touched by you      -> PATCH + 1
+#  - MAJOR or MINOR changed by you    -> PATCH is set to 1 if you left it 0
+#                                        (otherwise your value is kept)
+#  - only PATCH changed by you        -> kept as is
+F="src/js/core/config.js"
+RE='APP_VERSION = "[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*"'
+
+[ -f "$F" ] || exit 0
+
+get() { grep -o "$RE" | head -n1 | grep -o '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*'; }
+
+NEW=$(get < "$F")
+if [ -z "$NEW" ]; then
+  echo "pre-commit: APP_VERSION not found in $F (expected APP_VERSION = \"X.Y.Z\")" >&2
+  exit 1
+fi
+
+OLD=""
+if git rev-parse --verify -q HEAD >/dev/null; then
+  OLD=$(git show "HEAD:$F" 2>/dev/null | get)
+fi
+
+# first commit / file is new: leave as is
+[ -n "$OLD" ] || exit 0
+
+NMA=${NEW%%.*}; R=${NEW#*.}; NMI=${R%%.*}; NPA=${R#*.}
+OMA=${OLD%%.*}; R=${OLD#*.}; OMI=${R%%.*}
+
+if [ "$NEW" = "$OLD" ]; then
+  RES="$NMA.$NMI.$((NPA + 1))"
+elif [ "$NMA" != "$OMA" ] || [ "$NMI" != "$OMI" ]; then
+  if [ "$NPA" -eq 0 ]; then RES="$NMA.$NMI.1"; else RES="$NEW"; fi
+else
+  RES="$NEW"
+fi
+
+if [ "$RES" != "$NEW" ]; then
+  TMP=$(mktemp) || exit 1
+  sed -E "s/APP_VERSION = \"[0-9]+\.[0-9]+\.[0-9]+\"/APP_VERSION = \"$RES\"/" "$F" > "$TMP" && cat "$TMP" > "$F"
+  rm -f "$TMP"
+fi
+git add "$F"
+echo "pre-commit: version $OLD -> $RES"
