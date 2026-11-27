@@ -19,7 +19,7 @@ VERSION="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 VERSION="${VERSION::8}"
 
 # Files that are not part of the app itself
-EXCLUDE='^(\.github/|\.vscode/|docs/readme/|README\.md$|LICENSE$)'
+EXCLUDE='^(\.github/|\.githooks/|\.vscode/|docs/readme/|README\.md$|LICENSE$)'
 
 copy_tree() {
   git ls-files -z | grep -zvE "$EXCLUDE" | tar --null -T - -cf - | tar -xf - -C "$1"
@@ -33,22 +33,20 @@ APP="$OUT"
 ICON_SRC="assets/icons/icon_${APP_ID_UP}_512x512.png"
 [ -f "$ICON_SRC" ] || { echo "Icon not found: $ICON_SRC" >&2; exit 1; }
 mkdir -p "$APP/assets/pwa"
-cp "$ICON_SRC" "$APP/assets/pwa/icon-512.png"
-if command -v convert >/dev/null 2>&1; then
-  convert "$ICON_SRC" -resize 192x192 "$APP/assets/pwa/icon-192.png"
-elif command -v magick >/dev/null 2>&1; then
-  magick "$ICON_SRC" -resize 192x192 "$APP/assets/pwa/icon-192.png"
-else
-  cp "$ICON_SRC" "$APP/assets/pwa/icon-192.png"
-fi
-
-# Maskable icon: opaque, solid background (MASKABLE_BG, default = THEME_COLOR) with the tile
-# inside the safe zone. Android uses exactly this colour around the icon in the launcher.
+# All manifest icons are OPAQUE (solid background, no transparent pixels): Android draws
+# transparent pixels black on the splash screen and puts its own plate under the launcher icon.
+# MASKABLE_BG (default = THEME_COLOR) is that solid colour everywhere.
 MASKABLE_BG="${MASKABLE_BG:-$THEME_COLOR}"
 if command -v convert >/dev/null 2>&1; then IM=convert; elif command -v magick >/dev/null 2>&1; then IM=magick; else IM=""; fi
 if [ -n "$IM" ]; then
+  # "any": the tile fills the square (rounded corners get the solid colour)
+  $IM -size 512x512 "xc:$MASKABLE_BG" "$ICON_SRC" -resize 512x512 -gravity center -compose over -composite -alpha off "$APP/assets/pwa/icon-512.png"
+  $IM "$APP/assets/pwa/icon-512.png" -resize 192x192 "$APP/assets/pwa/icon-192.png"
+  # "maskable": the tile inside the safe zone
   $IM -size 512x512 "xc:$MASKABLE_BG" \( "$ICON_SRC" -resize 85% \) -gravity center -compose over -composite -alpha off "$APP/assets/pwa/icon-maskable-512.png"
 else
+  cp "$ICON_SRC" "$APP/assets/pwa/icon-512.png"
+  cp "$ICON_SRC" "$APP/assets/pwa/icon-192.png"
   cp "$ICON_SRC" "$APP/assets/pwa/icon-maskable-512.png"
 fi
 
