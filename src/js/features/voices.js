@@ -27,13 +27,17 @@ export function createVoices({ bus, utils, allowedLangs = [] } = {}) {
 
   function collect() {
     try {
-      voices = (typeof speechSynthesis !== "undefined" && speechSynthesis.getVoices && speechSynthesis.getVoices()) || [];
+      voices =
+        (typeof speechSynthesis !== "undefined" &&
+          speechSynthesis.getVoices &&
+          speechSynthesis.getVoices()) ||
+        [];
     } catch (e) {
       voices = [];
     }
     utils.log(
       "Available Langs: ",
-      voices.map((v) => v.lang),
+      voices.map((v) => v.lang)
     );
     computeAvailableLanguages();
     utils.log("Filtered Langs: ", availableLanguages);
@@ -42,17 +46,21 @@ export function createVoices({ bus, utils, allowedLangs = [] } = {}) {
 
   async function load() {
     collect();
-    if (!voices.length && typeof speechSynthesis !== "undefined") {
-      try {
-        speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-        await new Promise((r) => setTimeout(r, 300));
-        collect();
-      } catch (e) {}
+    for (
+      let i = 0;
+      i < 10 && !voices.length && typeof speechSynthesis !== "undefined";
+      i++
+    ) {
+      await new Promise((r) => setTimeout(r, 200));
+      collect();
     }
     publish(EventTypes.VOICES_LOADED);
   }
 
-  if (typeof speechSynthesis !== "undefined" && "onvoiceschanged" in speechSynthesis) {
+  if (
+    typeof speechSynthesis !== "undefined" &&
+    "onvoiceschanged" in speechSynthesis
+  ) {
     speechSynthesis.onvoiceschanged = () => {
       collect();
     };
