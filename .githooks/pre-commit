@@ -1,8 +1,7 @@
 #!/bin/sh
 # Auto-versioning: APP_VERSION = "MAJOR.MINOR.PATCH" in src/js/core/config.js
 #  - version not touched by you      -> PATCH + 1
-#  - MAJOR or MINOR changed by you    -> PATCH is set to 1 if you left it 0
-#                                        (otherwise your value is kept)
+#  - MAJOR or MINOR changed by you    -> PATCH is set to 1 (whatever you left there)
 #  - only PATCH changed by you        -> kept as is
 F="src/js/core/config.js"
 RE='APP_VERSION = "[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*"'
@@ -31,7 +30,7 @@ OMA=${OLD%%.*}; R=${OLD#*.}; OMI=${R%%.*}
 if [ "$NEW" = "$OLD" ]; then
   RES="$NMA.$NMI.$((NPA + 1))"
 elif [ "$NMA" != "$OMA" ] || [ "$NMI" != "$OMI" ]; then
-  if [ "$NPA" -eq 0 ]; then RES="$NMA.$NMI.1"; else RES="$NEW"; fi
+  RES="$NMA.$NMI.1"
 else
   RES="$NEW"
 fi
