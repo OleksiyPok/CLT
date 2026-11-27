@@ -42,6 +42,22 @@ else
   cp "$ICON_SRC" "$APP/assets/pwa/icon-192.png"
 fi
 
+# OPTIONAL maskable icon: only when MASKABLE_BG is set (uncommented) in pwa.env.
+# An opaque icon with the solid colour MASKABLE_BG around the tile; Android uses it for the launcher
+# icon (the colour of the plate) and, on Android 12+, for the splash screen.
+MASKABLE_ENTRY=""
+if [ -n "${MASKABLE_BG:-}" ]; then
+  if command -v convert >/dev/null 2>&1; then IM=convert; elif command -v magick >/dev/null 2>&1; then IM=magick; else IM=""; fi
+  if [ -n "$IM" ]; then
+    $IM -size 512x512 "xc:$MASKABLE_BG" \( "$ICON_SRC" -resize 85% \) -gravity center -compose over -composite -alpha off "$APP/assets/pwa/icon-maskable-512.png"
+  else
+    cp "$ICON_SRC" "$APP/assets/pwa/icon-maskable-512.png"
+  fi
+  MASKABLE_ENTRY=',
+    { "src": "assets/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }'
+  echo "Maskable icon: $MASKABLE_BG"
+fi
+
 # Manifest (paths are relative to the manifest -> scope becomes /<repo>/)
 cat > "$APP/manifest.webmanifest" <<JSON
 {
@@ -54,7 +70,7 @@ cat > "$APP/manifest.webmanifest" <<JSON
   "theme_color": "$THEME_COLOR",
   "icons": [
     { "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }${MASKABLE_ENTRY}
   ]
 }
 JSON
@@ -99,7 +115,7 @@ self.addEventListener("fetch", (e) => {
 JS
 
 # Hook the manifest and the service worker into index.html
-INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-192.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>'
+INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-192.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");(function () { var m = document.querySelector("meta[name=theme-color]"); function u() { var c = getComputedStyle(document.body || document.documentElement).backgroundColor; if (m) { if (c !== "rgba(0, 0, 0, 0)") { m.setAttribute("content", c); } } } new MutationObserver(u).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] }); document.addEventListener("DOMContentLoaded", u); window.addEventListener("load", u); })();</script>'
 HTML="$(cat "$APP/index.html")"
 printf '%s\n' "${HTML/<\/head>/${INJECT}</head>}" > "$APP/index.html"
 grep -q 'manifest.webmanifest' "$APP/index.html" || { echo "Injection into index.html failed" >&2; exit 1; }
