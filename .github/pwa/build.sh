@@ -42,6 +42,16 @@ else
   cp "$ICON_SRC" "$APP/assets/pwa/icon-192.png"
 fi
 
+# Maskable icon: opaque, solid background (MASKABLE_BG, default = THEME_COLOR) with the tile
+# inside the safe zone. Android uses exactly this colour around the icon in the launcher.
+MASKABLE_BG="${MASKABLE_BG:-$THEME_COLOR}"
+if command -v convert >/dev/null 2>&1; then IM=convert; elif command -v magick >/dev/null 2>&1; then IM=magick; else IM=""; fi
+if [ -n "$IM" ]; then
+  $IM -size 512x512 "xc:$MASKABLE_BG" \( "$ICON_SRC" -resize 85% \) -gravity center -compose over -composite -alpha off "$APP/assets/pwa/icon-maskable-512.png"
+else
+  cp "$ICON_SRC" "$APP/assets/pwa/icon-maskable-512.png"
+fi
+
 # Manifest (paths are relative to the manifest -> scope becomes /<repo>/)
 cat > "$APP/manifest.webmanifest" <<JSON
 {
@@ -54,7 +64,8 @@ cat > "$APP/manifest.webmanifest" <<JSON
   "theme_color": "$THEME_COLOR",
   "icons": [
     { "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
 JSON
@@ -99,7 +110,7 @@ self.addEventListener("fetch", (e) => {
 JS
 
 # Hook the manifest and the service worker into index.html
-INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-192.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>'
+INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-maskable-512.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>'
 HTML="$(cat "$APP/index.html")"
 printf '%s\n' "${HTML/<\/head>/${INJECT}</head>}" > "$APP/index.html"
 grep -q 'manifest.webmanifest' "$APP/index.html" || { echo "Injection into index.html failed" >&2; exit 1; }
