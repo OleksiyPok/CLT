@@ -15,6 +15,10 @@ APP_ID_UP="$(echo "$APP_ID" | tr '[:lower:]' '[:upper:]')"
 APP_NAME="$(sed -n 's:.*<title>\(.*\)</title>.*:\1:p' index.html | head -1)"
 APP_NAME="${APP_NAME:-$APP_ID_UP}"
 THEME_COLOR="${THEME_COLOR:-#f8fafc}"
+# Splash-screen background (manifest background_color); default = THEME_COLOR. theme_color = status/navigation bars.
+BACKGROUND_COLOR="${BACKGROUND_COLOR:-$THEME_COLOR}"
+# THEME_SYNC=0 switches off the script that makes the bar colour follow the app theme
+THEME_SYNC="${THEME_SYNC:-1}"
 VERSION="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 VERSION="${VERSION::8}"
 
@@ -66,7 +70,7 @@ cat > "$APP/manifest.webmanifest" <<JSON
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "$THEME_COLOR",
+  "background_color": "$BACKGROUND_COLOR",
   "theme_color": "$THEME_COLOR",
   "icons": [
     { "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
@@ -115,7 +119,9 @@ self.addEventListener("fetch", (e) => {
 JS
 
 # Hook the manifest and the service worker into index.html
-INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-192.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");(function () { var m = document.querySelector("meta[name=theme-color]"); function u() { var c = getComputedStyle(document.body || document.documentElement).backgroundColor; if (m) { if (c !== "rgba(0, 0, 0, 0)") { m.setAttribute("content", c); } } } new MutationObserver(u).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] }); document.addEventListener("DOMContentLoaded", u); window.addEventListener("load", u); })();</script>'
+SYNC_JS=''
+[ "$THEME_SYNC" = "0" ] || SYNC_JS='(function () { var m = document.querySelector("meta[name=theme-color]"); function u() { var c = getComputedStyle(document.body || document.documentElement).backgroundColor; if (m) { if (c !== "rgba(0, 0, 0, 0)") { m.setAttribute("content", c); } } } new MutationObserver(u).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] }); document.addEventListener("DOMContentLoaded", u); window.addEventListener("load", u); })();'
+INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-192.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");'"$SYNC_JS"'</script>'
 HTML="$(cat "$APP/index.html")"
 printf '%s\n' "${HTML/<\/head>/${INJECT}</head>}" > "$APP/index.html"
 grep -q 'manifest.webmanifest' "$APP/index.html" || { echo "Injection into index.html failed" >&2; exit 1; }
