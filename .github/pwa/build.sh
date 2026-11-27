@@ -33,21 +33,13 @@ APP="$OUT"
 ICON_SRC="assets/icons/icon_${APP_ID_UP}_512x512.png"
 [ -f "$ICON_SRC" ] || { echo "Icon not found: $ICON_SRC" >&2; exit 1; }
 mkdir -p "$APP/assets/pwa"
-# All manifest icons are OPAQUE (solid background, no transparent pixels): Android draws
-# transparent pixels black on the splash screen and puts its own plate under the launcher icon.
-# MASKABLE_BG (default = THEME_COLOR) is that solid colour everywhere.
-MASKABLE_BG="${MASKABLE_BG:-$THEME_COLOR}"
-if command -v convert >/dev/null 2>&1; then IM=convert; elif command -v magick >/dev/null 2>&1; then IM=magick; else IM=""; fi
-if [ -n "$IM" ]; then
-  # "any": the tile fills the square (rounded corners get the solid colour)
-  $IM -size 512x512 "xc:$MASKABLE_BG" "$ICON_SRC" -resize 512x512 -gravity center -compose over -composite -alpha off "$APP/assets/pwa/icon-512.png"
-  $IM "$APP/assets/pwa/icon-512.png" -resize 192x192 "$APP/assets/pwa/icon-192.png"
-  # "maskable": the tile inside the safe zone
-  $IM -size 512x512 "xc:$MASKABLE_BG" \( "$ICON_SRC" -resize 85% \) -gravity center -compose over -composite -alpha off "$APP/assets/pwa/icon-maskable-512.png"
+cp "$ICON_SRC" "$APP/assets/pwa/icon-512.png"
+if command -v convert >/dev/null 2>&1; then
+  convert "$ICON_SRC" -resize 192x192 "$APP/assets/pwa/icon-192.png"
+elif command -v magick >/dev/null 2>&1; then
+  magick "$ICON_SRC" -resize 192x192 "$APP/assets/pwa/icon-192.png"
 else
-  cp "$ICON_SRC" "$APP/assets/pwa/icon-512.png"
   cp "$ICON_SRC" "$APP/assets/pwa/icon-192.png"
-  cp "$ICON_SRC" "$APP/assets/pwa/icon-maskable-512.png"
 fi
 
 # Manifest (paths are relative to the manifest -> scope becomes /<repo>/)
@@ -62,8 +54,7 @@ cat > "$APP/manifest.webmanifest" <<JSON
   "theme_color": "$THEME_COLOR",
   "icons": [
     { "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "assets/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }
 JSON
@@ -108,7 +99,7 @@ self.addEventListener("fetch", (e) => {
 JS
 
 # Hook the manifest and the service worker into index.html
-INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-maskable-512.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>'
+INJECT='<link rel="manifest" href="manifest.webmanifest" /><meta name="theme-color" content="'"$THEME_COLOR"'" /><link rel="apple-touch-icon" href="assets/pwa/icon-192.png" /><script>window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); });if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>'
 HTML="$(cat "$APP/index.html")"
 printf '%s\n' "${HTML/<\/head>/${INJECT}</head>}" > "$APP/index.html"
 grep -q 'manifest.webmanifest' "$APP/index.html" || { echo "Injection into index.html failed" >&2; exit 1; }
